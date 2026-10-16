@@ -88,9 +88,9 @@ test("creator dashboard keeps uploads local and generated media loads", async ({
 }) => {
   await page.goto("/painel");
   await page.locator('input[type="file"]').setInputFiles(
-    "apps/web/public/media/generated/luna-ferraz-avatar.webp",
+    "apps/web/public/media/generated/creator-luna-ferraz-avatar.jpg",
   );
-  await expect(page.getByText("luna-ferraz-avatar.webp")).toBeVisible();
+  await expect(page.getByText("creator-luna-ferraz-avatar.jpg")).toBeVisible();
   await expect(page.getByText("Prévia local · nenhum arquivo foi enviado")).toBeVisible();
   await page.getByRole("button", { name: "Publicar demo" }).click();
   await expect(page.getByText("Publicação simulada adicionada à fila.")).toBeVisible();
