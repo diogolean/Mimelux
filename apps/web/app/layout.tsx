@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   applicationName: "Mimelux",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${poppins.variable} min-h-full antialiased`}>
