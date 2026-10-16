@@ -24,7 +24,7 @@ test("new account completes verification, onboarding, and discovery coach marks"
   await page.goto("/auth?route=sign-up");
   await page.getByLabel("Seu nome").fill("Pessoa Demo");
   await page.getByLabel("Email ou CPF").fill("pessoa.demo@mimelux.test");
-  await page.getByLabel("Senha").fill("mimelux123");
+  await page.locator('input[name="password"]').fill("mimelux123");
   await page.getByRole("button", { name: "Continuar" }).click();
 
   await expect(page).toHaveURL(/\/verificacao/);
