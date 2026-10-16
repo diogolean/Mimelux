@@ -83,6 +83,33 @@ test("search filters fixtures and chat message persists", async ({ page }) => {
   await expect(page.getByText("Adorei o conteúdo demo!")).toBeVisible();
 });
 
+test("creator dashboard keeps uploads local and generated media loads", async ({
+  page,
+}) => {
+  await page.goto("/painel");
+  await page.locator('input[type="file"]').setInputFiles(
+    "apps/web/public/media/generated/luna-ferraz-avatar.webp",
+  );
+  await expect(page.getByText("luna-ferraz-avatar.webp")).toBeVisible();
+  await expect(page.getByText("Prévia local · nenhum arquivo foi enviado")).toBeVisible();
+  await page.getByRole("button", { name: "Publicar demo" }).click();
+  await expect(page.getByText("Publicação simulada adicionada à fila.")).toBeVisible();
+
+  await page.goto("/topcreators?tab=top-creators");
+  await expect
+    .poll(async () =>
+      page.locator("img").evaluateAll((images) =>
+        images.every(
+          (image) =>
+            image instanceof HTMLImageElement &&
+            image.complete &&
+            image.naturalWidth > 0,
+        ),
+      ),
+    )
+    .toBe(true);
+});
+
 test("responsive pages do not overflow and key screenshots render", async ({ page }) => {
   await mkdir(artifactDir, { recursive: true });
   for (const viewport of [
