@@ -1,0 +1,18 @@
+import { Controller, Get } from "@nestjs/common";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
+
+@ApiTags("health")
+@Controller("health")
+export class HealthController {
+  @Get()
+  @ApiOperation({ summary: "Check API process health" })
+  check() {
+    return {
+      status: "ok",
+      service: "mimelux-api",
+      version: "v1",
+      database: "optional",
+      timestamp: new Date().toISOString(),
+    };
+  }
+}

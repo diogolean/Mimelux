@@ -1,0 +1,319 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  FAN
+  CREATOR
+  MODERATOR
+  ADMIN
+}
+
+enum CreatorStatus {
+  DRAFT
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+enum SubscriptionStatus {
+  PENDING
+  ACTIVE
+  CANCELED
+  EXPIRED
+}
+
+enum ContentVisibility {
+  FREE
+  SUBSCRIBERS
+  PPV
+}
+
+enum MediaKind {
+  IMAGE
+  VIDEO
+}
+
+enum PurchaseKind {
+  SUBSCRIPTION
+  POST
+  MESSAGE
+}
+
+enum PurchaseStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+enum LedgerDirection {
+  DEBIT
+  CREDIT
+}
+
+enum ReportStatus {
+  OPEN
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+model User {
+  id               String         @id @default(cuid())
+  email            String         @unique
+  passwordHash     String
+  role             UserRole       @default(FAN)
+  emailVerifiedAt  DateTime?
+  refreshTokenHash String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  creator          Creator?
+  profile          Profile?
+  subscriptions    Subscription[] @relation("FanSubscriptions")
+  purchases        Purchase[]     @relation("BuyerPurchases")
+  messages         Message[]      @relation("SentMessages")
+  ledgerEntries    LedgerEntry[]  @relation("UserLedger")
+  reportsCreated   Report[]       @relation("Reporters")
+  reportsReceived  Report[]       @relation("ReportedUsers")
+  auditLogs        AuditLog[]     @relation("AuditActors")
+
+  @@map("users")
+}
+
+model Creator {
+  id             String          @id @default(cuid())
+  userId         String          @unique
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status         CreatorStatus   @default(DRAFT)
+  category       String
+  aiGenerated    Boolean         @default(false)
+  fictitious     Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  plans          Plan[]
+  subscriptions  Subscription[]
+  posts          Post[]
+  purchases      Purchase[]
+  ledgerEntries  LedgerEntry[]
+
+  @@map("creators")
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  username    String   @unique
+  bio         String?
+  city        String?
+  avatarUrl   String?
+  coverUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+model Plan {
+  id               String         @id @default(cuid())
+  creatorId        String
+  creator          Creator        @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  name             String
+  description      String
+  priceCents       Int
+  durationMonths   Int            @default(1)
+  active           Boolean        @default(true)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  subscriptions    Subscription[]
+
+  @@index([creatorId])
+  @@map("plans")
+}
+
+model Subscription {
+  id          String             @id @default(cuid())
+  fanId       String
+  fan         User               @relation("FanSubscriptions", fields: [fanId], references: [id], onDelete: Cascade)
+  creatorId   String
+  creator     Creator            @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  planId      String
+  plan        Plan               @relation(fields: [planId], references: [id])
+  status      SubscriptionStatus @default(PENDING)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@unique([fanId, creatorId])
+  @@index([creatorId, status])
+  @@map("subscriptions")
+}
+
+model Post {
+  id          String            @id @default(cuid())
+  creatorId   String
+  creator     Creator           @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  caption     String
+  visibility  ContentVisibility @default(FREE)
+  priceCents  Int?
+  publishedAt DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  media       Media[]
+  purchases   Purchase[]
+  reports     Report[]
+
+  @@index([creatorId, publishedAt])
+  @@map("posts")
+}
+
+model Media {
+  id         String    @id @default(cuid())
+  postId     String?
+  post       Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  messageId  String?
+  message    Message?  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  kind       MediaKind
+  storageKey String
+  mimeType   String
+  width      Int?
+  height     Int?
+  durationMs Int?
+  createdAt  DateTime  @default(now())
+
+  @@index([postId])
+  @@index([messageId])
+  @@map("media")
+}
+
+model Purchase {
+  id            String         @id @default(cuid())
+  buyerId       String
+  buyer         User           @relation("BuyerPurchases", fields: [buyerId], references: [id])
+  creatorId     String
+  creator       Creator        @relation(fields: [creatorId], references: [id])
+  postId        String?
+  post          Post?          @relation(fields: [postId], references: [id])
+  messageId     String?
+  message       Message?       @relation(fields: [messageId], references: [id])
+  kind          PurchaseKind
+  status        PurchaseStatus @default(PENDING)
+  amountCents   Int
+  currency      String         @default("BRL")
+  idempotencyKey String         @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  ledgerEntries LedgerEntry[]
+  paymentEvents PaymentEvent[]
+
+  @@index([buyerId, status])
+  @@index([creatorId, status])
+  @@map("purchases")
+}
+
+model Conversation {
+  id             String    @id @default(cuid())
+  participantIds Json
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  messages       Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id])
+  body           String
+  ppvPriceCents  Int?
+  createdAt      DateTime     @default(now())
+  media          Media[]
+  purchases      Purchase[]
+  reports        Report[]
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+model LedgerEntry {
+  id           String          @id @default(cuid())
+  userId       String?
+  user         User?           @relation("UserLedger", fields: [userId], references: [id])
+  creatorId    String?
+  creator      Creator?        @relation(fields: [creatorId], references: [id])
+  purchaseId   String?
+  purchase     Purchase?       @relation(fields: [purchaseId], references: [id])
+  direction    LedgerDirection
+  account      String
+  amountCents  Int
+  currency     String          @default("BRL")
+  reference    String
+  createdAt    DateTime        @default(now())
+
+  @@index([purchaseId])
+  @@index([creatorId, createdAt])
+  @@map("ledger_entries")
+}
+
+model PaymentEvent {
+  id         String    @id @default(cuid())
+  provider   String
+  providerId String
+  purchaseId String?
+  purchase   Purchase? @relation(fields: [purchaseId], references: [id])
+  eventType  String
+  payload    Json
+  processedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@unique([provider, providerId])
+  @@index([purchaseId])
+  @@map("payment_events")
+}
+
+model Report {
+  id           String       @id @default(cuid())
+  reporterId   String
+  reporter     User         @relation("Reporters", fields: [reporterId], references: [id])
+  targetUserId String?
+  targetUser   User?        @relation("ReportedUsers", fields: [targetUserId], references: [id])
+  postId       String?
+  post         Post?        @relation(fields: [postId], references: [id])
+  messageId    String?
+  message      Message?     @relation(fields: [messageId], references: [id])
+  reason       String
+  details      String?
+  status       ReportStatus @default(OPEN)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([status, createdAt])
+  @@map("reports")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation("AuditActors", fields: [actorId], references: [id])
+  action     String
+  entityType String
+  entityId   String?
+  ipHash     String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@map("audit_logs")
+}

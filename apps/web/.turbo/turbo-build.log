@@ -1,0 +1,39 @@
+
+> @mimelux/web@0.1.0 build /workspace/apps/web
+> next build
+
+▲ Next.js 16.4.2 (Turbopack)
+✓ Running next.config.ts took 32ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.8s
+  Running TypeScript ...
+  Finished TypeScript in 4.6s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/13) ...
+  Generating static pages using 3 workers (3/13) 
+  Generating static pages using 3 workers (6/13) 
+  Generating static pages using 3 workers (9/13) 
+✓ Generating static pages using 3 workers (13/13) in 379ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/auth/[...nextauth]
+├ ○ /auth
+├ ○ /busca
+├ ○ /chat
+├ ƒ /chat/[id]
+├ ○ /checkout
+├ ƒ /creator/[username]
+├ ○ /feed
+├ ○ /onboarding
+├ ○ /painel
+├ ○ /topcreators
+└ ○ /verificacao
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

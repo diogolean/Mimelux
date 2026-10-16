@@ -1,0 +1,4 @@
+
+> @mimelux/core@0.1.0 build /workspace/packages/core
+> tsc --noEmit
+

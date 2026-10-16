@@ -1,0 +1,4 @@
+
+> @mimelux/core@0.1.0 lint /workspace/packages/core
+> tsc --noEmit
+

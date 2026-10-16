@@ -1,0 +1,4 @@
+
+> @mimelux/ui@0.1.0 lint /workspace/packages/ui
+> tsc --noEmit
+
