@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import {
   ArrowRight,
   BadgeCheck,
@@ -19,12 +19,9 @@ function TopCreatorsContent() {
   const router = useRouter();
   const search = useSearchParams();
   const tab = search.get("tab") === "destaques" ? "destaques" : "top-creators";
-  const [tour, setTour] = useState(0);
-
-  useEffect(() => {
-    const state = readDemo();
-    if (search.get("tour") === "1" || !state.coachSeen) setTour(1);
-  }, [search]);
+  const [tour, setTour] = useState(() =>
+    search.get("tour") === "1" || !readDemo().coachSeen ? 1 : 0,
+  );
 
   function setTab(next: "top-creators" | "destaques") {
     router.push(`/topcreators?tab=${next}`);

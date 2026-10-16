@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, Suspense, useEffect, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import {
   Apple,
   Eye,
@@ -24,11 +24,7 @@ function AuthContent() {
   const [loading, setLoading] = useState(false);
   const [social, setSocial] = useState("");
   const [error, setError] = useState("");
-  const [cookie, setCookie] = useState(false);
-
-  useEffect(() => {
-    setCookie(!readDemo().cookieAccepted);
-  }, []);
+  const [cookie, setCookie] = useState(() => !readDemo().cookieAccepted);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
