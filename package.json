@@ -12,12 +12,14 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
+    "test:e2e": "playwright test",
     "db:generate": "pnpm --filter @mimelux/db generate",
     "db:migrate": "pnpm --filter @mimelux/db migrate",
     "db:seed": "pnpm --filter @mimelux/db seed",
     "generate:creator-images": "tsx scripts/generate-creator-images.ts"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "tsx": "4.23.15",
     "turbo": "2.11.8",
     "typescript": "5.9.3"

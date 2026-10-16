@@ -144,7 +144,7 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
           {filteredPosts.map((post) => {
             const locked = post.visibility === "subscriber" ? !subscribed : post.visibility === "ppv" ? !unlocks.includes(post.id) : false;
             return (
-              <div key={post.id} className="group relative aspect-[4/5] overflow-hidden rounded-[18px] bg-surface sm:rounded-[24px]">
+              <div key={post.id} data-testid="profile-post" data-locked={locked} className="group relative aspect-[4/5] overflow-hidden rounded-[18px] bg-surface sm:rounded-[24px]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={post.image} alt={post.caption} className={`h-full w-full object-cover transition duration-500 group-hover:scale-105 ${locked ? "scale-105 blur-[10px]" : ""}`} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
@@ -154,7 +154,7 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
                       <span className="mx-auto grid size-10 place-items-center rounded-full bg-black/35 backdrop-blur"><LockKeyhole className="size-4" /></span>
                       <p className="mt-2 text-[9px] font-bold">{post.visibility === "subscriber" ? "Para assinantes" : brl(post.price || 0)}</p>
                       <Link href={post.visibility === "subscriber" ? `/checkout?kind=subscription&id=${creator.id}&return=/creator/${creator.username}` : `/checkout?kind=post&id=${post.id}&creator=${creator.id}&return=/creator/${creator.username}`}>
-                        <span className="mt-2 inline-block rounded-full bg-primary px-3 py-1.5 text-[8px] font-black text-ink">Desbloquear</span>
+                        <span className="mt-2 inline-block rounded-full bg-primary px-3 py-1.5 text-[8px] font-black text-ink">Assine para desbloquear</span>
                       </Link>
                     </div>
                   </div>
