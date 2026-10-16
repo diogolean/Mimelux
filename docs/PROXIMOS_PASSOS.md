@@ -1,13 +1,19 @@
 # Mimelux — next steps
 
-## V0.1 completion
+## V0.1 follow-up
 
-1. Finish browser assertions and save mobile/desktop artifacts.
-2. Add Playwright critical-flow tests for entry, search, profile subscription, chat send, dashboard upload, persistence, refresh, and 404.
-3. Add visual checks at 360, 390, 768, 1024, and 1440 widths.
-4. Complete keyboard navigation and screen-reader labels audit.
-5. Replace remaining raw `<img>` use with a shared optimized media component where it does not interfere with generated local assets.
-6. Translate older pre-brief technical documents to English for consistency.
+Completed in the current checkpoint: critical Playwright navigation flows,
+subscription and message persistence, dashboard local-upload simulation, 404
+handling, generated-image loading, responsive overflow checks at 360, 390, 768,
+1024, and 1440 px, plus mobile/desktop artifacts.
+
+Remaining hardening:
+
+1. Complete a dedicated keyboard and screen-reader audit.
+2. Replace remaining raw `<img>` use with a shared optimized media component
+   where it does not interfere with generated local assets.
+3. Translate older pre-brief technical documents to English for consistency.
+4. Add screenshot diff baselines once the visual direction is approved.
 
 ## V0.2 product
 
@@ -39,7 +45,7 @@
 ## Quality and delivery
 
 1. Add Vitest unit/contract suites.
-2. Add Playwright E2E and screenshot baselines.
+2. Expand Playwright coverage and add screenshot diff baselines.
 3. Add k6 API/load scenarios.
 4. Configure CI for install, lint, typecheck, build, Prisma validation, and tests.
 5. Add OpenTelemetry, structured logs, request IDs, error tracking, and product analytics.
