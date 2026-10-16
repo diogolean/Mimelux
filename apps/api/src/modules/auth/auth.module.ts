@@ -1,6 +1,5 @@
 import { Body, Controller, HttpCode, Module, Post } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { loginSchema, registerSchema } from "@mimelux/core";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -8,16 +7,14 @@ class AuthController {
   @Post("login")
   @HttpCode(501)
   @ApiOperation({ summary: "Authenticate with credentials (contract only in V0.1)" })
-  login(@Body() body: unknown) {
-    loginSchema.parse(body);
+  login(@Body() _body: unknown) {
     return { code: "NOT_IMPLEMENTED", mode: "contract-only" };
   }
 
   @Post("register")
   @HttpCode(501)
   @ApiOperation({ summary: "Register a user (contract only in V0.1)" })
-  register(@Body() body: unknown) {
-    registerSchema.parse(body);
+  register(@Body() _body: unknown) {
     return { code: "NOT_IMPLEMENTED", mode: "contract-only" };
   }
 
