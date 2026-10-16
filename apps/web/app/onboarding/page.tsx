@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Button, Logo, Pill } from "@mimelux/ui";
 import { creators } from "@/lib/gateway";
-import { writeDemo } from "@/lib/demo-store";
+import { readDemo, writeDemo } from "@/lib/demo-store";
 
 const interests = ["Lifestyle", "Fitness", "Música", "Gastronomia", "Moda", "Arte", "Viagem", "Bem-estar"];
 
@@ -60,7 +60,14 @@ export default function OnboardingPage() {
       return;
     }
     writeDemo({ onboarding: true, coachSeen: false });
-    router.push("/topcreators?tab=top-creators&tour=1");
+    const nextRole = readDemo().role;
+    router.push(
+      nextRole === "affiliate"
+        ? "/afiliados"
+        : nextRole === "creator"
+          ? "/painel"
+          : "/topcreators?tab=top-creators&tour=1",
+    );
   }
 
   return (
@@ -70,7 +77,14 @@ export default function OnboardingPage() {
         <button
           onClick={() => {
             writeDemo({ onboarding: true, coachSeen: false });
-            router.push("/topcreators?tab=top-creators&tour=1");
+            const nextRole = readDemo().role;
+            router.push(
+              nextRole === "affiliate"
+                ? "/afiliados"
+                : nextRole === "creator"
+                  ? "/painel"
+                  : "/topcreators?tab=top-creators&tour=1",
+            );
           }}
           className="text-xs font-bold text-muted transition hover:text-foreground"
         >

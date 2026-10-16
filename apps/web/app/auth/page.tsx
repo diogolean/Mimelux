@@ -7,20 +7,34 @@ import {
   Apple,
   Eye,
   EyeOff,
+  Handshake,
+  Heart,
   LoaderCircle,
   Music2,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button, Logo } from "@mimelux/ui";
-import { DEMO_ACCOUNTS, loginSchema, registerSchema } from "@mimelux/core";
+import { DEMO_ACCOUNTS, loginSchema, registerSchema, type AccountRole } from "@mimelux/core";
+import { bindAttribution } from "@/lib/affiliates";
 import { mockDelay, readDemo, writeDemo } from "@/lib/demo-store";
 import { creators, posts } from "@/lib/gateway";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { MonetizeSection } from "@/components/monetize-section";
+import { toast } from "sonner";
 
 function AuthContent() {
   const router = useRouter();
   const params = useSearchParams();
+  const t = useTranslations("auth");
   const signUp = params.get("route") === "sign-up";
+  const requestedRole = params.get("role");
+  const [role, setRole] = useState<AccountRole | null>(
+    requestedRole === "fan" || requestedRole === "creator" || requestedRole === "affiliate"
+      ? requestedRole
+      : null,
+  );
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [social, setSocial] = useState("");
@@ -40,7 +54,7 @@ function AuthContent() {
           name: form.get("name"),
           email,
           password,
-          role: form.get("role"),
+          role: role ?? "fan",
         })
       : loginSchema.safeParse({ identifier: email, password });
 
@@ -55,13 +69,29 @@ function AuthContent() {
       setError("No demo, use a senha mimelux123.");
       return;
     }
+    const nextRole: AccountRole = !signUp
+      ? email === DEMO_ACCOUNTS.creator.email
+        ? "creator"
+        : email === DEMO_ACCOUNTS.affiliate.email
+          ? "affiliate"
+          : "fan"
+      : role ?? "fan";
+    const current = readDemo();
     writeDemo({
       signedIn: true,
-      role: String(form.get("role") || "fan") as "fan" | "creator",
+      role: nextRole,
       verified: !signUp,
       onboarding: !signUp,
+      ...(signUp ? bindAttribution(current, email) : {}),
     });
-    router.push(signUp ? "/verificacao" : "/topcreators?tab=top-creators");
+    const destination = signUp
+      ? "/verificacao"
+      : nextRole === "creator"
+        ? "/painel"
+        : nextRole === "affiliate"
+          ? "/afiliados"
+          : "/topcreators?tab=top-creators";
+    router.push(destination);
   }
 
   async function socialLogin(name: string) {
@@ -72,22 +102,46 @@ function AuthContent() {
   }
 
   return (
-    <main className="relative grid min-h-dvh overflow-hidden bg-background lg:grid-cols-[minmax(480px,0.9fr)_1.1fr]">
+    <main className="bg-background">
+      <div className="relative grid min-h-dvh overflow-hidden lg:grid-cols-[minmax(480px,0.9fr)_1.1fr]">
       <section className="relative z-10 flex min-h-dvh items-center justify-center px-5 py-10 sm:px-10 lg:px-14">
         <div className="w-full max-w-[440px] animate-enter">
-          <Logo className="mb-10" />
+          <div className="mb-10 flex items-center justify-between gap-3">
+            <Logo />
+            <LanguageSwitcher compact />
+          </div>
           <p className="mb-2 text-xs font-bold uppercase tracking-[.22em] text-primary-strong">
-            {signUp ? "Sua comunidade começa aqui" : "Perto de quem inspira"}
+            {signUp ? t("signupEyebrow") : t("loginEyebrow")}
           </p>
           <h1 className="text-3xl font-extrabold tracking-[-.04em] sm:text-4xl">
-            {signUp ? "Crie sua conta" : "Que bom ter você aqui."}
+            {signUp && !role ? t("roleQuestion") : signUp ? t("signupTitle") : t("loginTitle")}
           </h1>
           <p className="mt-3 text-sm leading-6 text-muted">
-            {signUp
-              ? "Entre para uma comunidade feita de conexões reais e conteúdo único."
-              : "Entre para descobrir conteúdos e experiências que não estão em nenhum outro lugar."}
+            {signUp && !role ? t("roleBody") : signUp ? t("signupBody") : t("loginBody")}
           </p>
 
+          {signUp && !role ? (
+            <div className="mt-8 space-y-3">
+              {([
+                ["fan", Heart, t("fan"), t("fanBody")],
+                ["creator", Sparkles, t("creator"), t("creatorBody")],
+                ["affiliate", Handshake, t("affiliate"), t("affiliateBody")],
+              ] as const).map(([value, Icon, title, body]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setRole(value)}
+                  className="flex w-full items-center gap-4 rounded-[24px] border border-black/8 bg-white/70 p-4 text-left transition hover:-translate-y-0.5 hover:border-primary dark:bg-white/5"
+                >
+                  <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary/20 text-primary-strong"><Icon className="size-5" /></span>
+                  <span>
+                    <span className="block text-sm font-extrabold">{title}</span>
+                    <span className="mt-1 block text-[11px] leading-5 text-muted">{body}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : (
           <form onSubmit={submit} className="mt-8 space-y-3">
             {signUp && (
               <input
@@ -126,25 +180,12 @@ function AuthContent() {
               </button>
             </div>
             {signUp && (
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <label className="cursor-pointer">
-                  <input className="peer sr-only" type="radio" name="role" value="fan" defaultChecked />
-                  <span className="flex h-12 items-center justify-center rounded-full border border-black/8 bg-white/50 text-xs font-bold peer-checked:border-primary peer-checked:bg-primary/15 dark:bg-white/5">
-                    Quero acompanhar
-                  </span>
-                </label>
-                <label className="cursor-pointer">
-                  <input className="peer sr-only" type="radio" name="role" value="creator" />
-                  <span className="flex h-12 items-center justify-center rounded-full border border-black/8 bg-white/50 text-xs font-bold peer-checked:border-primary peer-checked:bg-primary/15 dark:bg-white/5">
-                    Sou criador(a)
-                  </span>
-                </label>
-              </div>
+              <button type="button" onClick={() => setRole(null)} className="text-xs font-bold text-muted">{t("back")}</button>
             )}
             {!signUp && (
               <div className="flex justify-end">
-                <button type="button" className="text-xs font-semibold text-muted hover:text-foreground">
-                  Esqueceu sua senha?
+                <button type="button" onClick={() => toast.info(t("forgotDemo"))} className="text-xs font-semibold text-muted hover:text-foreground">
+                  {t("forgot")}
                 </button>
               </div>
             )}
@@ -155,9 +196,10 @@ function AuthContent() {
             )}
             <Button type="submit" size="lg" className="mt-2 w-full" disabled={loading}>
               {loading ? <LoaderCircle className="size-4 animate-spin" /> : null}
-              {signUp ? "Continuar" : "Entrar"}
+              {signUp ? t("continue") : t("enter")}
             </Button>
           </form>
+          )}
 
           <div className="my-6 flex items-center gap-3 text-[11px] text-muted before:h-px before:flex-1 before:bg-black/10 after:h-px after:flex-1 after:bg-black/10">
             ou entre com
@@ -183,12 +225,12 @@ function AuthContent() {
           </div>
 
           <p className="mt-7 text-center text-xs text-muted">
-            {signUp ? "Já tem uma conta?" : "Ainda não tem uma conta?"}{" "}
+            {signUp ? t("hasAccount") : t("noAccount")}{" "}
             <Link
               href={signUp ? "/auth?route=sign-in" : "/auth?route=sign-up"}
               className="font-bold text-primary-strong hover:underline"
             >
-              {signUp ? "Entrar" : "Cadastre-se"}
+              {signUp ? t("signIn") : t("signUp")}
             </Link>
           </p>
         </div>
@@ -198,7 +240,7 @@ function AuthContent() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_18%,rgba(233,176,167,.8),transparent_24rem),radial-gradient(circle_at_20%_90%,rgba(233,161,94,.42),transparent_25rem)]" />
         <div className="absolute left-12 top-12 flex items-center gap-2 rounded-full border border-white/60 bg-white/50 px-4 py-2 text-xs font-semibold backdrop-blur">
           <ShieldCheck className="size-4 text-primary-strong" />
-          Conteúdo no seu ritmo
+          {t("panelBadge")}
         </div>
         <div className="absolute inset-x-0 top-[16%] flex justify-center">
           <div className="relative h-[480px] w-[310px] [animation:float_6s_ease-in-out_infinite]">
@@ -226,15 +268,15 @@ function AuthContent() {
         </div>
         <div className="absolute inset-x-12 bottom-12">
           <h2 className="max-w-lg text-4xl font-extrabold leading-[1.1] tracking-[-.045em] text-ink">
-            Exclusivo para você.
-            <br />
-            Valioso para quem cria.
+            {t("panelTitle")}
           </h2>
           <p className="mt-4 max-w-md text-sm leading-6 text-black/55">
-            Uma experiência premium para apoiar talentos e chegar mais perto de tudo o que inspira você.
+            {t("panelBody")}
           </p>
         </div>
       </aside>
+      </div>
+      {!signUp && <MonetizeSection />}
 
       {cookie && (
         <div className="fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-2xl flex-col gap-3 rounded-3xl border border-white/10 bg-ink p-4 text-white shadow-2xl sm:flex-row sm:items-center sm:px-5">

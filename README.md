@@ -53,6 +53,9 @@ PostgreSQL is optional for V0.1. No real payment, authentication, upload, or pay
 |---|---|---|
 | Fan | `fan@mimelux.com.br` | `mimelux123` |
 | Creator | `criadora@mimelux.com.br` | `mimelux123` |
+| Affiliate | `afiliado@mimelux.com.br` | `mimelux123` |
+
+The affiliate demo identity is Nara Costa, code `nara`. Promotion links look like `/r/nara/lunaferraz?lang=pt-BR&sub=tiktok`. See [`docs/AFFILIATES.md`](docs/AFFILIATES.md).
 
 Registration uses mock verification code `224488`, then four onboarding steps. Completion, likes, saves, comments, messages, subscriptions, and unlocks persist only in `localStorage`.
 
@@ -98,6 +101,8 @@ See:
 - [`docs/AUDITORIA_V01.md`](docs/AUDITORIA_V01.md)
 - [`docs/RELATORIO-TECNICO.md`](docs/RELATORIO-TECNICO.md)
 - [`docs/STATUS_V01.md`](docs/STATUS_V01.md)
+- [`docs/STATUS_V02.md`](docs/STATUS_V02.md)
+- [`docs/AFFILIATES.md`](docs/AFFILIATES.md)
 - [`docs/PROXIMOS_PASSOS.md`](docs/PROXIMOS_PASSOS.md)
 - Original research report: [`uploads/relatorio-privacy-arquitetura_b5c7.md`](uploads/relatorio-privacy-arquitetura_b5c7.md)
 
@@ -113,11 +118,12 @@ pnpm build
 pnpm test:e2e
 ```
 
-The Playwright suite covers login navigation, subscription unlock and refresh
-persistence, creator search, local chat persistence, responsive overflow at
-360/390/768/1024/1440 px, key screenshots, and the 404 response. Broader
-accessibility coverage and k6 load tests remain planned; this demo is not
-production-ready.
+The Playwright suite covers login navigation, role selection, affiliate
+attribution through a simulated subscription, locale switching, the monetize
+section, subscription unlock and refresh persistence, creator search, local
+chat persistence, responsive overflow at 360/390/768/1024/1440 px, key
+screenshots, and the 404 response. Broader accessibility coverage and k6 load
+tests remain planned; this demo is not production-ready.
 
 ## Safety
 

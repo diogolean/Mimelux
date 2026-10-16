@@ -1,10 +1,53 @@
 "use client";
 
+import type { AccountRole, PaymentProviderId } from "@mimelux/core";
+import { buildAffiliateSeed } from "./affiliates";
+
 const key = "mimelux-demo";
+const affiliateSeed = buildAffiliateSeed();
+
+export type DemoAttribution = {
+  id: string;
+  code: string;
+  creatorId: string;
+  creatorSlug: string;
+  subId: string;
+  clickId: string;
+  clickedAt: string;
+  fanEmail?: string;
+  blockedReason?: "self_referral" | "suspicious";
+};
+
+export type DemoClick = {
+  id: string;
+  code: string;
+  creatorId: string;
+  creatorSlug: string;
+  subId: string;
+  locale: string;
+  suspicious: boolean;
+  createdAt: string;
+};
+
+export type DemoCommission = {
+  id: string;
+  affiliateCode: string;
+  creatorId: string;
+  creatorName: string;
+  subId: string;
+  saleCents: number;
+  amountCents: number;
+  rateBps: number;
+  status: "pending" | "approved" | "paid" | "rejected";
+  kind: "first_sale" | "renewal";
+  holdUntil: string;
+  renewalUntil: string;
+  createdAt: string;
+};
 
 export type DemoState = {
   signedIn: boolean;
-  role: "fan" | "creator";
+  role: AccountRole;
   verified: boolean;
   onboarding: boolean;
   coachSeen: boolean;
@@ -15,6 +58,14 @@ export type DemoState = {
   comments: Record<string, string[]>;
   sentMessages: Record<string, string[]>;
   cookieAccepted: boolean;
+  clicks: DemoClick[];
+  attributions: DemoAttribution[];
+  commissions: DemoCommission[];
+  pendingAttribution: DemoAttribution | null;
+  activeAttribution: DemoAttribution | null;
+  attributionBlocked: DemoAttribution["blockedReason"] | null;
+  creatorProgram: { acceptsAffiliates: boolean; commissionBps: number };
+  payoutSettings: { method: PaymentProviderId; destination: string };
 };
 
 const defaults: DemoState = {
@@ -30,6 +81,14 @@ const defaults: DemoState = {
   comments: {},
   sentMessages: {},
   cookieAccepted: false,
+  clicks: affiliateSeed.clicks,
+  attributions: affiliateSeed.attributions,
+  commissions: affiliateSeed.commissions,
+  pendingAttribution: null,
+  activeAttribution: null,
+  attributionBlocked: null,
+  creatorProgram: { acceptsAffiliates: true, commissionBps: 2000 },
+  payoutSettings: { method: "pix", destination: "demo-chave-pix" },
 };
 
 export function readDemo(): DemoState {

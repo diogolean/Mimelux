@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { Button, Logo, Pill } from "@mimelux/ui";
 import { brl, creators, plans, posts } from "@/lib/gateway";
+import { commissionForSale } from "@/lib/affiliates";
+import { paymentGateway } from "@/lib/payments";
 import { mockDelay, readDemo, writeDemo } from "@/lib/demo-store";
 import { toast } from "sonner";
 
@@ -63,9 +65,23 @@ function CheckoutContent() {
   async function simulate() {
     setPaying(true);
     await mockDelay(900);
+    await paymentGateway.recordConfirmedPayment({
+      provider: "pix",
+      amountCents: amount,
+      currency: "BRL",
+      description: kind,
+      idempotencyKey: `${kind}-${creator.id}-${id}`,
+    });
     const state = readDemo();
     if (kind === "subscription") {
-      writeDemo({ subscriptions: Array.from(new Set([...state.subscriptions, creator.id])) });
+      writeDemo({
+        subscriptions: Array.from(new Set([...state.subscriptions, creator.id])),
+        ...commissionForSale(state, {
+          creatorId: creator.id,
+          creatorName: creator.name,
+          amountCents: amount,
+        }),
+      });
     } else {
       writeDemo({ unlocks: Array.from(new Set([...state.unlocks, id])) });
     }

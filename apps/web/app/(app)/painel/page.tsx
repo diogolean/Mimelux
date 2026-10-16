@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   ArrowDownToLine,
   ArrowUpRight,
@@ -14,12 +15,16 @@ import {
 } from "lucide-react";
 import { Button, Pill } from "@mimelux/ui";
 import { brl, creators, dashboardMetrics, posts } from "@/lib/gateway";
+import { readDemo, writeDemo } from "@/lib/demo-store";
 import { toast } from "sonner";
 
 export default function DashboardPage() {
   const creator = creators[0]!;
   const inputRef = useRef<HTMLInputElement>(null);
+  const programCopy = useTranslations("creatorProgram");
   const [uploadName, setUploadName] = useState("");
+  const [acceptsAffiliates, setAcceptsAffiliates] = useState(() => readDemo().creatorProgram.acceptsAffiliates);
+  const [commission, setCommission] = useState(() => readDemo().creatorProgram.commissionBps / 100);
   const max = Math.max(...dashboardMetrics.monthlySeries);
 
   function selectUpload(event: ChangeEvent<HTMLInputElement>) {
@@ -109,7 +114,7 @@ export default function DashboardPage() {
       </div>
 
       <section className="mt-5 rounded-[28px] border border-black/5 bg-white/65 p-5 dark:bg-white/5 sm:p-6">
-        <div className="flex items-center justify-between"><div><h2 className="text-sm font-extrabold">Publicações recentes</h2><p className="mt-1 text-[9px] text-muted">Desempenho fictício dos conteúdos</p></div><button className="text-[10px] font-bold text-primary-strong">Ver todas</button></div>
+        <div className="flex items-center justify-between"><div><h2 className="text-sm font-extrabold">Publicações recentes</h2><p className="mt-1 text-[9px] text-muted">Desempenho fictício dos conteúdos</p></div><a href={`/creator/${creator.username}`} className="text-[10px] font-bold text-primary-strong">Ver todas</a></div>
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
           {posts.filter((post) => post.creatorId === creator.id).slice(0, 3).map((post) => (
             <article key={post.id} className="flex items-center gap-3 rounded-[20px] bg-surface/55 p-3 dark:bg-white/5">
@@ -119,6 +124,23 @@ export default function DashboardPage() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="mt-5 rounded-[28px] border border-black/5 bg-white/65 p-5 dark:bg-white/5 sm:p-6">
+        <h2 className="text-sm font-extrabold">{programCopy("title")}</h2>
+        <p className="mt-2 max-w-xl text-[10px] leading-5 text-muted">{programCopy("body")}</p>
+        <label className="mt-5 flex items-center gap-3 text-xs font-bold">
+          <input type="checkbox" checked={acceptsAffiliates} onChange={(event) => setAcceptsAffiliates(event.target.checked)} />
+          {programCopy("accept")}
+        </label>
+        <label className="mt-4 block text-[10px] font-bold text-muted">
+          {programCopy("rate")}: {commission}%
+          <input type="range" min={5} max={50} value={commission} onChange={(event) => setCommission(Number(event.target.value))} className="mt-2 w-full accent-primary" />
+        </label>
+        <Button className="mt-5" onClick={() => {
+          writeDemo({ creatorProgram: { acceptsAffiliates, commissionBps: commission * 100 } });
+          toast.success(programCopy("saved"));
+        }}>{programCopy("save")}</Button>
       </section>
     </div>
   );
