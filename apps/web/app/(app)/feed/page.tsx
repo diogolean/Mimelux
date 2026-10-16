@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Plus, Sparkles } from "lucide-react";
 import { PostCard } from "@/components/post-card";
-import { creators, posts } from "@/lib/fixtures";
+import { creators, posts } from "@/lib/gateway";
 
 export default function FeedPage() {
   return (

@@ -6,19 +6,17 @@ import {
   ArrowLeft,
   Check,
   Clock3,
-  Copy,
   LoaderCircle,
   LockKeyhole,
-  QrCode,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import { Button, Logo, Pill } from "@mimelux/ui";
-import { brl, creators, posts } from "@/lib/fixtures";
+import { brl, creators, plans, posts } from "@/lib/gateway";
 import { mockDelay, readDemo, writeDemo } from "@/lib/demo-store";
 import { toast } from "sonner";
 
-function FakeQr({ seed }: { seed: string }) {
+function DemoPaymentGraphic({ seed }: { seed: string }) {
   const cells = useMemo(() => {
     let hash = 0;
     for (const char of seed) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
@@ -35,8 +33,11 @@ function FakeQr({ seed }: { seed: string }) {
   }, [seed]);
 
   return (
-    <div className="grid size-48 grid-cols-[repeat(15,1fr)] gap-[2px] rounded-[22px] bg-white p-4 shadow-inner">
-      {cells.map((active, index) => <i key={index} className={active ? "rounded-[1px] bg-ink" : ""} />)}
+    <div className="relative grid size-48 grid-cols-[repeat(15,1fr)] gap-[3px] overflow-hidden rounded-[32px] bg-surface p-5 shadow-inner">
+      {cells.map((active, index) => <i key={index} className={active ? "rounded-full bg-primary/55" : "rounded-full bg-white/35"} />)}
+      <span className="absolute inset-x-5 top-1/2 -translate-y-1/2 rotate-[-8deg] rounded-full bg-ink px-4 py-2 text-center text-[10px] font-black tracking-[.22em] text-white shadow-xl">
+        SIMULAÇÃO
+      </span>
     </div>
   );
 }
@@ -50,7 +51,11 @@ function CheckoutContent() {
   const creator = creators.find((item) => item.id === creatorId) || creators[0]!;
   const post = posts.find((item) => item.id === id);
   const message = kind === "message";
-  const amount = kind === "subscription" ? creator.price : message ? 1290 : post?.price || 990;
+  const plan = plans.find((item) => item.id === search.get("plan")) || plans[0]!;
+  const subscriptionTotal = Math.round(
+    creator.price * plan.months * (1 - plan.discount / 100),
+  );
+  const amount = kind === "subscription" ? subscriptionTotal : message ? 1290 : post?.price || 990;
   const [paying, setPaying] = useState(false);
   const [paid, setPaid] = useState(false);
   const returnPath = search.get("return")?.startsWith("/") ? search.get("return")! : `/creator/${creator.username}`;
@@ -96,7 +101,7 @@ function CheckoutContent() {
         <div className="mt-7 flex items-center gap-4 rounded-[24px] border border-black/5 bg-white/60 p-4 dark:bg-white/5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={creator.avatar} alt={creator.name} className="size-16 rounded-[20px] object-cover" />
-          <div className="min-w-0 flex-1"><p className="text-xs font-extrabold">{kind === "subscription" ? `Assinatura de ${creator.name}` : `Conteúdo de ${creator.name}`}</p><p className="mt-1 text-[9px] text-muted">{kind === "subscription" ? "Plano mensal · renovação simulada" : message ? "Mensagem exclusiva · acesso permanente" : "Post exclusivo · acesso permanente"}</p></div>
+          <div className="min-w-0 flex-1"><p className="text-xs font-extrabold">{kind === "subscription" ? `Assinatura de ${creator.name}` : `Conteúdo de ${creator.name}`}</p><p className="mt-1 text-[9px] text-muted">{kind === "subscription" ? `${plan.name} · renovação simulada` : message ? "Mensagem exclusiva · acesso permanente" : "Post exclusivo · acesso permanente"}</p></div>
           <p className="text-sm font-black">{brl(amount)}</p>
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
@@ -108,14 +113,14 @@ function CheckoutContent() {
       <section className="overflow-hidden rounded-[34px] border border-black/5 bg-white/75 shadow-[0_30px_90px_rgba(32,32,39,.12)] dark:bg-white/5">
         <div className="flex items-center justify-between border-b border-black/5 p-5 sm:px-7">
           <div><p className="text-xs font-extrabold">Pague com Pix</p><p className="mt-1 text-[9px] text-muted">Confirmação instantânea no ambiente real</p></div>
-          <span className="grid size-10 place-items-center rounded-2xl bg-primary/20"><QrCode className="size-5 text-primary-strong" /></span>
+          <span className="grid size-10 place-items-center rounded-2xl bg-primary/20"><Sparkles className="size-5 text-primary-strong" /></span>
         </div>
         <div className="grid place-items-center p-6 sm:p-8">
-          <FakeQr seed={`${kind}-${id}-${amount}`} />
-          <div className="mt-5 flex items-center gap-2 text-[10px] font-semibold text-muted"><Clock3 className="size-3.5" /> QR válido por 14:52</div>
-          <button onClick={() => toast.success("Código Pix copiado")} className="mt-5 flex w-full max-w-sm items-center gap-3 rounded-2xl bg-surface/65 p-3 text-left dark:bg-white/5">
-            <span className="min-w-0 flex-1 truncate text-[9px] text-muted">00020126580014BR.GOV.BCB.PIX...MIMELUXDEMO</span><Copy className="size-4 shrink-0" />
-          </button>
+          <DemoPaymentGraphic seed={`${kind}-${id}-${amount}`} />
+          <div className="mt-5 flex items-center gap-2 text-[10px] font-semibold text-muted"><Clock3 className="size-3.5" /> Tela ilustrativa · sem código Pix real</div>
+          <div className="mt-5 w-full max-w-sm rounded-2xl bg-surface/65 p-3 text-center text-[9px] font-semibold text-muted dark:bg-white/5">
+            Checkout em modo de demonstração
+          </div>
           <Button size="lg" className="mt-5 w-full max-w-sm" onClick={simulate} disabled={paying}>
             {paying ? <LoaderCircle className="size-4 animate-spin" /> : <Check className="size-4" />}
             {paying ? "Confirmando..." : "Simular pagamento"}

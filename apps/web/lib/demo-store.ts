@@ -10,6 +10,10 @@ export type DemoState = {
   coachSeen: boolean;
   subscriptions: string[];
   unlocks: string[];
+  likes: string[];
+  saves: string[];
+  comments: Record<string, string[]>;
+  sentMessages: Record<string, string[]>;
   cookieAccepted: boolean;
 };
 
@@ -19,8 +23,12 @@ const defaults: DemoState = {
   verified: false,
   onboarding: false,
   coachSeen: false,
-  subscriptions: ["helena"],
+  subscriptions: ["nina-valenca"],
   unlocks: [],
+  likes: [],
+  saves: [],
+  comments: {},
+  sentMessages: {},
   cookieAccepted: false,
 };
 

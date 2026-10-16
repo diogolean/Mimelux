@@ -13,8 +13,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@mimelux/ui";
-import { brl, creators, posts } from "@/lib/fixtures";
-import { readDemo } from "@/lib/demo-store";
+import { brl, creators, posts } from "@/lib/gateway";
+import { readDemo, writeDemo } from "@/lib/demo-store";
 
 export default function ConversationPage() {
   const params = useParams<{ id: string }>();
@@ -22,7 +22,7 @@ export default function ConversationPage() {
   const lockedPost = posts.find((item) => item.creatorId === creator.id) || posts[0]!;
   const messageId = `message-${creator.id}`;
   const [unlocked, setUnlocked] = useState(false);
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<string[]>(() => readDemo().sentMessages[creator.id] ?? []);
 
   useEffect(() => {
     const sync = () => setUnlocked(readDemo().unlocks.includes(messageId));
@@ -37,7 +37,10 @@ export default function ConversationPage() {
     const data = new FormData(form);
     const body = String(data.get("message") || "").trim();
     if (!body) return;
-    setMessages((items) => [...items, body]);
+    const next = [...messages, body];
+    setMessages(next);
+    const current = readDemo();
+    writeDemo({ sentMessages: { ...current.sentMessages, [creator.id]: next } });
     form.reset();
   }
 

@@ -84,3 +84,4 @@ export function Pill({
 }
 
 export { palette, tokens };
+export * from "./components";

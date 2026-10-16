@@ -45,9 +45,9 @@ const creatorDefinitions = [
   ["isis-amaral", "Isis Amaral", "isisamaral", "Viagem", "Praias e aventuras pelo Brasil.", "Recife, PE"],
   ["grace-halden", "Grace Halden", "gracehalden", "Música", "Voz, piano e noites de jazz.", "Nova York · Rio"],
   ["lara-nakamura", "Lara Nakamura", "laranakamura", "Gastronomia", "Gastronomia e dicas de SP.", "São Paulo, SP"],
-  ["theo-marin", "Theo Marin", "theomarin", "Fitness", "Treino funcional e corrida.", "Brasília, DF"],
-  ["rafael-sena", "Rafael Sena", "rafaelsena", "Moda", "Estilo masculino e alfaiataria.", "Fortaleza, CE"],
-  ["noah-avery", "Noah Avery", "noahavery", "Viagem", "Fotografia e trilhas pelo mundo.", "Vancouver · Curitiba"],
+  ["maya-torres", "Maya Torres", "mayatorres", "Fitness", "Treino, praia e muita energia.", "Brasília, DF"],
+  ["kiara-lopes", "Kiara Lopes", "kiaralopes", "Moda", "Moda ousada e looks de verão.", "Fortaleza, CE"],
+  ["alana-reis", "Alana Reis", "alanareis", "Viagem", "Ilhas, barcos e pôr do sol.", "Florianópolis, SC"],
 ] as const;
 
 export const creators: Creator[] = creatorDefinitions.map(
@@ -85,23 +85,36 @@ const captions = [
   "Uma experiência criada especialmente para a comunidade.",
 ];
 
-export const posts: Post[] = Array.from({ length: 36 }, (_, index) => {
-  const creator = creators[index % creators.length]!;
-  const imageIndex = (index % 12) + 1;
-  const visibility = (["free", "subscriber", "ppv"] as const)[index % 3]!;
-  return {
-    id: `post-${String(index + 1).padStart(2, "0")}`,
-    creatorId: creator.id,
-    image: `${generatedPath}/post-${String(imageIndex).padStart(2, "0")}.jpg`,
-    caption: captions[index % captions.length]!,
-    visibility,
-    mediaType: index % 7 === 0 ? "video" : "image",
-    price: visibility === "ppv" ? 690 + (index % 5) * 200 : undefined,
-    likes: 612 + ((index * 487) % 6200),
-    time: index < 2 ? `há ${24 + index * 19} min` : index < 8 ? `há ${index} h` : `há ${Math.ceil(index / 5)} d`,
-    demo: true,
-  };
-});
+const publicPosts: Post[] = creators.slice(0, 12).map((creator, index) => ({
+  id: `public-${creator.id}`,
+  creatorId: creator.id,
+  image: `${generatedPath}/post-${String(index + 1).padStart(2, "0")}.jpg`,
+  caption: captions[index]!,
+  visibility: "free",
+  mediaType: "image",
+  likes: 1240 + index * 317,
+  time: index < 2 ? `há ${24 + index * 19} min` : `há ${index + 1} h`,
+  demo: true,
+}));
+
+const subscriberPosts: Post[] = creators.flatMap((creator, creatorIndex) =>
+  Array.from({ length: creatorIndex < 4 ? 2 : 1 }, (_, itemIndex) => {
+    const assetIndex = ((creatorIndex + itemIndex + 3) % 12) + 1;
+    return {
+      id: `subscriber-${creator.id}-${itemIndex + 1}`,
+      creatorId: creator.id,
+      image: `${generatedPath}/post-${String(assetIndex).padStart(2, "0")}.jpg`,
+      caption: captions[(creatorIndex + itemIndex + 4) % captions.length]!,
+      visibility: "subscriber" as const,
+      mediaType: (creatorIndex + itemIndex) % 6 === 0 ? "video" as const : "image" as const,
+      likes: 612 + ((creatorIndex * 487 + itemIndex * 173) % 4200),
+      time: `há ${Math.ceil((creatorIndex + itemIndex + 3) / 3)} d`,
+      demo: true as const,
+    };
+  }),
+);
+
+export const posts: Post[] = [...publicPosts, ...subscriberPosts];
 
 export const conversations = creators.slice(0, 7).map((creator, index) => ({
   id: creator.id,

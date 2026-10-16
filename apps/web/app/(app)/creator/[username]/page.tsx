@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { CreatorProfile } from "@/components/creator-profile";
-import { creators, posts } from "@/lib/fixtures";
+import { creators, posts } from "@/lib/gateway";
 
 export default async function CreatorPage(props: {
   params: Promise<{ username: string }>;
@@ -17,6 +17,8 @@ export default async function CreatorPage(props: {
       ...post,
       id: `${creator.id}-extra-${index}`,
       creatorId: creator.id,
+      visibility: "subscriber" as const,
+      price: undefined,
     }));
 
   return <CreatorProfile creator={creator} posts={[...creatorPosts, ...fallbackPosts]} />;

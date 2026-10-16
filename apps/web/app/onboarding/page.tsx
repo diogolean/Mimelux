@@ -14,7 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { Button, Logo, Pill } from "@mimelux/ui";
-import { creators } from "@/lib/fixtures";
+import { creators } from "@/lib/gateway";
 import { writeDemo } from "@/lib/demo-store";
 
 const interests = ["Lifestyle", "Fitness", "Música", "Gastronomia", "Moda", "Arte", "Viagem", "Bem-estar"];

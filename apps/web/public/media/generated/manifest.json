@@ -1,195 +1,208 @@
 {
-  "creators": [
-    {
-      "name": "Luna Ferraz",
-      "username": "lunaferraz",
-      "category": "lifestyle",
-      "bio": "Lifestyle, café e pôr do sol em SP.",
-      "files": {
-        "avatar": "creator-luna-ferraz-avatar.jpg",
-        "cover": "creator-luna-ferraz-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Bella Monroe",
-      "username": "bellamonroe",
-      "category": "fashion",
-      "bio": "Moda autoral e looks do dia.",
-      "files": {
-        "avatar": "creator-bella-monroe-avatar.jpg",
-        "cover": "creator-bella-monroe-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Nina Valença",
-      "username": "ninavalenca",
-      "category": "beauty",
-      "bio": "Skincare e maquiagem natural.",
-      "files": {
-        "avatar": "creator-nina-valenca-avatar.jpg",
-        "cover": "creator-nina-valenca-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Sofia Blake",
-      "username": "sofiablake",
-      "category": "fitness",
-      "bio": "Treinos e bem-estar diário.",
-      "files": {
-        "avatar": "creator-sofia-blake-avatar.jpg",
-        "cover": "creator-sofia-blake-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Clara Duarte",
-      "username": "claraduarte",
-      "category": "travel",
-      "bio": "Viagens e roteiros secretos.",
-      "files": {
-        "avatar": "creator-clara-duarte-avatar.jpg",
-        "cover": "creator-clara-duarte-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Mia Castell",
-      "username": "miacastell",
-      "category": "music",
-      "bio": "Música acústica e bastidores.",
-      "files": {
-        "avatar": "creator-mia-castell-avatar.jpg",
-        "cover": "creator-mia-castell-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Aiko Lume",
-      "username": "aikolume",
-      "category": "fashion",
-      "bio": "Minimalismo e moda urbana.",
-      "files": {
-        "avatar": "creator-aiko-lume-avatar.jpg",
-        "cover": "creator-aiko-lume-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Valentina Rios",
-      "username": "valentinarios",
-      "category": "fitness",
-      "bio": "Pilates e alimentação leve.",
-      "files": {
-        "avatar": "creator-valentina-rios-avatar.jpg",
-        "cover": "creator-valentina-rios-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Zara Monteiro",
-      "username": "zaramonteiro",
-      "category": "beauty",
-      "bio": "Beleza, cabelo e autoestima.",
-      "files": {
-        "avatar": "creator-zara-monteiro-avatar.jpg",
-        "cover": "creator-zara-monteiro-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Elena Vidal",
-      "username": "elenavidal",
-      "category": "lifestyle",
-      "bio": "Rotina slow e decoração.",
-      "files": {
-        "avatar": "creator-elena-vidal-avatar.jpg",
-        "cover": "creator-elena-vidal-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Isis Amaral",
-      "username": "isisamaral",
-      "category": "travel",
-      "bio": "Praias e aventuras pelo Brasil.",
-      "files": {
-        "avatar": "creator-isis-amaral-avatar.jpg",
-        "cover": "creator-isis-amaral-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Grace Halden",
-      "username": "gracehalden",
-      "category": "music",
-      "bio": "Voz, piano e noites de jazz.",
-      "files": {
-        "avatar": "creator-grace-halden-avatar.jpg",
-        "cover": "creator-grace-halden-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Lara Nakamura",
-      "username": "laranakamura",
-      "category": "lifestyle",
-      "bio": "Gastronomia e dicas de SP.",
-      "files": {
-        "avatar": "creator-lara-nakamura-avatar.jpg",
-        "cover": "creator-lara-nakamura-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Theo Marin",
-      "username": "theomarin",
-      "category": "fitness",
-      "bio": "Treino funcional e corrida.",
-      "files": {
-        "avatar": "creator-theo-marin-avatar.jpg",
-        "cover": "creator-theo-marin-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Rafael Sena",
-      "username": "rafaelsena",
-      "category": "fashion",
-      "bio": "Estilo masculino e alfaiataria.",
-      "files": {
-        "avatar": "creator-rafael-sena-avatar.jpg",
-        "cover": "creator-rafael-sena-cover.jpg"
-      },
-      "aiGenerated": true
-    },
-    {
-      "name": "Noah Avery",
-      "username": "noahavery",
-      "category": "travel",
-      "bio": "Fotografia e trilhas pelo mundo.",
-      "files": {
-        "avatar": "creator-noah-avery-avatar.jpg",
-        "cover": "creator-noah-avery-cover.jpg"
-      },
-      "aiGenerated": true
-    }
-  ],
-  "posts": [
-    "post-01.jpg",
-    "post-02.jpg",
-    "post-03.jpg",
-    "post-04.jpg",
-    "post-05.jpg",
-    "post-06.jpg",
-    "post-07.jpg",
-    "post-08.jpg",
-    "post-09.jpg",
-    "post-10.jpg",
-    "post-11.jpg",
-    "post-12.jpg"
-  ],
-  "aiGenerated": true
+ "creators": [
+  {
+   "name": "Luna Ferraz",
+   "username": "lunaferraz",
+   "category": "lifestyle",
+   "bio": "Lifestyle, café e pôr do sol em SP.",
+   "files": {
+    "avatar": "creator-luna-ferraz-avatar.jpg",
+    "cover": "creator-luna-ferraz-cover.jpg"
+   },
+   "aiGenerated": true,
+   "post": "post-01.jpg"
+  },
+  {
+   "name": "Bella Monroe",
+   "username": "bellamonroe",
+   "category": "fashion",
+   "bio": "Moda autoral e looks do dia.",
+   "files": {
+    "avatar": "creator-bella-monroe-avatar.jpg",
+    "cover": "creator-bella-monroe-cover.jpg"
+   },
+   "aiGenerated": true,
+   "post": "post-02.jpg"
+  },
+  {
+   "name": "Nina Valença",
+   "username": "ninavalenca",
+   "category": "beauty",
+   "bio": "Skincare e maquiagem natural.",
+   "files": {
+    "avatar": "creator-nina-valenca-avatar.jpg",
+    "cover": "creator-nina-valenca-cover.jpg"
+   },
+   "aiGenerated": true,
+   "post": "post-03.jpg"
+  },
+  {
+   "name": "Sofia Blake",
+   "username": "sofiablake",
+   "category": "fitness",
+   "bio": "Treinos e bem-estar diário.",
+   "files": {
+    "avatar": "creator-sofia-blake-avatar.jpg",
+    "cover": "creator-sofia-blake-cover.jpg"
+   },
+   "aiGenerated": true,
+   "post": "post-04.jpg"
+  },
+  {
+   "name": "Clara Duarte",
+   "username": "claraduarte",
+   "category": "travel",
+   "bio": "Viagens e roteiros secretos.",
+   "files": {
+    "avatar": "creator-clara-duarte-avatar.jpg",
+    "cover": "creator-clara-duarte-cover.jpg"
+   },
+   "aiGenerated": true,
+   "post": "post-05.jpg"
+  },
+  {
+   "name": "Mia Castell",
+   "username": "miacastell",
+   "category": "music",
+   "bio": "Música acústica e bastidores.",
+   "files": {
+    "avatar": "creator-mia-castell-avatar.jpg",
+    "cover": "creator-mia-castell-cover.jpg"
+   },
+   "aiGenerated": true,
+   "post": "post-06.jpg"
+  },
+  {
+   "name": "Aiko Lume",
+   "username": "aikolume",
+   "category": "fashion",
+   "bio": "Minimalismo e moda urbana.",
+   "files": {
+    "avatar": "creator-aiko-lume-avatar.jpg",
+    "cover": "creator-aiko-lume-cover.jpg"
+   },
+   "aiGenerated": true,
+   "post": "post-07.jpg"
+  },
+  {
+   "name": "Valentina Rios",
+   "username": "valentinarios",
+   "category": "fitness",
+   "bio": "Pilates e alimentação leve.",
+   "files": {
+    "avatar": "creator-valentina-rios-avatar.jpg",
+    "cover": "creator-valentina-rios-cover.jpg"
+   },
+   "aiGenerated": true,
+   "post": "post-08.jpg"
+  },
+  {
+   "name": "Zara Monteiro",
+   "username": "zaramonteiro",
+   "category": "beauty",
+   "bio": "Beleza, cabelo e autoestima.",
+   "files": {
+    "avatar": "creator-zara-monteiro-avatar.jpg",
+    "cover": "creator-zara-monteiro-cover.jpg"
+   },
+   "aiGenerated": true,
+   "post": "post-09.jpg"
+  },
+  {
+   "name": "Elena Vidal",
+   "username": "elenavidal",
+   "category": "lifestyle",
+   "bio": "Rotina slow e decoração.",
+   "files": {
+    "avatar": "creator-elena-vidal-avatar.jpg",
+    "cover": "creator-elena-vidal-cover.jpg"
+   },
+   "aiGenerated": true,
+   "post": "post-10.jpg"
+  },
+  {
+   "name": "Isis Amaral",
+   "username": "isisamaral",
+   "category": "travel",
+   "bio": "Praias e aventuras pelo Brasil.",
+   "files": {
+    "avatar": "creator-isis-amaral-avatar.jpg",
+    "cover": "creator-isis-amaral-cover.jpg"
+   },
+   "aiGenerated": true,
+   "post": "post-11.jpg"
+  },
+  {
+   "name": "Grace Halden",
+   "username": "gracehalden",
+   "category": "music",
+   "bio": "Voz, piano e noites de jazz.",
+   "files": {
+    "avatar": "creator-grace-halden-avatar.jpg",
+    "cover": "creator-grace-halden-cover.jpg"
+   },
+   "aiGenerated": true,
+   "post": "post-12.jpg"
+  },
+  {
+   "name": "Lara Nakamura",
+   "username": "laranakamura",
+   "category": "lifestyle",
+   "bio": "Gastronomia e dicas de SP.",
+   "files": {
+    "avatar": "creator-lara-nakamura-avatar.jpg",
+    "cover": "creator-lara-nakamura-cover.jpg"
+   },
+   "aiGenerated": true
+  },
+  {
+   "name": "Maya Torres",
+   "username": "mayatorres",
+   "category": "fitness",
+   "bio": "Treino, praia e muita energia.",
+   "files": {
+    "avatar": "creator-maya-torres-avatar.jpg",
+    "cover": "creator-maya-torres-cover.jpg"
+   },
+   "aiGenerated": true
+  },
+  {
+   "name": "Kiara Lopes",
+   "username": "kiaralopes",
+   "category": "fashion",
+   "bio": "Moda ousada e looks de verão.",
+   "files": {
+    "avatar": "creator-kiara-lopes-avatar.jpg",
+    "cover": "creator-kiara-lopes-cover.jpg"
+   },
+   "aiGenerated": true
+  },
+  {
+   "name": "Alana Reis",
+   "username": "alanareis",
+   "category": "travel",
+   "bio": "Ilhas, barcos e pôr do sol.",
+   "files": {
+    "avatar": "creator-alana-reis-avatar.jpg",
+    "cover": "creator-alana-reis-cover.jpg"
+   },
+   "aiGenerated": true
+  }
+ ],
+ "posts": [
+  "post-01.jpg",
+  "post-02.jpg",
+  "post-03.jpg",
+  "post-04.jpg",
+  "post-05.jpg",
+  "post-06.jpg",
+  "post-07.jpg",
+  "post-08.jpg",
+  "post-09.jpg",
+  "post-10.jpg",
+  "post-11.jpg",
+  "post-12.jpg"
+ ],
+ "aiGenerated": true,
+ "generatedWith": "gemini-2.5-flash-image"
 }

@@ -15,7 +15,7 @@ import {
 import { Button, Logo } from "@mimelux/ui";
 import { DEMO_ACCOUNTS, loginSchema, registerSchema } from "@mimelux/core";
 import { mockDelay, readDemo, writeDemo } from "@/lib/demo-store";
-import { creators, posts } from "@/lib/fixtures";
+import { creators, posts } from "@/lib/gateway";
 
 function AuthContent() {
   const router = useRouter();

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import {
   BadgeCheck,
   Bookmark,
@@ -12,13 +12,15 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button, Pill } from "@mimelux/ui";
-import type { Creator, Post } from "@/lib/fixtures";
-import { brl } from "@/lib/fixtures";
-import { readDemo } from "@/lib/demo-store";
+import type { Creator, Post } from "@/lib/gateway";
+import { brl } from "@/lib/gateway";
+import { readDemo, writeDemo } from "@/lib/demo-store";
 
 export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [commentOpen, setCommentOpen] = useState(false);
+  const [comments, setComments] = useState<string[]>([]);
   const [state, setState] = useState(() => ({
     subscriptions: [] as string[],
     unlocks: [] as string[],
@@ -28,11 +30,37 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
     const sync = () => {
       const current = readDemo();
       setState({ subscriptions: current.subscriptions, unlocks: current.unlocks });
+      setLiked(current.likes.includes(post.id));
+      setSaved(current.saves.includes(post.id));
+      setComments(current.comments[post.id] ?? []);
     };
     sync();
     window.addEventListener("mimelux:state", sync);
     return () => window.removeEventListener("mimelux:state", sync);
-  }, []);
+  }, [post.id]);
+
+  function toggleList(kind: "likes" | "saves", active: boolean) {
+    const current = readDemo();
+    const next = active
+      ? current[kind].filter((id) => id !== post.id)
+      : [...current[kind], post.id];
+    writeDemo({ [kind]: next });
+  }
+
+  function addComment(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const body = String(new FormData(form).get("comment") || "").trim();
+    if (!body) return;
+    const current = readDemo();
+    writeDemo({
+      comments: {
+        ...current.comments,
+        [post.id]: [...(current.comments[post.id] ?? []), body],
+      },
+    });
+    form.reset();
+  }
 
   const locked =
     post.visibility === "subscriber"
@@ -99,11 +127,11 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
 
       <div className="p-4">
         <div className="flex items-center gap-1">
-          <button onClick={() => setLiked((value) => !value)} className="grid size-9 place-items-center rounded-full hover:bg-black/5" aria-label="Curtir">
+          <button onClick={() => toggleList("likes", liked)} className="grid size-9 place-items-center rounded-full hover:bg-black/5" aria-label="Curtir">
             <Heart className={`size-[19px] ${liked ? "fill-accent text-accent-strong" : ""}`} />
           </button>
-          <button className="grid size-9 place-items-center rounded-full hover:bg-black/5" aria-label="Comentar"><MessageCircle className="size-[19px]" /></button>
-          <button onClick={() => setSaved((value) => !value)} className="ml-auto grid size-9 place-items-center rounded-full hover:bg-black/5" aria-label="Salvar">
+          <button onClick={() => setCommentOpen((value) => !value)} className="grid size-9 place-items-center rounded-full hover:bg-black/5" aria-label="Comentar"><MessageCircle className="size-[19px]" /></button>
+          <button onClick={() => toggleList("saves", saved)} className="ml-auto grid size-9 place-items-center rounded-full hover:bg-black/5" aria-label="Salvar">
             <Bookmark className={`size-[19px] ${saved ? "fill-primary text-primary-strong" : ""}`} />
           </button>
         </div>
@@ -112,6 +140,17 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
           <b className="mr-1.5">{creator.name}</b>
           {post.caption}
         </p>
+        {comments.map((comment, index) => (
+          <p key={`${comment}-${index}`} className="mt-2 text-[10px] leading-5">
+            <b className="mr-1.5">você</b>{comment}
+          </p>
+        ))}
+        {commentOpen && (
+          <form onSubmit={addComment} className="mt-3 flex gap-2">
+            <input name="comment" autoFocus placeholder="Escreva um comentário..." className="h-10 min-w-0 flex-1 rounded-full bg-surface/60 px-4 text-[10px] outline-none focus:ring-2 focus:ring-primary/30 dark:bg-white/5" />
+            <Button type="submit" size="sm">Publicar</Button>
+          </form>
+        )}
       </div>
     </article>
   );

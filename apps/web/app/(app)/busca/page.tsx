@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { BadgeCheck, Search, SlidersHorizontal, TrendingUp } from "lucide-react";
 import { Pill } from "@mimelux/ui";
-import { brl, creators } from "@/lib/fixtures";
+import { brl, creators } from "@/lib/gateway";
 
 const categories = ["Todos", "Lifestyle", "Fitness", "Música", "Gastronomia", "Moda", "Arte", "Viagem"];
 

@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@mimelux/ui";
-import { brl, compact, creators } from "@/lib/fixtures";
+import { brl, compact, creators } from "@/lib/gateway";
 import { readDemo, writeDemo } from "@/lib/demo-store";
 
 function TopCreatorsContent() {

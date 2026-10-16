@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { Button, Logo } from "@mimelux/ui";
 import { resetDemo } from "@/lib/demo-store";
-import { creators } from "@/lib/fixtures";
+import { creators } from "@/lib/gateway";
 
 const items = [
   { href: "/feed", label: "Feed", icon: House },

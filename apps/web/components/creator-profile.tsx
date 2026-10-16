@@ -15,13 +15,15 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button, Pill } from "@mimelux/ui";
-import type { Creator, Post } from "@/lib/fixtures";
-import { brl, compact } from "@/lib/fixtures";
+import type { Creator, Post } from "@/lib/gateway";
+import { brl, compact, plans } from "@/lib/gateway";
 import { readDemo } from "@/lib/demo-store";
 
 export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Post[] }) {
   const [subscribed, setSubscribed] = useState(false);
   const [unlocks, setUnlocks] = useState<string[]>([]);
+  const [tab, setTab] = useState<"posts" | "media">("posts");
+  const [filter, setFilter] = useState<"all" | "photos" | "videos" | "paid">("all");
 
   useEffect(() => {
     const sync = () => {
@@ -33,6 +35,13 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
     window.addEventListener("mimelux:state", sync);
     return () => window.removeEventListener("mimelux:state", sync);
   }, [creator.id]);
+
+  const filteredPosts = posts.filter((post) => {
+    if (filter === "photos") return post.mediaType === "image";
+    if (filter === "videos") return post.mediaType === "video";
+    if (filter === "paid") return post.visibility !== "free";
+    return true;
+  });
 
   return (
     <div className="mx-auto w-full max-w-5xl pb-12">
@@ -84,25 +93,55 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
         </div>
 
         {!subscribed && (
-          <div className="mt-6 rounded-[26px] border border-primary/25 bg-gradient-to-br from-primary/16 to-accent/16 p-5 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[.16em] text-primary-strong">Plano Essencial</p>
-              <h2 className="mt-1 text-lg font-extrabold">{creator.free ? "Comece sem custo" : `${brl(creator.price)} por mês`}</h2>
-              <p className="mt-2 text-[10px] text-muted">Feed exclusivo · Chat · Cancele quando quiser</p>
+          <div className="mt-6">
+            <div className="flex items-end justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[.16em] text-primary-strong">Escolha seu acesso</p>
+                <h2 className="mt-1 text-lg font-extrabold">Planos de assinatura demo</h2>
+              </div>
+              <Pill>Oferta fictícia</Pill>
             </div>
-            <Link href={`/checkout?kind=subscription&id=${creator.id}&return=/creator/${creator.username}`}>
-              <Button className="mt-4 w-full sm:mt-0 sm:w-auto">Quero fazer parte</Button>
-            </Link>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              {plans.map((plan, index) => {
+                const total = creator.free
+                  ? 0
+                  : Math.round(creator.price * plan.months * (1 - plan.discount / 100));
+                return (
+                  <article key={plan.id} className={`rounded-[22px] border p-4 ${index === 1 ? "border-primary/35 bg-primary/10" : "border-black/5 bg-white/55 dark:bg-white/5"}`}>
+                    {index === 1 && <Pill active>Mais escolhido</Pill>}
+                    <p className="mt-3 text-xs font-extrabold">{plan.name}</p>
+                    <p className="mt-1 text-lg font-extrabold">{creator.free ? "Grátis" : brl(total)}</p>
+                    <p className="mt-1 text-[8px] text-muted">{plan.discount ? `${plan.discount}% de desconto demo` : "Acesso por 30 dias"}</p>
+                    <Link href={`/checkout?kind=subscription&id=${creator.id}&plan=${plan.id}&return=/creator/${creator.username}`}>
+                      <Button variant={index === 1 ? "primary" : "outline"} size="sm" className="mt-4 w-full">Escolher</Button>
+                    </Link>
+                  </article>
+                );
+              })}
+            </div>
           </div>
         )}
 
         <div className="mt-8 flex items-center gap-6 border-b border-black/8">
-          <button className="flex items-center gap-2 border-b-2 border-primary px-1 pb-3 text-xs font-bold"><Grid3X3 className="size-4" /> Conteúdos</button>
-          <button className="flex items-center gap-2 px-1 pb-3 text-xs font-semibold text-muted"><ImageIcon className="size-4" /> Mídias</button>
+          <button onClick={() => setTab("posts")} className={`flex items-center gap-2 px-1 pb-3 text-xs ${tab === "posts" ? "border-b-2 border-primary font-bold" : "font-semibold text-muted"}`}><Grid3X3 className="size-4" /> Postagens</button>
+          <button onClick={() => setTab("media")} className={`flex items-center gap-2 px-1 pb-3 text-xs ${tab === "media" ? "border-b-2 border-primary font-bold" : "font-semibold text-muted"}`}><ImageIcon className="size-4" /> Mídias</button>
+        </div>
+
+        <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+          {[
+            ["all", "Todos"],
+            ["photos", "Fotos"],
+            ["videos", "Vídeos"],
+            ["paid", "Pagos"],
+          ].map(([value, label]) => (
+            <button key={value} onClick={() => setFilter(value as typeof filter)}>
+              <Pill active={filter === value}>{label}</Pill>
+            </button>
+          ))}
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {posts.map((post) => {
+          {filteredPosts.map((post) => {
             const locked = post.visibility === "subscriber" ? !subscribed : post.visibility === "ppv" ? !unlocks.includes(post.id) : false;
             return (
               <div key={post.id} className="group relative aspect-[4/5] overflow-hidden rounded-[18px] bg-surface sm:rounded-[24px]">
@@ -126,6 +165,13 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
             );
           })}
         </div>
+        {filteredPosts.length === 0 && (
+          <div className="mt-4 rounded-[24px] bg-surface/50 px-6 py-12 text-center">
+            <ImageIcon className="mx-auto size-7 text-muted" />
+            <p className="mt-3 text-xs font-extrabold">Nenhuma mídia nesta categoria</p>
+            <p className="mt-1 text-[9px] text-muted">Escolha outro filtro para continuar.</p>
+          </div>
+        )}
       </section>
     </div>
   );
