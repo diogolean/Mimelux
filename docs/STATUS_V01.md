@@ -33,7 +33,7 @@ Last updated: 2026-10-16.
 | `GET /v1/health` | Passed with HTTP 200 JSON |
 | Swagger `/v1/docs` | Passed with HTTP 200 |
 | Prisma `validate` | Passed |
-| `pnpm test:e2e` | Passed: 5/5 critical-flow tests |
+| `pnpm test:e2e` | Passed: 6/6 critical-flow tests |
 
 ## Browser QA
 
@@ -46,9 +46,10 @@ The critical subscription test passed in Playwright:
 5. Confirm subscriber posts are visible.
 6. Refresh and confirm persistence.
 
-Additional passing assertions cover login navigation, fixture search, local
-chat persistence, the 404 response, and horizontal overflow at 360, 390, 768,
-1024, and 1440 px.
+Additional passing assertions cover login navigation, the complete
+registration → verification → onboarding → coach-mark flow, fixture search,
+local chat persistence, the 404 response, and horizontal overflow at 360, 390,
+768, 1024, and 1440 px.
 
 Artifacts:
 
