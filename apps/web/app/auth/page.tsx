@@ -254,7 +254,7 @@ function AuthContent() {
       )}
 
       {social && (
-        <div className="fixed inset-0 z-[60] grid place-items-center bg-background/90 backdrop-blur-md dark:bg-[#151519]/90">
+        <div className="fixed inset-0 z-[60] grid place-items-center bg-background/90 backdrop-blur-md">
           <div className="text-center">
             <div className="mx-auto grid size-16 place-items-center rounded-3xl bg-primary">
               <LoaderCircle className="size-7 animate-spin text-ink" />

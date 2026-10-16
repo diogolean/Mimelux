@@ -18,6 +18,34 @@ test("root redirects to login and demo login opens discovery", async ({ page }) 
   await expect(page.getByRole("heading", { name: "Em alta", exact: true })).toBeVisible();
 });
 
+test("new account completes verification, onboarding, and discovery coach marks", async ({
+  page,
+}) => {
+  await page.goto("/auth?route=sign-up");
+  await page.getByLabel("Seu nome").fill("Pessoa Demo");
+  await page.getByLabel("Email ou CPF").fill("pessoa.demo@mimelux.test");
+  await page.getByLabel("Senha").fill("mimelux123");
+  await page.getByRole("button", { name: "Continuar" }).click();
+
+  await expect(page).toHaveURL(/\/verificacao/);
+  const ageConfirmation = page.getByRole("checkbox");
+  if (await ageConfirmation.isVisible()) await ageConfirmation.check();
+  await page.getByRole("button", { name: "Verificar e continuar" }).click();
+
+  await expect(page).toHaveURL(/\/onboarding/);
+  for (let step = 0; step < 3; step += 1) {
+    await page.getByRole("button", { name: "Próximo passo" }).click();
+  }
+  await page.getByRole("button", { name: "Concluir" }).click();
+
+  await expect(page).toHaveURL(/\/topcreators/);
+  await expect(page.getByText("Quem tá em alta agora")).toBeVisible();
+  await page.getByRole("button", { name: "Próxima" }).click();
+  await expect(page.getByText("Descubra de tudo um pouco")).toBeVisible();
+  await page.getByRole("button", { name: "Entendi" }).click();
+  await expect(page.getByRole("heading", { name: "Em alta", exact: true })).toBeVisible();
+});
+
 test("creator subscription unlocks locked posts and persists", async ({ page }) => {
   await page.goto("/creator/lunaferraz");
   const posts = page.getByTestId("profile-post");
