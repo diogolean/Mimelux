@@ -1,0 +1,23 @@
+{
+  "name": "mimelux",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.33.4",
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:web": "pnpm --filter @mimelux/web dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "db:generate": "pnpm --filter @mimelux/db generate",
+    "db:migrate": "pnpm --filter @mimelux/db migrate",
+    "db:seed": "pnpm --filter @mimelux/db seed"
+  },
+  "devDependencies": {
+    "turbo": "2.11.8",
+    "typescript": "5.9.3"
+  }
+}
