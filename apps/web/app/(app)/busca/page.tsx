@@ -47,7 +47,7 @@ export default function SearchPage() {
       )}
 
       <div className="mt-8 flex items-center justify-between"><h2 className="text-sm font-extrabold">{query ? `Resultados para “${query}”` : "Talentos para conhecer"}</h2><span className="text-[10px] text-muted">{filtered.length} perfis</span></div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div data-testid="search-results" className="mt-4 grid gap-3 sm:grid-cols-2">
         {filtered.map((creator) => (
           <Link key={creator.id} href={`/creator/${creator.username}`} className="card-lift flex items-center gap-4 rounded-[24px] border border-black/5 bg-white/65 p-3.5 dark:bg-white/5">
             {/* eslint-disable-next-line @next/next/no-img-element */}

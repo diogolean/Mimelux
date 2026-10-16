@@ -15,7 +15,7 @@ test("root redirects to login and demo login opens discovery", async ({ page }) 
 
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await expect(page).toHaveURL(/\/topcreators/);
-  await expect(page.getByRole("heading", { name: "Em alta" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Em alta", exact: true })).toBeVisible();
 });
 
 test("creator subscription unlocks locked posts and persists", async ({ page }) => {
@@ -32,18 +32,20 @@ test("creator subscription unlocks locked posts and persists", async ({ page }) 
   await expect(page.getByText("Você faz parte!")).toBeVisible();
   await page.getByRole("button", { name: /Ver agora/ }).click();
 
-  await expect(page.getByText("Assinatura ativa")).toBeVisible();
+  await expect(page).toHaveURL((url) => url.pathname === "/creator/lunaferraz");
+  await expect(page.getByRole("button", { name: "Assinatura ativa", exact: true })).toBeVisible();
   await expect(page.locator('[data-testid="profile-post"][data-locked="true"]')).toHaveCount(0);
   await page.reload();
-  await expect(page.getByText("Assinatura ativa")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Assinatura ativa", exact: true })).toBeVisible();
   await expect(page.locator('[data-testid="profile-post"][data-locked="true"]')).toHaveCount(0);
 });
 
 test("search filters fixtures and chat message persists", async ({ page }) => {
   await page.goto("/busca");
   await page.getByPlaceholder("Busque por nome, @usuário ou tema").fill("Kiara");
-  await expect(page.getByText("Kiara Lopes")).toBeVisible();
-  await expect(page.getByText("Luna Ferraz")).not.toBeVisible();
+  const searchResults = page.getByTestId("search-results");
+  await expect(searchResults.getByText("Kiara Lopes")).toBeVisible();
+  await expect(searchResults.getByText("Luna Ferraz")).not.toBeVisible();
 
   await page.goto("/chat/luna-ferraz");
   await page.getByPlaceholder("Escreva uma mensagem...").fill("Adorei o conteúdo demo!");

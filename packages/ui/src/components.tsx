@@ -14,7 +14,7 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
-import { Button, Pill } from "./index";
+import { Button, Pill } from "./primitives";
 
 const cx = (...values: Array<string | false | null | undefined>) =>
   values.filter(Boolean).join(" ");
