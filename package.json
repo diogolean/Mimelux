@@ -14,9 +14,11 @@
     "typecheck": "turbo typecheck",
     "db:generate": "pnpm --filter @mimelux/db generate",
     "db:migrate": "pnpm --filter @mimelux/db migrate",
-    "db:seed": "pnpm --filter @mimelux/db seed"
+    "db:seed": "pnpm --filter @mimelux/db seed",
+    "generate:creator-images": "tsx scripts/generate-creator-images.ts"
   },
   "devDependencies": {
+    "tsx": "4.23.15",
     "turbo": "2.11.8",
     "typescript": "5.9.3"
   }
