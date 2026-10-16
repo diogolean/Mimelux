@@ -103,7 +103,21 @@ See:
 
 ## Tests and limitations
 
-The repository checks lint, TypeScript, Prisma validation, NestJS compilation, and Next.js production build. Playwright critical-flow tests and k6 load tests remain planned; this demo is not production-ready.
+Copy `.env.example` to `.env` before running workspace checks so Prisma can
+validate its PostgreSQL datasource.
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm build
+pnpm test:e2e
+```
+
+The Playwright suite covers login navigation, subscription unlock and refresh
+persistence, creator search, local chat persistence, responsive overflow at
+360/390/768/1024/1440 px, key screenshots, and the 404 response. Broader
+accessibility coverage and k6 load tests remain planned; this demo is not
+production-ready.
 
 ## Safety
 

@@ -33,10 +33,11 @@ Last updated: 2026-10-16.
 | `GET /v1/health` | Passed with HTTP 200 JSON |
 | Swagger `/v1/docs` | Passed with HTTP 200 |
 | Prisma `validate` | Passed |
+| `pnpm test:e2e` | Passed: 5/5 critical-flow tests |
 
 ## Browser QA
 
-The critical subscription test is tracked separately from command checks:
+The critical subscription test passed in Playwright:
 
 1. Open Luna Ferraz's profile with cleared demo state.
 2. Confirm one public post is visible and additional posts are blurred/locked.
@@ -45,7 +46,14 @@ The critical subscription test is tracked separately from command checks:
 5. Confirm subscriber posts are visible.
 6. Refresh and confirm persistence.
 
-The final artifact paths and assertion result are added only after browser execution completes.
+Additional passing assertions cover login navigation, fixture search, local
+chat persistence, the 404 response, and horizontal overflow at 360, 390, 768,
+1024, and 1440 px.
+
+Artifacts:
+
+- `/opt/cursor/artifacts/screenshots/mimelux-profile-mobile-390.png`
+- `/opt/cursor/artifacts/screenshots/mimelux-em-alta-desktop-1440.png`
 
 ## Known simulation boundaries
 
@@ -70,4 +78,5 @@ The final artifact paths and assertion result are added only after browser execu
 
 - Docker CLI is not available in the current agent VM, so `docker compose up` was not executed here.
 - PostgreSQL 16 was installed locally for environment diagnostics, but no production-like database migration claim is made.
-- Playwright and k6 are pending until their suites are added; no unrun test is marked as passed.
+- Playwright is installed and the critical-flow suite passes. k6 is still
+  pending; no load-test claim is made.
