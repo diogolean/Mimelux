@@ -4,7 +4,7 @@ import path from "node:path";
 const MODEL = "gemini-2.5-flash-image";
 const API_ROOT = "https://generativelanguage.googleapis.com/v1beta/models";
 const OUTPUT_DIR = path.resolve("apps/web/public/media/generated");
-const MANIFEST_PATH = path.join(OUTPUT_DIR, "manifest.json");
+const MANIFEST_PATH = path.join(OUTPUT_DIR, "generation-manifest.json");
 
 type AssetKind = "avatar" | "cover" | "post";
 

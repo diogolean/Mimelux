@@ -44,7 +44,7 @@ export default function VerificationPage() {
   return (
     <main className="grid min-h-dvh place-items-center px-5 py-8">
       <section className="relative w-full max-w-xl overflow-hidden rounded-[32px] border border-black/5 bg-white/70 p-6 shadow-[0_30px_90px_rgba(32,32,39,.1)] backdrop-blur sm:p-10 dark:bg-white/5">
-        <div className="absolute -right-16 -top-20 size-56 rounded-full bg-[#E9B0A7]/30 blur-3xl" />
+        <div className="absolute -right-16 -top-20 size-56 rounded-full bg-accent/30 blur-3xl" />
         <button
           onClick={() => router.back()}
           className="relative mb-8 grid size-10 place-items-center rounded-full border border-black/10 bg-white/50 transition hover:bg-white dark:bg-white/5"
@@ -54,10 +54,10 @@ export default function VerificationPage() {
         </button>
         <div className="relative">
           <Logo compact />
-          <div className="mt-9 grid size-14 place-items-center rounded-2xl bg-[#E9A15E]/20 text-[#B16E35]">
+          <div className="mt-9 grid size-14 place-items-center rounded-2xl bg-primary/20 text-primary-strong">
             <Mail className="size-6" />
           </div>
-          <p className="mt-6 text-xs font-bold uppercase tracking-[.2em] text-[#B16E35]">Só mais um passo</p>
+          <p className="mt-6 text-xs font-bold uppercase tracking-[.2em] text-primary-strong">Só mais um passo</p>
           <h1 className="mt-2 text-3xl font-extrabold tracking-[-.04em]">Verifique seu e-mail</h1>
           <p className="mt-3 max-w-md text-sm leading-6 text-muted">
             Enviamos um código para o seu e-mail. Para esta demonstração, ele já está preenchido.
@@ -77,22 +77,22 @@ export default function VerificationPage() {
                     next[index] = event.target.value.replace(/\D/g, "");
                     setCode(next);
                   }}
-                  className="aspect-square min-w-0 rounded-2xl border border-black/8 bg-[#F0E8DE]/65 text-center text-lg font-extrabold outline-none focus:border-[#E9A15E] focus:ring-4 focus:ring-[#E9A15E]/15 dark:bg-white/5"
+                  className="aspect-square min-w-0 rounded-2xl border border-black/8 bg-surface/65 text-center text-lg font-extrabold outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 dark:bg-white/5"
                 />
               ))}
             </div>
 
             {needsAge && (
-              <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-2xl border border-black/6 bg-[#F0E8DE]/45 p-4 dark:bg-white/5">
+              <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-2xl border border-black/6 bg-surface/45 p-4 dark:bg-white/5">
                 <input
                   type="checkbox"
                   checked={age}
                   onChange={(event) => setAge(event.target.checked)}
-                  className="mt-1 size-4 accent-[#E9A15E]"
+                  className="mt-1 size-4 accent-primary"
                 />
                 <span>
                   <span className="flex items-center gap-1.5 text-sm font-bold">
-                    <ShieldCheck className="size-4 text-[#B16E35]" />
+                    <ShieldCheck className="size-4 text-primary-strong" />
                     Confirmo que tenho 18 anos ou mais
                   </span>
                   <span className="mt-1 block text-[11px] leading-5 text-muted">

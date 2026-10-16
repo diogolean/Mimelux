@@ -12,8 +12,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button, Pill } from "@mimelux/ui";
-import type { Creator, Post } from "@/lib/mock-data";
-import { brl } from "@/lib/mock-data";
+import type { Creator, Post } from "@/lib/fixtures";
+import { brl } from "@/lib/fixtures";
 import { readDemo } from "@/lib/demo-store";
 
 export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
@@ -57,19 +57,19 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
             <Link href={`/creator/${creator.username}`} className="truncate text-xs font-extrabold hover:underline">
               {creator.name}
             </Link>
-            {creator.verified && <BadgeCheck className="size-3.5 fill-[#E9A15E] text-white" />}
+            {creator.verified && <BadgeCheck className="size-3.5 fill-primary text-white" />}
           </div>
           <p className="text-[9px] text-muted">@{creator.username} · {post.time}</p>
         </div>
         <button aria-label="Mais opções" className="grid size-9 place-items-center rounded-full hover:bg-black/5"><MoreHorizontal className="size-4" /></button>
       </header>
 
-      <div className="relative mx-2 overflow-hidden rounded-[20px] bg-[#F0E8DE]" style={{ aspectRatio: "4 / 4.35" }}>
+      <div className="relative mx-2 overflow-hidden rounded-[20px] bg-surface" style={{ aspectRatio: "4 / 4.35" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={post.image} alt={post.caption} className={`h-full w-full object-cover transition duration-500 ${locked ? "scale-105 blur-[15px]" : ""}`} />
         {locked && (
-          <div className="absolute inset-0 grid place-items-center bg-[#202027]/30 px-6 text-center">
-            <div className="max-w-xs rounded-[26px] border border-white/20 bg-[#202027]/78 p-6 text-white shadow-2xl backdrop-blur-md">
+          <div className="absolute inset-0 grid place-items-center bg-ink/30 px-6 text-center">
+            <div className="max-w-xs rounded-[26px] border border-white/20 bg-ink/78 p-6 text-white shadow-2xl backdrop-blur-md">
               <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-white/10">
                 <LockKeyhole className="size-5" />
               </span>
@@ -91,7 +91,7 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
           </div>
         )}
         {!locked && post.visibility !== "free" && (
-          <Pill className="absolute left-3 top-3 bg-[#202027]/75 text-white backdrop-blur">
+          <Pill className="absolute left-3 top-3 bg-ink/75 text-white backdrop-blur">
             <LockKeyhole className="mr-1 size-3" /> Desbloqueado
           </Pill>
         )}
@@ -100,11 +100,11 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
       <div className="p-4">
         <div className="flex items-center gap-1">
           <button onClick={() => setLiked((value) => !value)} className="grid size-9 place-items-center rounded-full hover:bg-black/5" aria-label="Curtir">
-            <Heart className={`size-[19px] ${liked ? "fill-[#E9B0A7] text-[#D37F73]" : ""}`} />
+            <Heart className={`size-[19px] ${liked ? "fill-accent text-accent-strong" : ""}`} />
           </button>
           <button className="grid size-9 place-items-center rounded-full hover:bg-black/5" aria-label="Comentar"><MessageCircle className="size-[19px]" /></button>
           <button onClick={() => setSaved((value) => !value)} className="ml-auto grid size-9 place-items-center rounded-full hover:bg-black/5" aria-label="Salvar">
-            <Bookmark className={`size-[19px] ${saved ? "fill-[#E9A15E] text-[#B16E35]" : ""}`} />
+            <Bookmark className={`size-[19px] ${saved ? "fill-primary text-primary-strong" : ""}`} />
           </button>
         </div>
         <p className="mt-1 text-[10px] font-bold">{(post.likes + (liked ? 1 : 0)).toLocaleString("pt-BR")} curtidas</p>

@@ -9,7 +9,10 @@
   --color-background: var(--background);
   --color-surface: var(--surface);
   --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
   --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-ink: var(--ink);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-border: var(--border);
@@ -19,7 +22,10 @@
   --background: #faf8f5;
   --surface: #f0e8de;
   --primary: #e9a15e;
+  --primary-strong: #b16e35;
   --accent: #e9b0a7;
+  --accent-strong: #d37f73;
+  --ink: #202027;
   --foreground: #202027;
   --muted: #6f6b69;
   --border: rgba(32, 32, 39, 0.1);
@@ -66,6 +72,11 @@ select {
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+:where(a, button, input, textarea, select):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 55%, transparent);
+  outline-offset: 2px;
 }
 
 ::selection {

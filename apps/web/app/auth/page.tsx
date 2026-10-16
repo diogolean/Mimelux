@@ -15,6 +15,7 @@ import {
 import { Button, Logo } from "@mimelux/ui";
 import { DEMO_ACCOUNTS, loginSchema, registerSchema } from "@mimelux/core";
 import { mockDelay, readDemo, writeDemo } from "@/lib/demo-store";
+import { creators, posts } from "@/lib/fixtures";
 
 function AuthContent() {
   const router = useRouter();
@@ -25,6 +26,8 @@ function AuthContent() {
   const [social, setSocial] = useState("");
   const [error, setError] = useState("");
   const [cookie, setCookie] = useState(() => !readDemo().cookieAccepted);
+  const featuredCreator = creators[0]!;
+  const featuredPost = posts[0]!;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -73,7 +76,7 @@ function AuthContent() {
       <section className="relative z-10 flex min-h-dvh items-center justify-center px-5 py-10 sm:px-10 lg:px-14">
         <div className="w-full max-w-[440px] animate-enter">
           <Logo className="mb-10" />
-          <p className="mb-2 text-xs font-bold uppercase tracking-[.22em] text-[#B16E35]">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[.22em] text-primary-strong">
             {signUp ? "Sua comunidade começa aqui" : "Perto de quem inspira"}
           </p>
           <h1 className="text-3xl font-extrabold tracking-[-.04em] sm:text-4xl">
@@ -92,7 +95,7 @@ function AuthContent() {
                 aria-label="Seu nome"
                 placeholder="Seu nome"
                 autoComplete="name"
-                className="h-13 w-full rounded-full border border-black/8 bg-white/70 px-5 text-sm outline-none transition focus:border-[#E9A15E] focus:ring-4 focus:ring-[#E9A15E]/15 dark:bg-white/5"
+                className="h-13 w-full rounded-full border border-black/8 bg-white/70 px-5 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15 dark:bg-white/5"
               />
             )}
             <input
@@ -101,7 +104,7 @@ function AuthContent() {
               defaultValue={signUp ? "" : DEMO_ACCOUNTS.fan.email}
               placeholder={signUp ? "E-mail" : "E-mail ou CPF"}
               autoComplete="email"
-              className="h-13 w-full rounded-full border border-black/8 bg-white/70 px-5 text-sm outline-none transition focus:border-[#E9A15E] focus:ring-4 focus:ring-[#E9A15E]/15 dark:bg-white/5"
+              className="h-13 w-full rounded-full border border-black/8 bg-white/70 px-5 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15 dark:bg-white/5"
             />
             <div className="relative">
               <input
@@ -111,7 +114,7 @@ function AuthContent() {
                 type={visible ? "text" : "password"}
                 placeholder="Senha"
                 autoComplete={signUp ? "new-password" : "current-password"}
-                className="h-13 w-full rounded-full border border-black/8 bg-white/70 px-5 pr-13 text-sm outline-none transition focus:border-[#E9A15E] focus:ring-4 focus:ring-[#E9A15E]/15 dark:bg-white/5"
+                className="h-13 w-full rounded-full border border-black/8 bg-white/70 px-5 pr-13 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15 dark:bg-white/5"
               />
               <button
                 type="button"
@@ -126,13 +129,13 @@ function AuthContent() {
               <div className="grid grid-cols-2 gap-2 pt-1">
                 <label className="cursor-pointer">
                   <input className="peer sr-only" type="radio" name="role" value="fan" defaultChecked />
-                  <span className="flex h-12 items-center justify-center rounded-full border border-black/8 bg-white/50 text-xs font-bold peer-checked:border-[#E9A15E] peer-checked:bg-[#E9A15E]/15 dark:bg-white/5">
+                  <span className="flex h-12 items-center justify-center rounded-full border border-black/8 bg-white/50 text-xs font-bold peer-checked:border-primary peer-checked:bg-primary/15 dark:bg-white/5">
                     Quero acompanhar
                   </span>
                 </label>
                 <label className="cursor-pointer">
                   <input className="peer sr-only" type="radio" name="role" value="creator" />
-                  <span className="flex h-12 items-center justify-center rounded-full border border-black/8 bg-white/50 text-xs font-bold peer-checked:border-[#E9A15E] peer-checked:bg-[#E9A15E]/15 dark:bg-white/5">
+                  <span className="flex h-12 items-center justify-center rounded-full border border-black/8 bg-white/50 text-xs font-bold peer-checked:border-primary peer-checked:bg-primary/15 dark:bg-white/5">
                     Sou criador(a)
                   </span>
                 </label>
@@ -146,7 +149,7 @@ function AuthContent() {
               </div>
             )}
             {error && (
-              <p role="alert" className="rounded-2xl bg-[#E9B0A7]/25 px-4 py-3 text-xs font-medium">
+              <p role="alert" className="rounded-2xl bg-accent/25 px-4 py-3 text-xs font-medium">
                 {error}
               </p>
             )}
@@ -183,7 +186,7 @@ function AuthContent() {
             {signUp ? "Já tem uma conta?" : "Ainda não tem uma conta?"}{" "}
             <Link
               href={signUp ? "/auth?route=sign-in" : "/auth?route=sign-up"}
-              className="font-bold text-[#B16E35] hover:underline"
+              className="font-bold text-primary-strong hover:underline"
             >
               {signUp ? "Entrar" : "Cadastre-se"}
             </Link>
@@ -191,38 +194,38 @@ function AuthContent() {
         </div>
       </section>
 
-      <aside className="relative m-3 hidden min-h-[calc(100dvh-1.5rem)] overflow-hidden rounded-[36px] bg-[#F0E8DE] lg:block">
+      <aside className="relative m-3 hidden min-h-[calc(100dvh-1.5rem)] overflow-hidden rounded-[36px] bg-surface lg:block">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_18%,rgba(233,176,167,.8),transparent_24rem),radial-gradient(circle_at_20%_90%,rgba(233,161,94,.42),transparent_25rem)]" />
         <div className="absolute left-12 top-12 flex items-center gap-2 rounded-full border border-white/60 bg-white/50 px-4 py-2 text-xs font-semibold backdrop-blur">
-          <ShieldCheck className="size-4 text-[#B16E35]" />
+          <ShieldCheck className="size-4 text-primary-strong" />
           Conteúdo no seu ritmo
         </div>
         <div className="absolute inset-x-0 top-[16%] flex justify-center">
           <div className="relative h-[480px] w-[310px] [animation:float_6s_ease-in-out_infinite]">
-            <div className="absolute inset-0 rotate-[-6deg] rounded-[44px] bg-[#202027]/10" />
+            <div className="absolute inset-0 rotate-[-6deg] rounded-[44px] bg-ink/10" />
             <div className="absolute inset-0 overflow-hidden rounded-[44px] border-[7px] border-white bg-white shadow-[0_30px_80px_rgba(32,32,39,.18)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/media/posts/marina-1.jpg" alt="Viagem com Marina Luz" className="h-[68%] w-full object-cover" />
+              <img src={featuredPost.image} alt={`Conteúdo demo de ${featuredCreator.name}`} className="h-[68%] w-full object-cover" />
               <div className="p-5">
                 <div className="flex items-center gap-3">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/media/avatars/marina.jpg" alt="" className="size-11 rounded-full object-cover" />
+                  <img src={featuredCreator.avatar} alt="" className="size-11 rounded-full object-cover" />
                   <div>
-                    <p className="text-sm font-extrabold text-[#202027]">Marina Luz</p>
-                    <p className="text-[10px] text-black/50">@marinaluz</p>
+                    <p className="text-sm font-extrabold text-ink">{featuredCreator.name}</p>
+                    <p className="text-[10px] text-black/50">@{featuredCreator.username}</p>
                   </div>
                 </div>
-                <div className="mt-4 h-2 w-full rounded-full bg-[#F0E8DE]" />
-                <div className="mt-2 h-2 w-3/5 rounded-full bg-[#F0E8DE]" />
+                <div className="mt-4 h-2 w-full rounded-full bg-surface" />
+                <div className="mt-2 h-2 w-3/5 rounded-full bg-surface" />
               </div>
             </div>
-            <span className="absolute -right-8 top-20 grid size-16 place-items-center rounded-3xl bg-[#E9A15E] shadow-xl">
-              <Sparkles className="size-7 text-[#202027]" />
+            <span className="absolute -right-8 top-20 grid size-16 place-items-center rounded-3xl bg-primary shadow-xl">
+              <Sparkles className="size-7 text-ink" />
             </span>
           </div>
         </div>
         <div className="absolute inset-x-12 bottom-12">
-          <h2 className="max-w-lg text-4xl font-extrabold leading-[1.1] tracking-[-.045em] text-[#202027]">
+          <h2 className="max-w-lg text-4xl font-extrabold leading-[1.1] tracking-[-.045em] text-ink">
             Exclusivo para você.
             <br />
             Valioso para quem cria.
@@ -234,7 +237,7 @@ function AuthContent() {
       </aside>
 
       {cookie && (
-        <div className="fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-2xl flex-col gap-3 rounded-3xl border border-white/10 bg-[#202027] p-4 text-white shadow-2xl sm:flex-row sm:items-center sm:px-5">
+        <div className="fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-2xl flex-col gap-3 rounded-3xl border border-white/10 bg-ink p-4 text-white shadow-2xl sm:flex-row sm:items-center sm:px-5">
           <p className="flex-1 text-[11px] leading-5 text-white/70">
             Usamos cookies essenciais para manter sua experiência segura. No demo, preferências ficam somente neste navegador.
           </p>
@@ -251,10 +254,10 @@ function AuthContent() {
       )}
 
       {social && (
-        <div className="fixed inset-0 z-[60] grid place-items-center bg-[#FAF8F5]/90 backdrop-blur-md dark:bg-[#151519]/90">
+        <div className="fixed inset-0 z-[60] grid place-items-center bg-background/90 backdrop-blur-md dark:bg-[#151519]/90">
           <div className="text-center">
-            <div className="mx-auto grid size-16 place-items-center rounded-3xl bg-[#E9A15E]">
-              <LoaderCircle className="size-7 animate-spin text-[#202027]" />
+            <div className="mx-auto grid size-16 place-items-center rounded-3xl bg-primary">
+              <LoaderCircle className="size-7 animate-spin text-ink" />
             </div>
             <p className="mt-5 text-lg font-extrabold">Entrando...</p>
             <p className="mt-1 text-xs text-muted">Conectando com {social}</p>

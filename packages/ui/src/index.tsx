@@ -10,14 +10,14 @@ export function Logo({ compact = false, className }: { compact?: boolean; classN
   return (
     <span
       className={classes(
-        "inline-flex items-center gap-2 font-black tracking-[-0.06em] text-[#202027] dark:text-[#FAF8F5]",
+        "inline-flex items-center gap-2 font-black tracking-[-0.06em] text-ink dark:text-background",
         compact ? "text-xl" : "text-3xl",
         className,
       )}
     >
-      <span className="relative grid size-8 place-items-center rounded-[11px] bg-[#202027] text-[#FAF8F5] dark:bg-[#FAF8F5] dark:text-[#202027]">
+      <span className="relative grid size-8 place-items-center rounded-[11px] bg-ink text-background dark:bg-background dark:text-ink">
         <Sparkles className="size-4" strokeWidth={2.4} />
-        <i className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-[#E9A15E]" />
+        <i className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-primary" />
       </span>
       Mimelux
     </span>
@@ -37,11 +37,11 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variants = {
-    primary: "bg-[#E9A15E] text-[#202027] shadow-[0_10px_28px_rgba(233,161,94,.28)] hover:brightness-105",
-    secondary: "bg-[#F0E8DE] text-[#202027] hover:bg-[#eaded0] dark:bg-white/10 dark:text-[#FAF8F5]",
-    outline: "border border-black/10 bg-white/55 text-[#202027] hover:bg-white dark:border-white/15 dark:bg-white/5 dark:text-[#FAF8F5]",
-    ghost: "bg-transparent text-[#202027] hover:bg-black/5 dark:text-[#FAF8F5] dark:hover:bg-white/10",
-    dark: "bg-[#202027] text-[#FAF8F5] shadow-xl hover:bg-[#303039] dark:bg-[#FAF8F5] dark:text-[#202027]",
+    primary: "bg-primary text-ink shadow-[0_10px_28px_rgba(233,161,94,.28)] hover:brightness-105",
+    secondary: "bg-surface text-ink hover:bg-[#eaded0] dark:bg-white/10 dark:text-background",
+    outline: "border border-black/10 bg-white/55 text-ink hover:bg-white dark:border-white/15 dark:bg-white/5 dark:text-background",
+    ghost: "bg-transparent text-ink hover:bg-black/5 dark:text-background dark:hover:bg-white/10",
+    dark: "bg-ink text-background shadow-xl hover:bg-[#303039] dark:bg-background dark:text-ink",
   };
   const sizes = {
     sm: "h-9 px-4 text-xs",
@@ -73,7 +73,7 @@ export function Pill({
     <span
       className={classes(
         "inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold",
-        active ? "bg-[#202027] text-white dark:bg-[#E9A15E] dark:text-[#202027]" : "bg-[#F0E8DE] text-[#202027] dark:bg-white/10 dark:text-white/75",
+        active ? "bg-ink text-white dark:bg-primary dark:text-ink" : "bg-surface text-ink dark:bg-white/10 dark:text-white/75",
         className,
       )}
       {...props}

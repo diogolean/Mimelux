@@ -14,7 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { Button, Logo, Pill } from "@mimelux/ui";
-import { creators } from "@/lib/mock-data";
+import { creators } from "@/lib/fixtures";
 import { writeDemo } from "@/lib/demo-store";
 
 const interests = ["Lifestyle", "Fitness", "Música", "Gastronomia", "Moda", "Arte", "Viagem", "Bem-estar"];
@@ -50,7 +50,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [selected, setSelected] = useState(["Lifestyle", "Música", "Viagem"]);
-  const [following, setFollowing] = useState(["marina", "theo"]);
+  const [following, setFollowing] = useState(["luna-ferraz", "bella-monroe"]);
   const current = steps[step]!;
   const Icon = current.icon;
 
@@ -78,14 +78,14 @@ export default function OnboardingPage() {
         </button>
       </header>
 
-      <div className="absolute left-1/2 top-[10%] size-[520px] -translate-x-1/2 rounded-full bg-[#E9B0A7]/20 blur-[100px]" />
+      <div className="absolute left-1/2 top-[10%] size-[520px] -translate-x-1/2 rounded-full bg-accent/20 blur-[100px]" />
 
       <section className="relative z-10 mx-auto flex min-h-dvh w-full max-w-6xl flex-col items-center justify-center px-5 pb-28 pt-24">
         <div key={step} className="w-full animate-enter text-center">
-          <div className="mx-auto grid size-16 place-items-center rounded-[24px] bg-[#E9A15E]/20 text-[#B16E35]">
+          <div className="mx-auto grid size-16 place-items-center rounded-[24px] bg-primary/20 text-primary-strong">
             <Icon className="size-7" />
           </div>
-          <p className="mt-7 text-xs font-extrabold uppercase tracking-[.24em] text-[#B16E35]">{current.eyebrow}</p>
+          <p className="mt-7 text-xs font-extrabold uppercase tracking-[.24em] text-primary-strong">{current.eyebrow}</p>
           <h1 className="mx-auto mt-3 max-w-2xl text-3xl font-extrabold leading-tight tracking-[-.05em] sm:text-5xl">
             {current.title}
           </h1>
@@ -99,7 +99,7 @@ export default function OnboardingPage() {
                 { icon: Heart, text: "Apoio que transforma" },
               ].map(({ icon: FeatureIcon, text }) => (
                 <div key={text} className="rounded-[24px] border border-black/5 bg-white/55 p-4 dark:bg-white/5">
-                  <FeatureIcon className="mx-auto size-5 text-[#B16E35]" />
+                  <FeatureIcon className="mx-auto size-5 text-primary-strong" />
                   <p className="mt-3 text-[10px] font-bold sm:text-xs">{text}</p>
                 </div>
               ))}
@@ -146,7 +146,7 @@ export default function OnboardingPage() {
                         )
                       }
                       className={`mt-4 h-9 w-full rounded-full text-xs font-bold transition ${
-                        active ? "bg-[#202027] text-white" : "bg-[#E9A15E] text-[#202027]"
+                        active ? "bg-ink text-white" : "bg-primary text-ink"
                       }`}
                     >
                       {active ? "Seguindo" : "Seguir"}
@@ -165,7 +165,7 @@ export default function OnboardingPage() {
                 ["Converse", "Receba novidades e mensagens de quem você acompanha."],
               ].map(([title, body], index) => (
                 <div key={title} className="rounded-[24px] border border-black/5 bg-white/60 p-5 dark:bg-white/5">
-                  <span className="text-xs font-black text-[#B16E35]">0{index + 1}</span>
+                  <span className="text-xs font-black text-primary-strong">0{index + 1}</span>
                   <h3 className="mt-4 text-sm font-extrabold">{title}</h3>
                   <p className="mt-2 text-[11px] leading-5 text-muted">{body}</p>
                 </div>
@@ -188,7 +188,7 @@ export default function OnboardingPage() {
         <div className="text-center">
           <div className="flex gap-1.5">
             {steps.map((_, index) => (
-              <i key={index} className={`h-1.5 rounded-full transition-all ${index === step ? "w-7 bg-[#E9A15E]" : "w-1.5 bg-black/15 dark:bg-white/20"}`} />
+              <i key={index} className={`h-1.5 rounded-full transition-all ${index === step ? "w-7 bg-primary" : "w-1.5 bg-black/15 dark:bg-white/20"}`} />
             ))}
           </div>
           <p className="mt-2 text-[10px] font-semibold text-muted">Passo {step + 1}/4</p>

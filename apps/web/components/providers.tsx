@@ -10,7 +10,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <Toaster
         position="top-center"
         toastOptions={{
-          className: "!rounded-2xl !border-black/5 !bg-[#202027] !text-white",
+          className: "!rounded-2xl !border-black/5 !bg-ink !text-white",
         }}
       />
     </ThemeProvider>

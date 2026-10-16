@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { CreatorProfile } from "@/components/creator-profile";
-import { creators, posts } from "@/lib/mock-data";
+import { creators, posts } from "@/lib/fixtures";
 
 export default async function CreatorPage(props: {
   params: Promise<{ username: string }>;

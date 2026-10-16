@@ -14,7 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button, Logo, Pill } from "@mimelux/ui";
-import { brl, creators, posts } from "@/lib/mock-data";
+import { brl, creators, posts } from "@/lib/fixtures";
 import { mockDelay, readDemo, writeDemo } from "@/lib/demo-store";
 import { toast } from "sonner";
 
@@ -36,7 +36,7 @@ function FakeQr({ seed }: { seed: string }) {
 
   return (
     <div className="grid size-48 grid-cols-[repeat(15,1fr)] gap-[2px] rounded-[22px] bg-white p-4 shadow-inner">
-      {cells.map((active, index) => <i key={index} className={active ? "rounded-[1px] bg-[#202027]" : ""} />)}
+      {cells.map((active, index) => <i key={index} className={active ? "rounded-[1px] bg-ink" : ""} />)}
     </div>
   );
 }
@@ -45,8 +45,8 @@ function CheckoutContent() {
   const router = useRouter();
   const search = useSearchParams();
   const kind = search.get("kind") || "subscription";
-  const id = search.get("id") || "marina";
-  const creatorId = kind === "subscription" ? id : search.get("creator") || "marina";
+  const id = search.get("id") || "luna-ferraz";
+  const creatorId = kind === "subscription" ? id : search.get("creator") || "luna-ferraz";
   const creator = creators.find((item) => item.id === creatorId) || creators[0]!;
   const post = posts.find((item) => item.id === id);
   const message = kind === "message";
@@ -89,7 +89,7 @@ function CheckoutContent() {
       <section>
         <button onClick={() => router.back()} className="mb-8 flex items-center gap-2 text-xs font-bold text-muted hover:text-foreground"><ArrowLeft className="size-4" /> Voltar</button>
         <Logo compact />
-        <p className="mt-10 text-[10px] font-black uppercase tracking-[.2em] text-[#B16E35]">Checkout protegido</p>
+        <p className="mt-10 text-[10px] font-black uppercase tracking-[.2em] text-primary-strong">Checkout protegido</p>
         <h1 className="mt-2 text-3xl font-extrabold tracking-[-.05em]">{kind === "subscription" ? "Falta pouco para fazer parte." : "Uma experiência só sua."}</h1>
         <p className="mt-4 max-w-md text-sm leading-6 text-muted">Finalize com Pix. Este é um ambiente de demonstração: o QR é fictício e o botão apenas simula a confirmação.</p>
 
@@ -108,12 +108,12 @@ function CheckoutContent() {
       <section className="overflow-hidden rounded-[34px] border border-black/5 bg-white/75 shadow-[0_30px_90px_rgba(32,32,39,.12)] dark:bg-white/5">
         <div className="flex items-center justify-between border-b border-black/5 p-5 sm:px-7">
           <div><p className="text-xs font-extrabold">Pague com Pix</p><p className="mt-1 text-[9px] text-muted">Confirmação instantânea no ambiente real</p></div>
-          <span className="grid size-10 place-items-center rounded-2xl bg-[#E9A15E]/20"><QrCode className="size-5 text-[#B16E35]" /></span>
+          <span className="grid size-10 place-items-center rounded-2xl bg-primary/20"><QrCode className="size-5 text-primary-strong" /></span>
         </div>
         <div className="grid place-items-center p-6 sm:p-8">
           <FakeQr seed={`${kind}-${id}-${amount}`} />
           <div className="mt-5 flex items-center gap-2 text-[10px] font-semibold text-muted"><Clock3 className="size-3.5" /> QR válido por 14:52</div>
-          <button onClick={() => toast.success("Código Pix copiado")} className="mt-5 flex w-full max-w-sm items-center gap-3 rounded-2xl bg-[#F0E8DE]/65 p-3 text-left dark:bg-white/5">
+          <button onClick={() => toast.success("Código Pix copiado")} className="mt-5 flex w-full max-w-sm items-center gap-3 rounded-2xl bg-surface/65 p-3 text-left dark:bg-white/5">
             <span className="min-w-0 flex-1 truncate text-[9px] text-muted">00020126580014BR.GOV.BCB.PIX...MIMELUXDEMO</span><Copy className="size-4 shrink-0" />
           </button>
           <Button size="lg" className="mt-5 w-full max-w-sm" onClick={simulate} disabled={paying}>
