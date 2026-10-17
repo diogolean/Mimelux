@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Landmark, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bitcoin, CreditCard, Landmark, QrCode, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { payoutScheduleConfirmed } from "@mimelux/core";
 import { Button } from "@mimelux/ui";
 import { creators } from "@/lib/gateway";
 
@@ -62,6 +63,64 @@ export function MonetizeSection() {
                 {label}
               </p>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section data-testid="how-it-works" className="border-t border-border px-6 py-16 sm:px-10">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-2xl font-medium tracking-[-.03em] sm:text-3xl">{t("howTitle")}</h2>
+          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+            <article className="rounded-[28px] border border-border bg-elevated p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-primary-strong">{t("howCreator")}</p>
+              <ol className="mt-4 space-y-3">
+                {[t("stepCreator1"), t("stepCreator2"), t("stepCreator3")].map((step, index) => (
+                  <li key={step} className="flex gap-3 text-sm leading-6">
+                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary/20 text-xs font-semibold text-primary-strong">{index + 1}</span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </article>
+            <article className="rounded-[28px] border border-border bg-elevated p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-primary-strong">{t("howAffiliate")}</p>
+              <ol className="mt-4 space-y-3">
+                {[t("stepAffiliate1"), t("stepAffiliate2"), t("stepAffiliate3")].map((step, index) => (
+                  <li key={step} className="flex gap-3 text-sm leading-6">
+                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-accent/25 text-xs font-semibold text-accent-strong">{index + 1}</span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </article>
+          </div>
+          <div className="mt-4 rounded-[28px] border border-border bg-elevated p-6">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-primary-strong">{t("benefitTitle")}</p>
+                <p className="mt-2 max-w-xl text-sm leading-6 text-muted">{t("benefitBody")}</p>
+              </div>
+              {!payoutScheduleConfirmed && (
+                <span className="rounded-full bg-primary/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[.14em] text-primary-strong">
+                  {t("soon")}
+                </span>
+              )}
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              {(
+                [
+                  { Icon: QrCode, label: t("methodPix") },
+                  { Icon: CreditCard, label: t("methodCard") },
+                  { Icon: Bitcoin, label: t("methodCrypto") },
+                ] as const
+              ).map(({ Icon, label }) => (
+                <p key={label} className="flex items-center gap-3 rounded-full border border-border bg-background px-4 py-3 text-sm font-semibold">
+                  <Icon className="size-4 text-primary-strong" />
+                  {label}
+                </p>
+              ))}
+            </div>
+            {!payoutScheduleConfirmed && <p className="mt-4 text-xs text-muted">{t("payoutFlag")}</p>}
           </div>
         </div>
       </section>
@@ -137,7 +196,7 @@ function FeaturedCarousel({ demoLabel }: { demoLabel: string }) {
         setPaused(false);
       }}
     >
-      <div className="absolute inset-0 overflow-hidden bg-ink">
+      <div className="absolute inset-y-0 right-0 left-0 overflow-hidden bg-ink lg:left-8 xl:left-14">
         <div
           className="flex h-full transition-transform duration-700 ease-out"
           style={{ transform: `translateX(-${active * 100}%)` }}
@@ -167,7 +226,7 @@ function FeaturedCarousel({ demoLabel }: { demoLabel: string }) {
           ))}
         </div>
       </div>
-      <div className="absolute inset-x-0 top-6 z-10 flex items-center justify-between px-6 sm:px-8">
+      <div className="absolute inset-y-auto top-6 right-0 left-0 z-10 flex items-center justify-between px-6 sm:px-8 lg:left-8 xl:left-14">
         <div className="flex gap-2">
           {featured.map((creator, index) => (
             <button

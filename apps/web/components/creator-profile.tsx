@@ -137,10 +137,13 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
     return `/checkout?kind=subscription&id=${creator.id}&plan=${plan?.id ?? "monthly"}&return=/creator/${creator.username}`;
   }
 
+  const planGlow =
+    "shadow-[0_0_0_1px_color-mix(in_srgb,var(--primary)_45%,transparent),0_10px_24px_-14px_color-mix(in_srgb,var(--primary)_80%,transparent)] transition-shadow duration-300 hover:shadow-[0_0_0_1px_var(--primary),0_0_28px_color-mix(in_srgb,var(--primary)_70%,transparent)] focus-visible:outline-none focus-visible:shadow-[0_0_0_1px_var(--primary),0_0_28px_color-mix(in_srgb,var(--primary)_70%,transparent)] motion-reduce:transition-none";
+
   return (
-    <div className="mx-auto w-full max-w-xl px-4 pb-16 sm:px-6">
+    <div className="mx-auto w-full max-w-3xl px-4 pb-16 sm:px-6 lg:max-w-4xl lg:px-8">
       <div className="relative">
-        <div className="relative h-28 overflow-hidden rounded-[28px] sm:h-36">
+        <div className="relative h-[4.5rem] overflow-hidden rounded-[22px] sm:h-20">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={creator.cover} alt="" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-l from-ink/70 via-ink/20 to-transparent" />
@@ -166,21 +169,21 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
           data-testid="profile-avatar"
           src={creator.avatar}
           alt={creator.name}
-          className="absolute -bottom-8 left-4 z-20 size-20 rounded-full border-4 border-background bg-background object-cover shadow-[0_16px_40px_rgba(12,13,20,.28)] sm:size-24"
+          className="absolute -bottom-5 left-3 z-20 size-14 rounded-full border-2 border-background bg-background object-cover shadow-[0_10px_24px_rgba(12,13,20,.22)] sm:size-16"
         />
       </div>
 
-      <div className="mt-12">
+      <div className="mt-6">
         <div className="flex items-center gap-1.5">
-          <h1 className="text-2xl font-semibold tracking-[-.04em] sm:text-3xl">{creator.name}</h1>
-          {creator.verified && <BadgeCheck className="size-5 fill-primary text-white" />}
+          <h1 className="text-xl font-semibold leading-none tracking-[-.04em] sm:text-2xl">{creator.name}</h1>
+          {creator.verified && <BadgeCheck className="size-4 fill-primary text-white" />}
         </div>
-        <p className="mt-1 text-sm text-muted">@{creator.username}</p>
-        <p className={`mt-3 max-w-xl text-sm leading-6 ${bioOpen ? "" : "line-clamp-1"}`}>{creator.bio}</p>
-        <button type="button" className="mt-1 text-sm font-semibold text-primary-strong" onClick={() => setBioOpen((value) => !value)}>
+        <p className="mt-1 text-xs leading-4 text-muted">@{creator.username}</p>
+        <p className={`mt-1.5 max-w-3xl text-[13px] leading-4 ${bioOpen ? "" : "line-clamp-1"}`}>{creator.bio}</p>
+        <button type="button" className="text-xs font-semibold leading-4 text-primary-strong" onClick={() => setBioOpen((value) => !value)}>
           {bioOpen ? t("readLess") : t("readMore")}
         </button>
-        <div className="mt-4 flex items-center gap-2">
+        <div className="mt-1.5 flex items-center gap-1.5">
           {[
             ["instagram", t("socialInstagram")],
             ["x", t("socialX")],
@@ -191,55 +194,54 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
               type="button"
               aria-label={label}
               onClick={() => toast.info(label)}
-              className="grid size-9 place-items-center rounded-full border border-border bg-elevated text-xs font-bold"
+              className="grid size-7 place-items-center rounded-full border border-border bg-elevated text-[10px] font-bold"
             >
               {id === "instagram" ? "IG" : id === "x" ? "X" : "♪"}
             </button>
           ))}
-          <Link href={`/chat/${creator.id}`} aria-label={t("chat")} className="grid size-9 place-items-center rounded-full border border-border bg-elevated">
-            <MessageCircle className="size-4" />
+          <Link href={`/chat/${creator.id}`} aria-label={t("chat")} className="grid size-7 place-items-center rounded-full border border-border bg-elevated">
+            <MessageCircle className="size-3.5" />
           </Link>
         </div>
       </div>
 
-      <section className="mt-8">
-        <h2 className="text-sm font-semibold">{t("subscriptions")}</h2>
-        <div className="mt-3 space-y-3">
+      <section data-testid="profile-plans" className="mt-3">
+        <h2 className="text-xs font-semibold leading-4">{t("subscriptions")}</h2>
+        <div className="mt-1.5 space-y-1.5">
           {subscribed ? (
-            <Button variant="dark" className="h-14 w-full rounded-full"><BadgeCheck className="size-4" /> {t("active")}</Button>
+            <Button variant="dark" className="h-11 w-full rounded-full"><BadgeCheck className="size-4" /> {t("active")}</Button>
           ) : (
-            <Link href={planHref(1)} className="flex h-14 w-full items-center justify-between rounded-full bg-primary px-6 text-base font-semibold text-ink shadow-sm">
+            <Link href={planHref(1)} className={`flex h-11 w-full items-center justify-between rounded-full bg-gradient-to-r from-primary to-primary-strong/90 px-5 text-sm font-semibold text-ink ${planGlow}`}>
               <span>1 {t("month")}</span>
               <span>{creator.free ? t("free") : brl(planTotal(1))}</span>
             </Link>
           )}
-          <button type="button" aria-expanded={promosOpen} onClick={() => setPromosOpen((value) => !value)} className="flex w-full items-center justify-between py-1 text-sm font-semibold">
+          <button type="button" aria-expanded={promosOpen} onClick={() => setPromosOpen((value) => !value)} className="flex h-7 w-full items-center justify-between text-xs font-semibold leading-4">
             {t("promotions")}
-            <ChevronDown className={`size-4 transition ${promosOpen ? "rotate-180" : ""}`} />
+            <ChevronDown className={`size-3.5 transition motion-reduce:transition-none ${promosOpen ? "rotate-180" : ""}`} />
           </button>
           {promosOpen && (
-            <div className="space-y-3">
+            <div className="space-y-1.5">
               {promotionActive && (
-                <div data-testid="promotion-banner" className="rounded-[22px] bg-gradient-to-r from-primary/25 to-accent/25 px-4 py-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-[.14em] text-primary-strong">{t("promoLabel")}</p>
-                  <p className="mt-1 text-sm font-semibold">{t("promoBody", { percent: promotion.discountPercent })}</p>
-                  <p className="mt-1 text-xs text-muted">{t("promoMeta", { spots: (promotion.subscriberCap ?? 0) - promotion.redeemedCount })}</p>
+                <div data-testid="promotion-banner" className="flex h-8 items-center justify-between gap-3 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 px-4">
+                  <p className="truncate text-xs font-semibold">{t("promoBody", { percent: promotion.discountPercent })}</p>
+                  <p className="hidden shrink-0 text-[10px] text-muted sm:block">{t("promoMeta", { spots: (promotion.subscriberCap ?? 0) - promotion.redeemedCount })}</p>
                 </div>
               )}
               {([3, 6, 12] as const).map((months) => (
-                <Link key={months} href={planHref(months)} className="flex h-14 w-full items-center justify-between rounded-full border border-primary/40 bg-primary/15 px-6 text-base font-semibold">
+                <Link key={months} href={planHref(months)} className={`flex h-11 w-full items-center justify-between rounded-full border border-primary/35 bg-gradient-to-r from-primary/20 via-elevated to-accent/20 px-5 text-sm font-semibold ${planGlow}`}>
                   <span>{months} {t("months")}</span>
                   <span>{creator.free ? t("free") : brl(planTotal(months))}</span>
                 </Link>
               ))}
-              <Link href={`/checkout?kind=pack&id=summer-pack&creator=${creator.id}&return=/creator/${creator.username}`} className="flex h-14 w-full items-center justify-between rounded-full border border-border bg-elevated px-6 text-sm font-semibold">
+              <Link href={`/checkout?kind=pack&id=summer-pack&creator=${creator.id}&return=/creator/${creator.username}`} className={`flex h-10 w-full items-center justify-between rounded-full border border-accent/40 bg-gradient-to-r from-accent/15 to-primary/10 px-5 text-sm font-semibold ${planGlow}`}>
                 <span>Pacote Bastidores</span>
                 <span>{brl(4_990)}</span>
               </Link>
             </div>
           )}
         </div>
-        <Button variant="outline" className="mt-4 h-12 w-full rounded-full" onClick={() => setRequestOpen(true)}>
+        <Button variant="outline" data-testid="profile-special" className="mt-1.5 h-10 w-full rounded-full" onClick={() => setRequestOpen(true)}>
           <Sparkles className="size-4" /> {t("special")}
         </Button>
       </section>
@@ -260,16 +262,16 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
         </section>
       )}
 
-      <div className="mt-8 grid grid-cols-2 rounded-[22px] bg-surface/70 p-1">
-        <button type="button" onClick={() => setTab("posts")} className={`flex h-12 items-center justify-center gap-2 rounded-[18px] text-sm ${tab === "posts" ? "bg-elevated font-semibold shadow-sm" : "text-muted"}`}>
-          <ImageIcon className="size-4" /> {posts.length} {t("posts")}
+      <div className="mt-2 grid grid-cols-2 border-b border-border">
+        <button type="button" onClick={() => setTab("posts")} className={`flex h-9 items-center justify-center gap-2 text-sm ${tab === "posts" ? "border-b-2 border-primary-strong font-semibold" : "text-muted"}`}>
+          <ImageIcon className="size-3.5" /> {posts.length} {t("posts")}
         </button>
-        <button type="button" onClick={() => setTab("media")} className={`flex h-12 items-center justify-center gap-2 rounded-[18px] text-sm ${tab === "media" ? "bg-elevated font-semibold shadow-sm" : "text-muted"}`}>
-          <Video className="size-4" /> {photoCount + videoCount} {t("media")}
+        <button type="button" onClick={() => setTab("media")} className={`flex h-9 items-center justify-center gap-2 text-sm ${tab === "media" ? "border-b-2 border-primary-strong font-semibold" : "text-muted"}`}>
+          <Video className="size-3.5" /> {photoCount + videoCount} {t("media")}
         </button>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-1.5">
+      <div className="mt-1.5 grid grid-cols-3 gap-1.5">
         {visiblePosts.map((post) => {
           const locked = post.visibility === "subscriber" ? !subscribed : post.visibility === "ppv" ? !unlocks.includes(post.id) : false;
           return (
