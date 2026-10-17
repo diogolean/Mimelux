@@ -1,8 +1,8 @@
-# Mimelux V0.1 — technical report
+# FanMimo V0.1 — technical report
 
 ## Purpose
 
-Mimelux V0.1 is a premium, mobile-first creator subscription product demo for Brazil. It proves navigation, discovery, creator profiles, free versus subscriber content, simulated checkout, persistent demo unlocks, chat, and a creator dashboard without depending on production infrastructure.
+FanMimo V0.1 is a premium, mobile-first creator subscription product demo for Brazil. It proves navigation, discovery, creator profiles, free versus subscriber content, simulated checkout, persistent demo unlocks, chat, and a creator dashboard without depending on production infrastructure.
 
 The implementation is deliberately mock-first. It must not be interpreted as production authentication, payment, storage, moderation, or financial accounting.
 

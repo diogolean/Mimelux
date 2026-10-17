@@ -1,4 +1,4 @@
-# Mimelux V0.1 — implementation audit
+# FanMimo V0.1 — implementation audit
 
 Audit date: 2026-10-16. This document describes the repository as inspected; it does not treat planned architecture as implemented.
 

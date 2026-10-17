@@ -1,4 +1,4 @@
-# Mimelux V0.3 status
+# FanMimo V0.3 status
 
 ## Delivered
 

@@ -1,4 +1,4 @@
-# Stack do Mimelux
+# Stack do FanMimo
 
 Versões fixadas para o MVP:
 

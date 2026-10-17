@@ -2,9 +2,21 @@ import { Body, Controller, HttpCode, Module, Post, UnauthorizedException } from 
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { database } from "@mimelux/db/runtime";
 
+const demoEmailAliases: Record<string, string> = {
+  "creator@mimelux.com.br": "criadora@mimelux.com.br",
+  "creator@fanmimo.com": "criadora@mimelux.com.br",
+  "creator@fanmimo.com.br": "criadora@mimelux.com.br",
+  "criadora@fanmimo.com": "criadora@mimelux.com.br",
+  "criadora@fanmimo.com.br": "criadora@mimelux.com.br",
+  "fan@fanmimo.com": "fan@mimelux.com.br",
+  "fan@fanmimo.com.br": "fan@mimelux.com.br",
+  "afiliado@fanmimo.com": "afiliado@mimelux.com.br",
+  "afiliado@fanmimo.com.br": "afiliado@mimelux.com.br",
+};
+
 function canonicalDemoEmail(email: string) {
   const value = email.trim().toLowerCase();
-  return value === "creator@mimelux.com.br" ? "criadora@mimelux.com.br" : value;
+  return demoEmailAliases[value] ?? value;
 }
 import { compare, hash } from "bcryptjs";
 import { sign, verify } from "jsonwebtoken";

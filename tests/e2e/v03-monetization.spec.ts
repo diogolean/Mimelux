@@ -82,7 +82,7 @@ test("admin mode switch isolates demo fixtures", async ({ page }) => {
   await page.reload();
   await expect(page.getByRole("heading", { name: "Pronto para conteúdo real" })).toBeVisible();
   await page.getByRole("button", { name: "Voltar ao modo demo" }).click();
-  await expect(page.getByText("Mimelux", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("FanMimo", { exact: true }).first()).toBeVisible();
 });
 
 test("an attributed PPV purchase creates an affiliate commission", async ({

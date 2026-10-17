@@ -1,4 +1,4 @@
-# Mimelux V0.2 status
+# FanMimo V0.2 status
 
 Last updated: 2026-10-16.
 

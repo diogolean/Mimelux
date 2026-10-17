@@ -1,4 +1,4 @@
-# Mimelux V0.3
+# FanMimo V0.3
 
 Premium, mobile-first creator subscription prototype for Brazil. It is a working mock-first demo: the web runs without PostgreSQL, NestJS, payment credentials, or external services. All people and metrics are fictitious; creator images are AI-generated and SFW.
 
@@ -55,6 +55,8 @@ test-only password/JWT authentication. No live payment, upload, or payout occurs
 | Fan | `fan@mimelux.com.br` | `mimelux123` |
 | Creator | `criadora@mimelux.com.br` (alias `creator@mimelux.com.br`) | `mimelux123` |
 | Affiliate | `afiliado@mimelux.com.br` | `mimelux123` |
+
+The same accounts also sign in with `@fanmimo.com` and `@fanmimo.com.br` (`fan@`, `criadora@` or `creator@`, and `afiliado@`). The public site is [fanmimo.com.br](https://fanmimo.com.br).
 
 The affiliate demo identity is Nara Costa, code `nara`. Promotion links look like `/r/nara/lunaferraz?lang=pt-BR&sub=tiktok`. See [`docs/AFFILIATES.md`](docs/AFFILIATES.md).
 

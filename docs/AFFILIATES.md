@@ -1,4 +1,4 @@
-# Mimelux affiliate program
+# FanMimo affiliate program
 
 V0.2 implements the affiliate domain in the PostgreSQL schema and runs the fan-facing flow on the mock web adapter. No commission, click, or payout is financially real.
 

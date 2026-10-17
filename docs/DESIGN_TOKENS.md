@@ -1,4 +1,4 @@
-# Mimelux design tokens
+# FanMimo design tokens
 
 V0.3 replaces the original warm orange/beige prototype palette with an
 original violet-and-mint system. The direction combines a restrained light

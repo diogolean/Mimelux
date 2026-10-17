@@ -155,7 +155,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       }`}>
         <div className="lg:hidden"><Logo compact /></div>
         <div className="hidden lg:block">
-          <p className="text-[10px] font-bold uppercase tracking-[.18em] text-muted">Mimelux</p>
+          <p className="text-[10px] font-bold uppercase tracking-[.18em] text-muted">FanMimo</p>
           <p className="text-xs font-extrabold">{t("space")}</p>
         </div>
         <div className="flex items-center gap-1.5">

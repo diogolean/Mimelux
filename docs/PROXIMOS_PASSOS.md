@@ -1,4 +1,4 @@
-# Mimelux — next steps
+# FanMimo — next steps
 
 ## V0.1 follow-up
 

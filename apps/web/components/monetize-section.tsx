@@ -148,7 +148,10 @@ export function MonetizeSection() {
           ))}
         </div>
         <div className="mx-auto mt-10 flex max-w-6xl items-center justify-between gap-4 border-t border-white/10 pt-6">
-          <p className="flex items-center gap-2 text-lg font-black"><Sparkles className="size-4 text-primary" /> Mimelux</p>
+          <p className="flex items-center gap-2 text-lg font-medium tracking-[-0.05em] text-white">
+            <Sparkles className="size-4 text-primary" />
+            Fan<span className="font-semibold text-primary">Mimo</span>
+          </p>
           <Landmark className="size-4 text-white/40" />
         </div>
         <p className="mx-auto mt-4 max-w-6xl text-[10px] leading-5 text-white/45">{footer("note")}</p>

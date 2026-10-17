@@ -1,4 +1,4 @@
-# Mimelux V5
+# FanMimo V5
 
 The logged-out home is three screens. Screen 1 is the existing login. Screen 2 is a split: a quieter “monetize attention” call with one action on the left, and a large slideshow of featured creators on the right. Screen 3 is three short notes on the creator model, the affiliate model, and the fact that this prototype does not charge. The extra stat, the editorial band, and the repeated featured blocks from V4 are gone.
 

@@ -12,8 +12,8 @@ async function bootstrap() {
   });
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle("Mimelux API")
-    .setDescription("Versioned API contract for the Mimelux prototype.")
+    .setTitle("FanMimo API")
+    .setDescription("Versioned API contract for the FanMimo prototype.")
     .setVersion("0.1")
     .addBearerAuth()
     .build();

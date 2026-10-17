@@ -13,13 +13,22 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://fanmimo.com.br"),
   title: {
-    default: "Mimelux — perto de quem inspira",
-    template: "%s · Mimelux",
+    default: "FanMimo — perto de quem inspira",
+    template: "%s · FanMimo",
   },
   description:
     "Assine experiências exclusivas e apoie seus criadores favoritos.",
-  applicationName: "Mimelux",
+  applicationName: "FanMimo",
+  openGraph: {
+    title: "FanMimo — perto de quem inspira",
+    description: "Assine experiências exclusivas e apoie seus criadores favoritos.",
+    siteName: "FanMimo",
+    url: "https://fanmimo.com.br",
+    locale: "pt_BR",
+    type: "website",
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

@@ -25,7 +25,7 @@
     "signupTitle": "Create your account",
     "loginBody": "Sign in to discover experiences you will not find anywhere else.",
     "signupBody": "Join a community built around real connections and original work.",
-    "roleQuestion": "How do you want to use Mimelux?",
+    "roleQuestion": "How do you want to use FanMimo?",
     "roleBody": "Choose an area. You can explore the others later in this demo.",
     "fan": "Fan",
     "fanBody": "Discover creators, subscribe, and chat.",
@@ -91,7 +91,7 @@
     "socialX": "X",
     "socialTikTok": "TikTok",
     "fictitious": "Fictitious profile · AI-generated image",
-    "since": "On Mimelux since 2025",
+    "since": "On FanMimo since 2025",
     "chat": "Chat"
   },
   "monetize": {
@@ -162,7 +162,7 @@
     "note": "Fictitious prototype. These links are not final legal documents."
   },
   "landing": {
-    "presents": "A Mimelux creator",
+    "presents": "A FanMimo creator",
     "fictitious": "Fictitious profile · AI-generated image",
     "promoted": "Promotion link from {affiliate}",
     "cta": "I want in",
@@ -196,7 +196,7 @@
     "qr": "QR code for the promotion link",
     "breakdown": "By creator and channel",
     "kit": "Promotion kit",
-    "kitCopy": "Follow {name} on Mimelux. Fictitious profile, premium experience, content at your pace.",
+    "kitCopy": "Follow {name} on FanMimo. Fictitious profile, premium experience, content at your pace.",
     "copyKit": "Copy text",
     "payouts": "Simulated payouts",
     "method": "Payout method",
@@ -244,6 +244,6 @@
     "saved": "Affiliate rule saved in the demo."
   },
   "legal": {
-    "demo": "Provisional demonstration copy. This is not a legal document."
+    "demo": "Provisional FanMimo demonstration copy. This is not a legal document."
   }
 }

@@ -49,26 +49,55 @@ export type TokenPair = {
 };
 
 export const DEMO_ACCOUNTS = {
-  fan: { email: "fan@mimelux.com.br", password: "mimelux123" },
+  fan: {
+    email: "fan@mimelux.com.br",
+    aliases: ["fan@fanmimo.com", "fan@fanmimo.com.br"],
+    password: "mimelux123",
+  },
   creator: {
     email: "criadora@mimelux.com.br",
     alias: "creator@mimelux.com.br",
+    aliases: [
+      "creator@fanmimo.com",
+      "creator@fanmimo.com.br",
+      "criadora@fanmimo.com",
+      "criadora@fanmimo.com.br",
+    ],
     password: "mimelux123",
   },
-  affiliate: { email: "afiliado@mimelux.com.br", password: "mimelux123" },
+  affiliate: {
+    email: "afiliado@mimelux.com.br",
+    aliases: ["afiliado@fanmimo.com", "afiliado@fanmimo.com.br"],
+    password: "mimelux123",
+  },
 } as const;
 
-export function isDemoCreatorEmail(email: string) {
+function listed(email: string, values: readonly string[]) {
   const value = email.trim().toLowerCase();
-  return (
-    value === DEMO_ACCOUNTS.creator.email || value === DEMO_ACCOUNTS.creator.alias
-  );
+  return values.includes(value);
+}
+
+export function isDemoCreatorEmail(email: string) {
+  return listed(email, [
+    DEMO_ACCOUNTS.creator.email,
+    DEMO_ACCOUNTS.creator.alias,
+    ...DEMO_ACCOUNTS.creator.aliases,
+  ]);
+}
+
+export function isDemoAffiliateEmail(email: string) {
+  return listed(email, [DEMO_ACCOUNTS.affiliate.email, ...DEMO_ACCOUNTS.affiliate.aliases]);
+}
+
+export function isDemoFanEmail(email: string) {
+  return listed(email, [DEMO_ACCOUNTS.fan.email, ...DEMO_ACCOUNTS.fan.aliases]);
 }
 
 export function canonicalDemoEmail(email: string) {
-  return isDemoCreatorEmail(email)
-    ? DEMO_ACCOUNTS.creator.email
-    : email.trim().toLowerCase();
+  if (isDemoCreatorEmail(email)) return DEMO_ACCOUNTS.creator.email;
+  if (isDemoAffiliateEmail(email)) return DEMO_ACCOUNTS.affiliate.email;
+  if (isDemoFanEmail(email)) return DEMO_ACCOUNTS.fan.email;
+  return email.trim().toLowerCase();
 }
 
 export const paymentProviders = ["pix", "stripe", "crypto"] as const;

@@ -1,4 +1,4 @@
-# Mimelux V6
+# FanMimo V6
 
 The featured slideshow on the logged-out home sits further right and still bleeds to the desktop viewport edge.
 

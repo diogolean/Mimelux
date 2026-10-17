@@ -3,8 +3,6 @@ import type {
   HTMLAttributes,
   ReactNode,
 } from "react";
-import { Sparkles } from "lucide-react";
-
 function classes(...items: Array<string | false | null | undefined>) {
   return items.filter(Boolean).join(" ");
 }
@@ -19,16 +17,18 @@ export function Logo({
   return (
     <span
       className={classes(
-        "inline-flex items-center gap-2 font-black tracking-[-0.06em] text-ink dark:text-background",
+        "inline-flex items-center gap-2.5",
         compact ? "text-xl" : "text-3xl",
         className,
       )}
     >
-      <span className="relative grid size-8 place-items-center rounded-[11px] bg-ink text-background dark:bg-background dark:text-ink">
-        <Sparkles className="size-4" strokeWidth={2.4} />
-        <i className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-primary" />
+      <span className="relative grid size-8 place-items-center rounded-[10px] bg-foreground text-[15px] font-semibold leading-none tracking-[-0.04em] text-background">
+        F
+        <i className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-primary ring-2 ring-background" />
       </span>
-      Mimelux
+      <span className="font-medium tracking-[-0.055em] text-foreground">
+        Fan<span className="font-semibold text-primary-strong">Mimo</span>
+      </span>
     </span>
   );
 }

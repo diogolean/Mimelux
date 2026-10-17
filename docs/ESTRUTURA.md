@@ -1,4 +1,4 @@
-# Mimelux — estrutura do MVP
+# FanMimo — estrutura do MVP
 
 Documento de arquitetura para revisão externa. Estado: protótipo mock-first; decisões de produção estão explicitamente separadas.
 

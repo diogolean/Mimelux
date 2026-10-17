@@ -25,7 +25,7 @@
     "signupTitle": "Konto erstellen",
     "loginBody": "Melde dich an und entdecke Erlebnisse, die es so nur hier gibt.",
     "signupBody": "Werde Teil einer Community aus echten Verbindungen und eigenen Inhalten.",
-    "roleQuestion": "Wie möchtest du Mimelux nutzen?",
+    "roleQuestion": "Wie möchtest du FanMimo nutzen?",
     "roleBody": "Wähle einen Bereich. Die anderen kannst du in dieser Demo später ansehen.",
     "fan": "Fan",
     "fanBody": "Entdecke Creator, abonniere und schreibe ihnen.",
@@ -91,7 +91,7 @@
     "socialX": "X",
     "socialTikTok": "TikTok",
     "fictitious": "Fiktives Profil · KI-Bild",
-    "since": "Auf Mimelux seit 2025",
+    "since": "Auf FanMimo seit 2025",
     "chat": "Chat"
   },
   "monetize": {
@@ -162,7 +162,7 @@
     "note": "Fiktiver Prototyp. Diese Links sind keine endgültigen Rechtsdokumente."
   },
   "landing": {
-    "presents": "Ein Mimelux-Creator",
+    "presents": "Ein FanMimo-Creator",
     "fictitious": "Fiktives Profil · KI-generiertes Bild",
     "promoted": "Empfehlungslink von {affiliate}",
     "cta": "Ich will dabei sein",
@@ -196,7 +196,7 @@
     "qr": "QR-Code des Empfehlungslinks",
     "breakdown": "Nach Creator und Kanal",
     "kit": "Werbemittel",
-    "kitCopy": "Folge {name} auf Mimelux. Fiktives Profil, Premium-Erlebnis, Inhalte in deinem Tempo.",
+    "kitCopy": "Folge {name} auf FanMimo. Fiktives Profil, Premium-Erlebnis, Inhalte in deinem Tempo.",
     "copyKit": "Text kopieren",
     "payouts": "Simulierte Auszahlungen",
     "method": "Auszahlungsmethode",
@@ -244,6 +244,6 @@
     "saved": "Partnerregel in der Demo gespeichert."
   },
   "legal": {
-    "demo": "Vorläufiger Demonstrationstext. Dies ist kein Rechtsdokument."
+    "demo": "Vorläufiger Demonstrationstext von FanMimo. Dies ist kein Rechtsdokument."
   }
 }

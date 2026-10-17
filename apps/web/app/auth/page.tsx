@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button, Logo } from "@mimelux/ui";
-import { DEMO_ACCOUNTS, isDemoCreatorEmail, loginSchema, registerSchema, type AccountRole } from "@mimelux/core";
+import { DEMO_ACCOUNTS, isDemoAffiliateEmail, isDemoCreatorEmail, loginSchema, registerSchema, type AccountRole } from "@mimelux/core";
 import { bindAttribution } from "@/lib/affiliates";
 import { mockDelay, readDemo, writeDemo } from "@/lib/demo-store";
 import { creators, posts } from "@/lib/gateway";
@@ -73,7 +73,7 @@ function AuthContent() {
         ? chosen
         : isDemoCreatorEmail(email)
           ? "creator"
-          : email.trim().toLowerCase() === DEMO_ACCOUNTS.affiliate.email
+          : isDemoAffiliateEmail(email)
             ? "affiliate"
             : "fan"
       : chosen;
@@ -138,7 +138,7 @@ function AuthContent() {
             <input
               name="email"
               aria-label="Email ou CPF"
-              defaultValue={signUp ? "" : DEMO_ACCOUNTS.fan.email}
+              defaultValue={signUp ? "" : "fan@fanmimo.com.br"}
               placeholder={signUp ? "E-mail" : "E-mail ou CPF"}
               autoComplete="email"
               className="h-13 w-full rounded-full border border-black/8 bg-white/70 px-5 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15 dark:bg-white/5"

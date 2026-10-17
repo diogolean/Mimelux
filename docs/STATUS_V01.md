@@ -1,4 +1,4 @@
-# Mimelux V0.1 — status and verification
+# FanMimo V0.1 — status and verification
 
 Last updated: 2026-10-16.
 

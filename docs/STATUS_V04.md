@@ -1,4 +1,4 @@
-# Mimelux V4
+# FanMimo V4
 
 Gender-neutral creator wording across pt-BR, en, de, and fr. The demo creator login remains `criadora@mimelux.com.br`, with `creator@mimelux.com.br` as an alias.
 
