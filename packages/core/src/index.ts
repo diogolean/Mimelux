@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export * from "./contracts";
+export * from "./monetization";
 
 export const contentModes = ["general", "adult", "hybrid"] as const;
 export type ContentMode = (typeof contentModes)[number];
@@ -31,7 +32,7 @@ export const registerSchema = z.object({
 });
 
 export const checkoutSchema = z.object({
-  kind: z.enum(["subscription", "post", "message"]),
+  kind: z.enum(["subscription", "post", "message", "pack", "special_request"]),
   itemId: z.string().min(1),
   amountCents: z.coerce.number().int().positive(),
 });

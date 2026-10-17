@@ -10,6 +10,10 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "@mimelux/core": ["../../packages/core/src/index.ts"],
+      "@mimelux/db": ["../../packages/db/src/index.ts"]
+    },
     "incremental": true,
     "isolatedModules": false,
     "noEmit": false

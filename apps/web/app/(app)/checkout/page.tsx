@@ -53,11 +53,23 @@ function CheckoutContent() {
   const creator = creators.find((item) => item.id === creatorId) || creators[0]!;
   const post = posts.find((item) => item.id === id);
   const message = kind === "message";
+  const pack = kind === "pack";
+  const specialRequest = kind === "special_request";
   const plan = plans.find((item) => item.id === search.get("plan")) || plans[0]!;
   const subscriptionTotal = Math.round(
     creator.price * plan.months * (1 - plan.discount / 100),
   );
-  const amount = kind === "subscription" ? subscriptionTotal : message ? 1290 : post?.price || 990;
+  const requestedAmount = Number(search.get("amount"));
+  const amount =
+    kind === "subscription"
+      ? subscriptionTotal
+      : message
+        ? 1290
+        : pack
+          ? 4990
+          : specialRequest && Number.isFinite(requestedAmount)
+            ? requestedAmount
+            : post?.price || 990;
   const [paying, setPaying] = useState(false);
   const [paid, setPaid] = useState(false);
   const returnPath = search.get("return")?.startsWith("/") ? search.get("return")! : `/creator/${creator.username}`;
@@ -82,6 +94,12 @@ function CheckoutContent() {
           amountCents: amount,
         }),
       });
+    } else if (specialRequest) {
+      writeDemo({
+        specialRequests: state.specialRequests.map((request) =>
+          request.id === id ? { ...request, status: "paid" as const } : request,
+        ),
+      });
     } else {
       writeDemo({ unlocks: Array.from(new Set([...state.unlocks, id])) });
     }
@@ -96,7 +114,7 @@ function CheckoutContent() {
         <div className="w-full max-w-md rounded-[32px] border border-black/5 bg-white/70 p-8 text-center shadow-2xl dark:bg-white/5">
           <span className="mx-auto grid size-20 place-items-center rounded-full bg-emerald-500/15 text-emerald-600"><Check className="size-9" strokeWidth={3} /></span>
           <p className="mt-6 text-xs font-black uppercase tracking-[.2em] text-emerald-600">Pagamento simulado</p>
-          <h1 className="mt-2 text-2xl font-extrabold tracking-[-.04em]">{kind === "subscription" ? "Você faz parte!" : "Conteúdo liberado"}</h1>
+          <h1 className="mt-2 text-2xl font-extrabold tracking-[-.04em]">{kind === "subscription" ? "Você faz parte!" : specialRequest ? "Pedido confirmado" : "Conteúdo liberado"}</h1>
           <p className="mt-3 text-xs leading-5 text-muted">{kind === "subscription" ? `Sua assinatura de ${creator.name} está ativa neste navegador.` : "A experiência já está disponível para você neste navegador."}</p>
           <Button size="lg" className="mt-7 w-full" onClick={() => router.push(returnPath)}>Ver agora <Sparkles className="size-4" /></Button>
           <p className="mt-4 text-[9px] text-muted">Nenhuma cobrança real foi realizada.</p>
@@ -117,7 +135,7 @@ function CheckoutContent() {
         <div className="mt-7 flex items-center gap-4 rounded-[24px] border border-black/5 bg-white/60 p-4 dark:bg-white/5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={creator.avatar} alt={creator.name} className="size-16 rounded-[20px] object-cover" />
-          <div className="min-w-0 flex-1"><p className="text-xs font-extrabold">{kind === "subscription" ? `Assinatura de ${creator.name}` : `Conteúdo de ${creator.name}`}</p><p className="mt-1 text-[9px] text-muted">{kind === "subscription" ? `${plan.name} · renovação simulada` : message ? "Mensagem exclusiva · acesso permanente" : "Post exclusivo · acesso permanente"}</p></div>
+          <div className="min-w-0 flex-1"><p className="text-xs font-extrabold">{kind === "subscription" ? `Assinatura de ${creator.name}` : specialRequest ? `Pedido para ${creator.name}` : `Conteúdo de ${creator.name}`}</p><p className="mt-1 text-[9px] text-muted">{kind === "subscription" ? `${plan.name} · renovação simulada` : message ? "Mensagem exclusiva · acesso permanente" : pack ? "Pacote com 8 itens fictícios" : specialRequest ? "Valor combinado · ambiente demo" : "Post exclusivo · acesso permanente"}</p></div>
           <p className="text-sm font-black">{brl(amount)}</p>
         </div>
         <div className="mt-5 flex flex-wrap gap-2">

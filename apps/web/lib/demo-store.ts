@@ -45,6 +45,40 @@ export type DemoCommission = {
   createdAt: string;
 };
 
+export type DemoSpecialRequest = {
+  id: string;
+  creatorId: string;
+  description: string;
+  budgetCents?: number;
+  quotedPriceCents?: number;
+  status:
+    | "requested"
+    | "quoted"
+    | "accepted"
+    | "paid"
+    | "delivered"
+    | "declined"
+    | "refunded";
+  messages: { sender: "fan" | "creator"; body: string; createdAt: string }[];
+  createdAt: string;
+};
+
+export type CreatorMonetizationSettings = {
+  monthlyPriceCents: number;
+  bundleDiscounts: Record<"1" | "3" | "6" | "12", number>;
+  promotion: {
+    active: boolean;
+    discountPercent: number;
+    startsAt: string;
+    endsAt: string;
+    subscriberCap?: number;
+    redeemedCount: number;
+  };
+  commissionOnPpv: boolean;
+  commissionOnPacks: boolean;
+  commissionOnRequests: boolean;
+};
+
 export type DemoState = {
   signedIn: boolean;
   role: AccountRole;
@@ -66,6 +100,9 @@ export type DemoState = {
   attributionBlocked: DemoAttribution["blockedReason"] | null;
   creatorProgram: { acceptsAffiliates: boolean; commissionBps: number };
   payoutSettings: { method: PaymentProviderId; destination: string };
+  specialRequests: DemoSpecialRequest[];
+  creatorMonetization: CreatorMonetizationSettings;
+  demoMode: boolean;
 };
 
 const defaults: DemoState = {
@@ -89,6 +126,23 @@ const defaults: DemoState = {
   attributionBlocked: null,
   creatorProgram: { acceptsAffiliates: true, commissionBps: 2000 },
   payoutSettings: { method: "pix", destination: "demo-chave-pix" },
+  specialRequests: [],
+  creatorMonetization: {
+    monthlyPriceCents: 2_990,
+    bundleDiscounts: { "1": 0, "3": 10, "6": 20, "12": 30 },
+    promotion: {
+      active: true,
+      discountPercent: 50,
+      startsAt: "2026-01-01T00:00:00.000Z",
+      endsAt: "2027-12-31T23:59:59.000Z",
+      subscriberCap: 100,
+      redeemedCount: 28,
+    },
+    commissionOnPpv: true,
+    commissionOnPacks: true,
+    commissionOnRequests: true,
+  },
+  demoMode: process.env.NEXT_PUBLIC_DEMO_MODE !== "false",
 };
 
 export function readDemo(): DemoState {

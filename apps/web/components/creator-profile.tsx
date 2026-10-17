@@ -14,27 +14,69 @@ import {
   Share2,
   Sparkles,
 } from "lucide-react";
-import { Button, Pill } from "@mimelux/ui";
+import { Button, Pill, PremiumModal } from "@mimelux/ui";
 import type { Creator, Post } from "@/lib/gateway";
 import { brl, compact, plans } from "@/lib/gateway";
-import { readDemo } from "@/lib/demo-store";
+import { readDemo, writeDemo, type DemoSpecialRequest } from "@/lib/demo-store";
+import { toast } from "sonner";
 
 export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Post[] }) {
   const [subscribed, setSubscribed] = useState(false);
   const [unlocks, setUnlocks] = useState<string[]>([]);
   const [tab, setTab] = useState<"posts" | "media">("posts");
   const [filter, setFilter] = useState<"all" | "photos" | "videos" | "paid">("all");
+  const [requestOpen, setRequestOpen] = useState(false);
+  const [requestDescription, setRequestDescription] = useState("");
+  const [requestBudget, setRequestBudget] = useState("");
+  const [monetization, setMonetization] = useState(() => readDemo().creatorMonetization);
+  const [requests, setRequests] = useState<DemoSpecialRequest[]>([]);
+  const [now] = useState(() => Date.now());
 
   useEffect(() => {
     const sync = () => {
       const state = readDemo();
       setSubscribed(state.subscriptions.includes(creator.id));
       setUnlocks(state.unlocks);
+      setMonetization(state.creatorMonetization);
+      setRequests(state.specialRequests.filter((request) => request.creatorId === creator.id));
     };
     sync();
     window.addEventListener("mimelux:state", sync);
     return () => window.removeEventListener("mimelux:state", sync);
   }, [creator.id]);
+
+  const promotion = monetization.promotion;
+  const promotionActive =
+    promotion.active &&
+    now >= new Date(promotion.startsAt).getTime() &&
+    now <= new Date(promotion.endsAt).getTime() &&
+    (!promotion.subscriberCap || promotion.redeemedCount < promotion.subscriberCap);
+
+  function submitSpecialRequest() {
+    if (requestDescription.trim().length < 10) {
+      toast.error("Conte um pouco mais sobre o seu pedido.");
+      return;
+    }
+    const state = readDemo();
+    writeDemo({
+      specialRequests: [
+        ...state.specialRequests,
+        {
+          id: `request-${Date.now()}`,
+          creatorId: creator.id,
+          description: requestDescription.trim(),
+          budgetCents: requestBudget ? Math.round(Number(requestBudget) * 100) : undefined,
+          status: "requested",
+          messages: [{ sender: "fan", body: requestDescription.trim(), createdAt: new Date().toISOString() }],
+          createdAt: new Date().toISOString(),
+        },
+      ],
+    });
+    setRequestOpen(false);
+    setRequestDescription("");
+    setRequestBudget("");
+    toast.success("Pedido especial enviado em modo demo.");
+  }
 
   const filteredPosts = posts.filter((post) => {
     if (filter === "photos") return post.mediaType === "image";
@@ -64,6 +106,9 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
             className="-mt-16 size-40 rounded-full border-[7px] border-background object-cover shadow-[0_20px_50px_rgba(24,23,37,.24)] sm:-mt-20 sm:size-44"
           />
           <div className="flex gap-2 pb-1">
+            <Button variant="outline" onClick={() => setRequestOpen(true)}>
+              <Sparkles className="size-4" /> Pedido especial
+            </Button>
             <Link href={`/chat/${creator.id}`}>
               <Button variant="outline" size="icon" aria-label="Conversar"><MessageCircle className="size-4" /></Button>
             </Link>
@@ -98,6 +143,16 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
 
         {!subscribed && (
           <div className="mt-6">
+            {promotionActive && (
+              <div data-testid="promotion-banner" className="mb-4 flex flex-col gap-3 rounded-[24px] bg-gradient-to-r from-primary/20 to-accent/20 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[.16em] text-primary-strong">Oferta por tempo limitado</p>
+                  <p className="mt-1 text-sm font-extrabold">{promotion.discountPercent}% OFF no primeiro período</p>
+                  <p className="mt-1 text-[9px] text-muted">Termina em 31/12/2027 · {promotion.subscriberCap! - promotion.redeemedCount} vagas demo</p>
+                </div>
+                <Pill active>Oferta fictícia</Pill>
+              </div>
+            )}
             <div className="flex items-end justify-between">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[.16em] text-primary-strong">Escolha seu acesso</p>
@@ -109,13 +164,18 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
               {plans.map((plan, index) => {
                 const total = creator.free
                   ? 0
-                  : Math.round(creator.price * plan.months * (1 - plan.discount / 100));
+                  : Math.round(
+                      monetization.monthlyPriceCents *
+                        plan.months *
+                        (1 - (monetization.bundleDiscounts[String(plan.months) as "1" | "3" | "6" | "12"] ?? plan.discount) / 100) *
+                        (promotionActive ? 1 - promotion.discountPercent / 100 : 1),
+                    );
                 return (
                   <article key={plan.id} className={`rounded-[22px] border p-4 ${index === 1 ? "border-primary/35 bg-primary/10" : "border-black/5 bg-white/55 dark:bg-white/5"}`}>
                     {index === 1 && <Pill active>Mais escolhido</Pill>}
                     <p className="mt-3 text-xs font-extrabold">{plan.name}</p>
                     <p className="mt-1 text-lg font-extrabold">{creator.free ? "Grátis" : brl(total)}</p>
-                    <p className="mt-1 text-[8px] text-muted">{plan.discount ? `${plan.discount}% de desconto demo` : "Acesso por 30 dias"}</p>
+                    <p className="mt-1 text-[8px] text-muted">{plan.discount ? `${plan.discount}% no pacote${promotionActive ? ` + ${promotion.discountPercent}% promocional` : ""}` : "Acesso por 30 dias"}</p>
                     <Link href={`/checkout?kind=subscription&id=${creator.id}&plan=${plan.id}&return=/creator/${creator.username}`}>
                       <Button variant={index === 1 ? "primary" : "outline"} size="sm" className="mt-4 w-full">Escolher</Button>
                     </Link>
@@ -124,6 +184,34 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
               })}
             </div>
           </div>
+        )}
+
+        <section className="mt-7 rounded-[28px] border border-black/5 bg-white/60 p-5 dark:bg-white/5">
+          <div className="flex items-end justify-between gap-3">
+            <div><p className="text-[10px] font-black uppercase tracking-[.16em] text-primary-strong">Coleção premium</p><h2 className="mt-1 text-lg font-extrabold">Pacote Bastidores de Verão</h2></div>
+            <p className="text-base font-black">{brl(4_990)}</p>
+          </div>
+          <p className="mt-2 text-[10px] leading-5 text-muted">6 fotos e 2 vídeos fictícios para desbloquear de uma vez.</p>
+          <Link href={`/checkout?kind=pack&id=summer-pack&creator=${creator.id}&return=/creator/${creator.username}`}>
+            <Button variant="outline" className="mt-4">Desbloquear pacote</Button>
+          </Link>
+        </section>
+
+        {requests.length > 0 && (
+          <section className="mt-5 rounded-[28px] border border-black/5 bg-white/60 p-5 dark:bg-white/5">
+            <h2 className="text-sm font-extrabold">Seus pedidos especiais</h2>
+            <div className="mt-4 space-y-3">
+              {requests.map((request) => (
+                <article key={request.id} className="rounded-[20px] bg-surface/60 p-4 dark:bg-white/5">
+                  <div className="flex items-start justify-between gap-3"><p className="line-clamp-2 text-[10px] font-bold">{request.description}</p><Pill>{request.status}</Pill></div>
+                  {request.status === "quoted" && request.quotedPriceCents && (
+                    <div className="mt-3 flex items-center justify-between gap-3"><p className="text-xs font-extrabold">Contraproposta: {brl(request.quotedPriceCents)}</p><Link href={`/checkout?kind=special_request&id=${request.id}&creator=${creator.id}&amount=${request.quotedPriceCents}&return=/creator/${creator.username}`}><Button size="sm">Aceitar e simular pagamento</Button></Link></div>
+                  )}
+                  {request.status === "delivered" && <p className="mt-2 text-[9px] text-emerald-600">Conteúdo fictício entregue no thread do pedido.</p>}
+                </article>
+              ))}
+            </div>
+          </section>
         )}
 
         <div className="mt-8 flex items-center gap-6 border-b border-black/8">
@@ -158,7 +246,7 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
                       <span className="mx-auto grid size-10 place-items-center rounded-full bg-black/35 backdrop-blur"><LockKeyhole className="size-4" /></span>
                       <p className="mt-2 text-[9px] font-bold">{post.visibility === "subscriber" ? "Para assinantes" : brl(post.price || 0)}</p>
                       <Link href={post.visibility === "subscriber" ? `/checkout?kind=subscription&id=${creator.id}&return=/creator/${creator.username}` : `/checkout?kind=post&id=${post.id}&creator=${creator.id}&return=/creator/${creator.username}`}>
-                        <span className="mt-2 inline-block rounded-full bg-primary px-3 py-1.5 text-[8px] font-black text-ink">Assine para desbloquear</span>
+                        <span className="mt-2 inline-block rounded-full bg-primary px-3 py-1.5 text-[8px] font-black text-ink">{post.visibility === "subscriber" ? "Assine para desbloquear" : "Desbloquear conteúdo"}</span>
                       </Link>
                     </div>
                   </div>
@@ -177,6 +265,15 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
           </div>
         )}
       </section>
+      <PremiumModal open={requestOpen} onClose={() => setRequestOpen(false)} title="Pedido especial" description="Descreva sua ideia. A criadora poderá aceitar, recusar ou enviar uma contraproposta. Tudo aqui é simulado.">
+        <label className="block text-[10px] font-bold text-muted">Descrição
+          <textarea value={requestDescription} onChange={(event) => setRequestDescription(event.target.value)} className="mt-2 min-h-28 w-full rounded-2xl border border-black/10 bg-surface/60 p-3 text-xs outline-none focus:ring-2 focus:ring-primary" placeholder="Conte o que você gostaria de receber..." />
+        </label>
+        <label className="mt-4 block text-[10px] font-bold text-muted">Orçamento opcional (R$)
+          <input value={requestBudget} onChange={(event) => setRequestBudget(event.target.value)} type="number" min="1" className="mt-2 h-11 w-full rounded-2xl border border-black/10 bg-surface/60 px-3 text-xs outline-none focus:ring-2 focus:ring-primary" placeholder="150,00" />
+        </label>
+        <Button className="mt-5 w-full" onClick={submitSpecialRequest}>Enviar pedido demo</Button>
+      </PremiumModal>
     </div>
   );
 }

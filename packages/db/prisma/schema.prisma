@@ -64,6 +64,8 @@ enum PurchaseKind {
   SUBSCRIPTION
   POST
   MESSAGE
+  PACK
+  SPECIAL_REQUEST
 }
 
 enum PurchaseStatus {
@@ -85,98 +87,122 @@ enum ReportStatus {
   DISMISSED
 }
 
+enum SpecialRequestStatus {
+  REQUESTED
+  QUOTED
+  ACCEPTED
+  PAID
+  DELIVERED
+  DECLINED
+  REFUNDED
+}
+
 model User {
-  id               String         @id @default(cuid())
-  email            String         @unique
+  id               String           @id @default(cuid())
+  email            String           @unique
   passwordHash     String
-  role             UserRole       @default(FAN)
+  role             UserRole         @default(FAN)
   emailVerifiedAt  DateTime?
   refreshTokenHash String?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  isDemo           Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
   creator          Creator?
   profile          Profile?
-  subscriptions    Subscription[] @relation("FanSubscriptions")
-  purchases        Purchase[]     @relation("BuyerPurchases")
-  messages         Message[]      @relation("SentMessages")
-  ledgerEntries    LedgerEntry[]  @relation("UserLedger")
-  reportsCreated   Report[]       @relation("Reporters")
-  reportsReceived  Report[]       @relation("ReportedUsers")
-  auditLogs        AuditLog[]     @relation("AuditActors")
+  subscriptions    Subscription[]   @relation("FanSubscriptions")
+  purchases        Purchase[]       @relation("BuyerPurchases")
+  messages         Message[]        @relation("SentMessages")
+  ledgerEntries    LedgerEntry[]    @relation("UserLedger")
+  reportsCreated   Report[]         @relation("Reporters")
+  reportsReceived  Report[]         @relation("ReportedUsers")
+  auditLogs        AuditLog[]       @relation("AuditActors")
   affiliate        Affiliate?
-  attributions     Attribution[]  @relation("AttributedFans")
+  attributions     Attribution[]    @relation("AttributedFans")
+  specialRequests  SpecialRequest[] @relation("FanSpecialRequests")
 
   @@map("users")
 }
 
 model Creator {
-  id             String          @id @default(cuid())
-  userId         String          @unique
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status         CreatorStatus   @default(DRAFT)
-  category       String
-  aiGenerated       Boolean         @default(false)
-  fictitious        Boolean         @default(false)
-  acceptsAffiliates Boolean         @default(true)
-  commissionBps     Int             @default(2000)
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  plans             Plan[]
-  subscriptions     Subscription[]
-  posts             Post[]
-  purchases         Purchase[]
-  ledgerEntries     LedgerEntry[]
-  affiliateLinks    AffiliateLink[]
+  id                   String           @id @default(cuid())
+  userId               String           @unique
+  user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status               CreatorStatus    @default(DRAFT)
+  category             String
+  aiGenerated          Boolean          @default(false)
+  fictitious           Boolean          @default(false)
+  acceptsAffiliates    Boolean          @default(true)
+  commissionBps        Int              @default(2000)
+  commissionOnPpv      Boolean          @default(true)
+  commissionOnPacks    Boolean          @default(true)
+  commissionOnRequests Boolean          @default(true)
+  isDemo               Boolean          @default(false)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  plans                Plan[]
+  subscriptions        Subscription[]
+  posts                Post[]
+  purchases            Purchase[]
+  ledgerEntries        LedgerEntry[]
+  affiliateLinks       AffiliateLink[]
+  promotions           Promotion[]
+  contentPacks         ContentPack[]
+  specialRequests      SpecialRequest[]
 
   @@map("creators")
 }
 
 model Profile {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name        String
-  username    String   @unique
-  bio         String?
-  city        String?
-  avatarUrl   String?
-  coverUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  username  String   @unique
+  bio       String?
+  city      String?
+  avatarUrl String?
+  coverUrl  String?
+  isDemo    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("profiles")
 }
 
 model Plan {
-  id               String         @id @default(cuid())
-  creatorId        String
-  creator          Creator        @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  name             String
-  description      String
-  priceCents       Int
-  durationMonths   Int            @default(1)
-  active           Boolean        @default(true)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  subscriptions    Subscription[]
+  id              String         @id @default(cuid())
+  creatorId       String
+  creator         Creator        @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  name            String
+  description     String
+  priceCents      Int
+  durationMonths  Int            @default(1)
+  discountPercent Int            @default(0)
+  active          Boolean        @default(true)
+  isDemo          Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  subscriptions   Subscription[]
+  promotions      Promotion[]
 
   @@index([creatorId])
   @@map("plans")
 }
 
 model Subscription {
-  id          String             @id @default(cuid())
-  fanId       String
-  fan         User               @relation("FanSubscriptions", fields: [fanId], references: [id], onDelete: Cascade)
-  creatorId   String
-  creator     Creator            @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  planId      String
-  plan        Plan               @relation(fields: [planId], references: [id])
-  status      SubscriptionStatus @default(PENDING)
-  startsAt    DateTime?
-  endsAt      DateTime?
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  id        String             @id @default(cuid())
+  fanId     String
+  fan       User               @relation("FanSubscriptions", fields: [fanId], references: [id], onDelete: Cascade)
+  creatorId String
+  creator   Creator            @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  planId    String
+  plan      Plan               @relation(fields: [planId], references: [id])
+  status    SubscriptionStatus @default(PENDING)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  isDemo    Boolean            @default(false)
 
   @@unique([fanId, creatorId])
   @@index([creatorId, status])
@@ -190,12 +216,14 @@ model Post {
   caption     String
   visibility  ContentVisibility @default(FREE)
   priceCents  Int?
+  isDemo      Boolean           @default(false)
   publishedAt DateTime?
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
   media       Media[]
   purchases   Purchase[]
   reports     Report[]
+  packItems   ContentPackItem[]
 
   @@index([creatorId, publishedAt])
   @@map("posts")
@@ -213,6 +241,7 @@ model Media {
   width      Int?
   height     Int?
   durationMs Int?
+  isDemo     Boolean   @default(false)
   createdAt  DateTime  @default(now())
 
   @@index([postId])
@@ -221,25 +250,29 @@ model Media {
 }
 
 model Purchase {
-  id            String         @id @default(cuid())
-  buyerId       String
-  buyer         User           @relation("BuyerPurchases", fields: [buyerId], references: [id])
-  creatorId     String
-  creator       Creator        @relation(fields: [creatorId], references: [id])
-  postId        String?
-  post          Post?          @relation(fields: [postId], references: [id])
-  messageId     String?
-  message       Message?       @relation(fields: [messageId], references: [id])
-  kind          PurchaseKind
-  status        PurchaseStatus @default(PENDING)
-  amountCents   Int
-  currency      String         @default("BRL")
-  idempotencyKey String         @unique
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  ledgerEntries LedgerEntry[]
-  paymentEvents PaymentEvent[]
-  conversion    Conversion?
+  id             String          @id @default(cuid())
+  buyerId        String
+  buyer          User            @relation("BuyerPurchases", fields: [buyerId], references: [id])
+  creatorId      String
+  creator        Creator         @relation(fields: [creatorId], references: [id])
+  postId         String?
+  post           Post?           @relation(fields: [postId], references: [id])
+  messageId      String?
+  message        Message?        @relation(fields: [messageId], references: [id])
+  contentPackId  String?
+  contentPack    ContentPack?    @relation(fields: [contentPackId], references: [id])
+  kind           PurchaseKind
+  status         PurchaseStatus  @default(PENDING)
+  amountCents    Int
+  currency       String          @default("BRL")
+  idempotencyKey String          @unique
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  isDemo         Boolean         @default(false)
+  ledgerEntries  LedgerEntry[]
+  paymentEvents  PaymentEvent[]
+  conversion     Conversion?
+  specialRequest SpecialRequest?
 
   @@index([buyerId, status])
   @@index([creatorId, status])
@@ -251,6 +284,7 @@ model Conversation {
   participantIds Json
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+  isDemo         Boolean   @default(false)
   messages       Message[]
 
   @@map("conversations")
@@ -264,6 +298,7 @@ model Message {
   sender         User         @relation("SentMessages", fields: [senderId], references: [id])
   body           String
   ppvPriceCents  Int?
+  isDemo         Boolean      @default(false)
   createdAt      DateTime     @default(now())
   media          Media[]
   purchases      Purchase[]
@@ -274,19 +309,19 @@ model Message {
 }
 
 model LedgerEntry {
-  id           String          @id @default(cuid())
-  userId       String?
-  user         User?           @relation("UserLedger", fields: [userId], references: [id])
-  creatorId    String?
-  creator      Creator?        @relation(fields: [creatorId], references: [id])
-  purchaseId   String?
-  purchase     Purchase?       @relation(fields: [purchaseId], references: [id])
-  direction    LedgerDirection
-  account      String
-  amountCents  Int
-  currency     String          @default("BRL")
-  reference    String
-  createdAt    DateTime        @default(now())
+  id          String          @id @default(cuid())
+  userId      String?
+  user        User?           @relation("UserLedger", fields: [userId], references: [id])
+  creatorId   String?
+  creator     Creator?        @relation(fields: [creatorId], references: [id])
+  purchaseId  String?
+  purchase    Purchase?       @relation(fields: [purchaseId], references: [id])
+  direction   LedgerDirection
+  account     String
+  amountCents Int
+  currency    String          @default("BRL")
+  reference   String
+  createdAt   DateTime        @default(now())
 
   @@index([purchaseId])
   @@index([creatorId, createdAt])
@@ -294,15 +329,15 @@ model LedgerEntry {
 }
 
 model PaymentEvent {
-  id         String    @id @default(cuid())
-  provider   String
-  providerId String
-  purchaseId String?
-  purchase   Purchase? @relation(fields: [purchaseId], references: [id])
-  eventType  String
-  payload    Json
+  id          String    @id @default(cuid())
+  provider    String
+  providerId  String
+  purchaseId  String?
+  purchase    Purchase? @relation(fields: [purchaseId], references: [id])
+  eventType   String
+  payload     Json
   processedAt DateTime?
-  createdAt  DateTime  @default(now())
+  createdAt   DateTime  @default(now())
 
   @@unique([provider, providerId])
   @@index([purchaseId])
@@ -345,20 +380,106 @@ model AuditLog {
   @@map("audit_logs")
 }
 
+model Promotion {
+  id              String   @id @default(cuid())
+  creatorId       String
+  creator         Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  planId          String?
+  plan            Plan?    @relation(fields: [planId], references: [id], onDelete: SetNull)
+  name            String
+  discountPercent Int
+  startsAt        DateTime
+  endsAt          DateTime
+  subscriberCap   Int?
+  redeemedCount   Int      @default(0)
+  active          Boolean  @default(true)
+  isDemo          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([creatorId, startsAt, endsAt])
+  @@map("promotions")
+}
+
+model ContentPack {
+  id          String            @id @default(cuid())
+  creatorId   String
+  creator     Creator           @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  name        String
+  description String
+  priceCents  Int
+  active      Boolean           @default(true)
+  isDemo      Boolean           @default(false)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  items       ContentPackItem[]
+  purchases   Purchase[]
+
+  @@index([creatorId, active])
+  @@map("content_packs")
+}
+
+model ContentPackItem {
+  id     String      @id @default(cuid())
+  packId String
+  pack   ContentPack @relation(fields: [packId], references: [id], onDelete: Cascade)
+  postId String
+  post   Post        @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([packId, postId])
+  @@map("content_pack_items")
+}
+
+model SpecialRequest {
+  id                   String                  @id @default(cuid())
+  fanId                String
+  fan                  User                    @relation("FanSpecialRequests", fields: [fanId], references: [id])
+  creatorId            String
+  creator              Creator                 @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  purchaseId           String?                 @unique
+  purchase             Purchase?               @relation(fields: [purchaseId], references: [id])
+  description          String
+  requestedBudgetCents Int?
+  quotedPriceCents     Int?
+  status               SpecialRequestStatus    @default(REQUESTED)
+  deliveryUrl          String?
+  isDemo               Boolean                 @default(false)
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+  messages             SpecialRequestMessage[]
+
+  @@index([creatorId, status])
+  @@index([fanId, createdAt])
+  @@map("special_requests")
+}
+
+model SpecialRequestMessage {
+  id         String         @id @default(cuid())
+  requestId  String
+  request    SpecialRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  senderRole UserRole
+  body       String
+  createdAt  DateTime       @default(now())
+
+  @@index([requestId, createdAt])
+  @@map("special_request_messages")
+}
+
 model Affiliate {
-  id             String        @id @default(cuid())
-  userId         String        @unique
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  code           String        @unique
-  displayName    String
-  status         String        @default("ACTIVE")
-  payoutMethod   PayoutMethod  @default(PIX)
-  payoutDetails  Json?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  links          AffiliateLink[]
-  commissions    Commission[]
-  payouts        Payout[]
+  id            String          @id @default(cuid())
+  userId        String          @unique
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code          String          @unique
+  displayName   String
+  status        String          @default("ACTIVE")
+  payoutMethod  PayoutMethod    @default(PIX)
+  payoutDetails Json?
+  isDemo        Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  links         AffiliateLink[]
+  commissions   Commission[]
+  payouts       Payout[]
 
   @@map("affiliates")
 }
@@ -371,6 +492,7 @@ model AffiliateLink {
   creator     Creator   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   slug        String
   active      Boolean   @default(true)
+  isDemo      Boolean   @default(false)
   createdAt   DateTime  @default(now())
   clicks      Click[]
 
@@ -380,15 +502,16 @@ model AffiliateLink {
 }
 
 model Click {
-  id          String         @id @default(cuid())
+  id          String        @id @default(cuid())
   linkId      String
-  link        AffiliateLink  @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  link        AffiliateLink @relation(fields: [linkId], references: [id], onDelete: Cascade)
   subId       String?
   locale      String?
   ipHash      String?
   userAgent   String?
-  suspicious  Boolean        @default(false)
-  createdAt   DateTime       @default(now())
+  suspicious  Boolean       @default(false)
+  isDemo      Boolean       @default(false)
+  createdAt   DateTime      @default(now())
   attribution Attribution?
 
   @@index([linkId, createdAt])
@@ -403,6 +526,7 @@ model Attribution {
   fan           User?        @relation("AttributedFans", fields: [fanId], references: [id])
   expiresAt     DateTime
   blockedReason String?
+  isDemo        Boolean      @default(false)
   createdAt     DateTime     @default(now())
   conversions   Conversion[]
 
@@ -419,6 +543,7 @@ model Conversion {
   kind          String
   amountCents   Int
   currency      String       @default("BRL")
+  isDemo        Boolean      @default(false)
   createdAt     DateTime     @default(now())
   commissions   Commission[]
 
@@ -440,6 +565,7 @@ model Commission {
   status       CommissionStatus @default(PENDING)
   holdUntil    DateTime
   renewalUntil DateTime
+  isDemo       Boolean          @default(false)
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 
@@ -455,6 +581,7 @@ model Payout {
   amountCents Int
   currency    String       @default("BRL")
   status      PayoutStatus @default(REQUESTED)
+  isDemo      Boolean      @default(false)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   commissions Commission[]

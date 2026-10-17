@@ -145,7 +145,8 @@ export const categories = [
 
 export const plans = [
   { id: "monthly", name: "Mensal", months: 1, discount: 0 },
-  { id: "quarterly", name: "3 meses", months: 3, discount: 15 },
+  { id: "quarterly", name: "3 meses", months: 3, discount: 10 },
+  { id: "semiannual", name: "6 meses", months: 6, discount: 20 },
   { id: "yearly", name: "12 meses", months: 12, discount: 30 },
 ] as const;
 

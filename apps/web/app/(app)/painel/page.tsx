@@ -9,7 +9,9 @@ import {
   Eye,
   FileImage,
   ImagePlus,
+  MessagesSquare,
   Plus,
+  Tag,
   Users,
   Wallet,
 } from "lucide-react";
@@ -27,6 +29,8 @@ export default function DashboardPage() {
   const [uploadName, setUploadName] = useState("");
   const [acceptsAffiliates, setAcceptsAffiliates] = useState(() => readDemo().creatorProgram.acceptsAffiliates);
   const [commission, setCommission] = useState(() => readDemo().creatorProgram.commissionBps / 100);
+  const [monetization, setMonetization] = useState(() => readDemo().creatorMonetization);
+  const [requests, setRequests] = useState(() => readDemo().specialRequests);
   const max = Math.max(...dashboardMetrics.monthlySeries);
 
   if (!allowed) return <div className="m-6 h-[70vh] rounded-[30px] skeleton" />;
@@ -46,6 +50,27 @@ export default function DashboardPage() {
     toast.success("Publicação simulada adicionada à fila.");
     setUploadName("");
     if (inputRef.current) inputRef.current.value = "";
+  }
+
+  function saveMonetization() {
+    writeDemo({ creatorMonetization: monetization });
+    toast.success("Preços e ofertas salvos no modo demo.");
+  }
+
+  function updateRequest(id: string, status: "quoted" | "declined" | "delivered") {
+    const next = requests.map((request) =>
+      request.id === id
+        ? {
+            ...request,
+            status,
+            quotedPriceCents:
+              status === "quoted" ? request.quotedPriceCents || 15_000 : request.quotedPriceCents,
+          }
+        : request,
+    );
+    setRequests(next);
+    writeDemo({ specialRequests: next });
+    toast.success("Pedido atualizado no ambiente demo.");
   }
 
   return (
@@ -130,6 +155,48 @@ export default function DashboardPage() {
         </div>
       </section>
 
+      <section className="mt-5 grid gap-5 lg:grid-cols-2">
+        <div className="rounded-[28px] border border-black/5 bg-white/65 p-5 dark:bg-white/5 sm:p-6">
+          <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-2xl bg-primary/15"><Tag className="size-4 text-primary-strong" /></span><div><h2 className="text-sm font-extrabold">Preços e ofertas</h2><p className="text-[9px] text-muted">Configuração local para a demonstração</p></div></div>
+          <label className="mt-5 block text-[10px] font-bold text-muted">Preço mensal (R$)
+            <input data-testid="monthly-price" type="number" min={1} value={monetization.monthlyPriceCents / 100} onChange={(event) => setMonetization({ ...monetization, monthlyPriceCents: Math.round(Number(event.target.value) * 100) })} className="mt-2 h-11 w-full rounded-2xl border border-black/10 bg-surface/60 px-3 text-xs" />
+          </label>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {(["3", "6", "12"] as const).map((months) => (
+              <label key={months} className="text-[10px] font-bold text-muted">Desconto · {months} meses
+                <input type="number" min={0} max={95} value={monetization.bundleDiscounts[months]} onChange={(event) => setMonetization({ ...monetization, bundleDiscounts: { ...monetization.bundleDiscounts, [months]: Number(event.target.value) } })} className="mt-2 h-10 w-full rounded-2xl border border-black/10 bg-surface/60 px-3 text-xs" />
+              </label>
+            ))}
+          </div>
+          <div className="mt-5 rounded-[22px] bg-surface/60 p-4 dark:bg-white/5">
+            <label className="flex items-center justify-between text-xs font-bold">Promoção ativa <input type="checkbox" checked={monetization.promotion.active} onChange={(event) => setMonetization({ ...monetization, promotion: { ...monetization.promotion, active: event.target.checked } })} /></label>
+            <label className="mt-4 block text-[10px] font-bold text-muted">Desconto promocional: {monetization.promotion.discountPercent}%
+              <input type="range" min={5} max={80} value={monetization.promotion.discountPercent} onChange={(event) => setMonetization({ ...monetization, promotion: { ...monetization.promotion, discountPercent: Number(event.target.value) } })} className="mt-2 w-full accent-primary" />
+            </label>
+            <p className="mt-3 text-[9px] text-muted">Período e limite de novas assinantes ficam prontos para integração com a API.</p>
+          </div>
+          <Button className="mt-5 w-full" onClick={saveMonetization}>Salvar monetização</Button>
+        </div>
+
+        <div className="rounded-[28px] border border-black/5 bg-white/65 p-5 dark:bg-white/5 sm:p-6">
+          <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-2xl bg-accent/15"><MessagesSquare className="size-4 text-accent-strong" /></span><div><h2 className="text-sm font-extrabold">Pedidos especiais</h2><p className="text-[9px] text-muted">Aceite, recuse ou entregue solicitações</p></div></div>
+          <div className="mt-5 space-y-3">
+            {requests.length === 0 ? (
+              <div className="rounded-[22px] bg-surface/60 px-5 py-10 text-center dark:bg-white/5"><p className="text-xs font-extrabold">Nenhum pedido novo</p><p className="mt-1 text-[9px] text-muted">Pedidos enviados pelo perfil aparecerão aqui.</p></div>
+            ) : requests.map((request) => (
+              <article key={request.id} data-testid="special-request-card" className="rounded-[22px] bg-surface/60 p-4 dark:bg-white/5">
+                <div className="flex items-start justify-between gap-3"><p className="text-[10px] font-bold leading-5">{request.description}</p><Pill>{request.status}</Pill></div>
+                <p className="mt-2 text-[9px] text-muted">{request.budgetCents ? `Orçamento: ${brl(request.budgetCents)}` : "Sem orçamento sugerido"}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {request.status === "requested" && <><Button size="sm" onClick={() => updateRequest(request.id, "quoted")}>Contrapropor R$ 150</Button><Button size="sm" variant="outline" onClick={() => updateRequest(request.id, "declined")}>Recusar</Button></>}
+                  {request.status === "paid" && <Button size="sm" onClick={() => updateRequest(request.id, "delivered")}>Marcar como entregue</Button>}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="mt-5 rounded-[28px] border border-black/5 bg-white/65 p-5 dark:bg-white/5 sm:p-6">
         <h2 className="text-sm font-extrabold">{programCopy("title")}</h2>
         <p className="mt-2 max-w-xl text-[10px] leading-5 text-muted">{programCopy("body")}</p>
@@ -141,8 +208,20 @@ export default function DashboardPage() {
           {programCopy("rate")}: {commission}%
           <input type="range" min={5} max={50} value={commission} onChange={(event) => setCommission(Number(event.target.value))} className="mt-2 w-full accent-primary" />
         </label>
+        <div className="mt-4 grid gap-2 sm:grid-cols-3">
+          {([
+            ["commissionOnPpv", "Comissão em PPV"],
+            ["commissionOnPacks", "Comissão em pacotes"],
+            ["commissionOnRequests", "Comissão em pedidos"],
+          ] as const).map(([field, label]) => (
+            <label key={field} className="flex items-center gap-2 rounded-2xl bg-surface/60 p-3 text-[9px] font-bold dark:bg-white/5">
+              <input type="checkbox" checked={monetization[field]} onChange={(event) => setMonetization({ ...monetization, [field]: event.target.checked })} />
+              {label}
+            </label>
+          ))}
+        </div>
         <Button className="mt-5" onClick={() => {
-          writeDemo({ creatorProgram: { acceptsAffiliates, commissionBps: commission * 100 } });
+          writeDemo({ creatorProgram: { acceptsAffiliates, commissionBps: commission * 100 }, creatorMonetization: monetization });
           toast.success(programCopy("saved"));
         }}>{programCopy("save")}</Button>
       </section>

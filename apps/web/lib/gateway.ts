@@ -51,7 +51,7 @@ class MockGateway implements MimeluxGateway {
     return creator ? toCreatorDto(creator) : null;
   }
 
-  async listFeed(): Promise<Paginated<PostDto>> {
+  async listFeed(_cursor?: string): Promise<Paginated<PostDto>> {
     return {
       items: this.posts.map((post) => ({
         id: post.id,
@@ -79,11 +79,11 @@ class MockGateway implements MimeluxGateway {
     }));
   }
 
-  async simulateSubscription() {
+  async simulateSubscription(_creatorId?: string, _planId?: string) {
     return Promise.resolve();
   }
 
-  async simulatePurchase() {
+  async simulatePurchase(_contentId?: string) {
     return Promise.resolve();
   }
 }
@@ -164,9 +164,55 @@ export const apiGateway = new ApiGateway(
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3334/v1",
 );
 
-// V0.1 is deliberately mock-first. Switching this export is the only page-layer
-// change required once the API reaches contract parity.
-export const gateway = mockGateway;
+class FallbackGateway implements MimeluxGateway {
+  private async fallback<T>(api: () => Promise<T>, mock: () => Promise<T>) {
+    try {
+      return await api();
+    } catch {
+      return mock();
+    }
+  }
+
+  listCreators(query: DiscoveryQuery = {}) {
+    return this.fallback(
+      () => apiGateway.listCreators(query),
+      () => mockGateway.listCreators(query),
+    );
+  }
+  getCreator(username: string) {
+    return this.fallback(
+      () => apiGateway.getCreator(username),
+      () => mockGateway.getCreator(username),
+    );
+  }
+  listFeed(cursor?: string) {
+    return this.fallback(
+      () => apiGateway.listFeed(cursor),
+      () => mockGateway.listFeed(cursor),
+    );
+  }
+  listConversations() {
+    return this.fallback(
+      () => apiGateway.listConversations(),
+      () => mockGateway.listConversations(),
+    );
+  }
+  simulateSubscription(creatorId: string, planId: string) {
+    return this.fallback(
+      () => apiGateway.simulateSubscription(creatorId, planId),
+      () => mockGateway.simulateSubscription(creatorId, planId),
+    );
+  }
+  simulatePurchase(contentId: string) {
+    return this.fallback(
+      () => apiGateway.simulatePurchase(contentId),
+      () => mockGateway.simulatePurchase(contentId),
+    );
+  }
+}
+
+/** API-first adapter with a transparent local fallback for offline demos. */
+export const gateway = new FallbackGateway();
 
 export {
   categories,
