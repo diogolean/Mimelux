@@ -4,17 +4,16 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   BadgeCheck,
-  CalendarDays,
-  Grid3X3,
+  ChevronDown,
   Heart,
   ImageIcon,
   LockKeyhole,
-  MapPin,
   MessageCircle,
-  Share2,
   Sparkles,
   Star,
+  Video,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button, Pill, PremiumModal } from "@mimelux/ui";
 import type { Creator, Post } from "@/lib/gateway";
 import { brl, compact, plans, reviewsFor } from "@/lib/gateway";
@@ -22,10 +21,12 @@ import { readDemo, writeDemo, type DemoReview, type DemoSpecialRequest } from "@
 import { toast } from "sonner";
 
 export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Post[] }) {
+  const t = useTranslations("profile");
   const [subscribed, setSubscribed] = useState(false);
   const [unlocks, setUnlocks] = useState<string[]>([]);
   const [tab, setTab] = useState<"posts" | "media">("posts");
-  const [filter, setFilter] = useState<"all" | "photos" | "videos" | "paid">("all");
+  const [bioOpen, setBioOpen] = useState(false);
+  const [promosOpen, setPromosOpen] = useState(true);
   const [requestOpen, setRequestOpen] = useState(false);
   const [requestDescription, setRequestDescription] = useState("");
   const [requestBudget, setRequestBudget] = useState("");
@@ -115,244 +116,223 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
     posts.reduce((total, post) => total + post.likes, 0) +
     likedIds.filter((id) => posts.some((post) => post.id === id)).length;
 
-  const filteredPosts = posts.filter((post) => {
-    if (filter === "photos") return post.mediaType === "image";
-    if (filter === "videos") return post.mediaType === "video";
-    if (filter === "paid") return post.visibility !== "free";
-    return true;
-  });
+  const photoCount = posts.filter((post) => post.mediaType === "image").length;
+  const videoCount = posts.filter((post) => post.mediaType === "video").length;
+  const lockedCount = posts.filter((post) => post.visibility !== "free").length;
+  const visiblePosts = tab === "media" ? posts.filter((post) => post.mediaType === "image" || post.mediaType === "video") : posts;
+
+  function planTotal(months: 1 | 3 | 6 | 12) {
+    const plan = plans.find((item) => item.months === months);
+    if (!plan || creator.free) return 0;
+    return Math.round(
+      monetization.monthlyPriceCents *
+        plan.months *
+        (1 - (monetization.bundleDiscounts[String(plan.months) as "1" | "3" | "6" | "12"] ?? plan.discount) / 100) *
+        (promotionActive ? 1 - promotion.discountPercent / 100 : 1),
+    );
+  }
+
+  function planHref(months: number) {
+    const plan = plans.find((item) => item.months === months);
+    return `/checkout?kind=subscription&id=${creator.id}&plan=${plan?.id ?? "monthly"}&return=/creator/${creator.username}`;
+  }
 
   return (
-    <div className="mx-auto w-full max-w-5xl pb-12">
-      <div className="relative z-0 h-56 overflow-hidden sm:h-80 sm:rounded-b-[38px] lg:mt-6 lg:h-96 lg:rounded-[38px]">
+    <div className="mx-auto w-full max-w-xl px-4 pb-16 sm:px-6">
+      <div className="relative">
+        <div className="relative h-28 overflow-hidden rounded-[28px] sm:h-36">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={creator.cover} alt="" className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-l from-ink/70 via-ink/20 to-transparent" />
+          <div data-testid="profile-cover-stats" className="absolute right-3 top-3 grid max-w-[78%] grid-cols-4 gap-2 text-right text-white sm:right-4 sm:top-4">
+            {(
+              [
+                { value: photoCount, label: t("photos"), Icon: ImageIcon },
+                { value: videoCount, label: t("videos"), Icon: Video },
+                { value: lockedCount, label: t("locked"), Icon: LockKeyhole },
+                { value: compact(likeTotal), label: t("likes"), Icon: Heart, testId: "profile-likes" },
+              ] as const
+            ).map(({ value, label, Icon, ...rest }) => (
+              <div key={label} className="min-w-0">
+                <Icon className="ml-auto size-3.5 opacity-80" />
+                <b data-testid={"testId" in rest ? rest.testId : undefined} className="mt-1 block text-sm font-semibold leading-none">{value}</b>
+                <span className="mt-1 block text-[9px] uppercase tracking-wide text-white/80">{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={creator.cover} alt={`Capa de ${creator.name}`} className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-black/10" />
-        <div className="absolute right-4 top-4 flex gap-2">
-          <Button variant="outline" size="icon" aria-label="Compartilhar perfil" className="border-white/20 bg-black/20 text-white backdrop-blur hover:bg-black/35"><Share2 className="size-4" /></Button>
-          <Button variant="outline" size="icon" aria-label="Favoritar perfil" className="border-white/20 bg-black/20 text-white backdrop-blur hover:bg-black/35"><Heart className="size-4" /></Button>
+        <img
+          data-testid="profile-avatar"
+          src={creator.avatar}
+          alt={creator.name}
+          className="absolute -bottom-8 left-4 z-20 size-20 rounded-full border-4 border-background bg-background object-cover shadow-[0_16px_40px_rgba(12,13,20,.28)] sm:size-24"
+        />
+      </div>
+
+      <div className="mt-12">
+        <div className="flex items-center gap-1.5">
+          <h1 className="text-2xl font-semibold tracking-[-.04em] sm:text-3xl">{creator.name}</h1>
+          {creator.verified && <BadgeCheck className="size-5 fill-primary text-white" />}
+        </div>
+        <p className="mt-1 text-sm text-muted">@{creator.username}</p>
+        <p className={`mt-3 max-w-xl text-sm leading-6 ${bioOpen ? "" : "line-clamp-1"}`}>{creator.bio}</p>
+        <button type="button" className="mt-1 text-sm font-semibold text-primary-strong" onClick={() => setBioOpen((value) => !value)}>
+          {bioOpen ? t("readLess") : t("readMore")}
+        </button>
+        <div className="mt-4 flex items-center gap-2">
+          {[
+            ["instagram", t("socialInstagram")],
+            ["x", t("socialX")],
+            ["tiktok", t("socialTikTok")],
+          ].map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              aria-label={label}
+              onClick={() => toast.info(label)}
+              className="grid size-9 place-items-center rounded-full border border-border bg-elevated text-xs font-bold"
+            >
+              {id === "instagram" ? "IG" : id === "x" ? "X" : "♪"}
+            </button>
+          ))}
+          <Link href={`/chat/${creator.id}`} aria-label={t("chat")} className="grid size-9 place-items-center rounded-full border border-border bg-elevated">
+            <MessageCircle className="size-4" />
+          </Link>
         </div>
       </div>
 
-      <section className="px-4 sm:px-7">
-        <div className="relative z-20 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            data-testid="profile-avatar"
-            src={creator.avatar}
-            alt={creator.name}
-            className="relative z-20 -mt-16 size-32 shrink-0 rounded-full border-[6px] border-background bg-background object-cover shadow-[0_20px_50px_rgba(12,13,20,.24)] sm:-mt-20 sm:size-44 sm:border-[7px]"
-          />
-          <div className="flex flex-wrap gap-2 sm:justify-end sm:pb-1">
-            <Button variant="outline" onClick={() => setRequestOpen(true)}>
-              <Sparkles className="size-4" /> Pedido especial
-            </Button>
-            <Link href={`/chat/${creator.id}`}>
-              <Button variant="outline" size="icon" aria-label="Conversar"><MessageCircle className="size-4" /></Button>
+      <section className="mt-8">
+        <h2 className="text-sm font-semibold">{t("subscriptions")}</h2>
+        <div className="mt-3 space-y-3">
+          {subscribed ? (
+            <Button variant="dark" className="h-14 w-full rounded-full"><BadgeCheck className="size-4" /> {t("active")}</Button>
+          ) : (
+            <Link href={planHref(1)} className="flex h-14 w-full items-center justify-between rounded-full bg-primary px-6 text-base font-semibold text-ink shadow-sm">
+              <span>1 {t("month")}</span>
+              <span>{creator.free ? t("free") : brl(planTotal(1))}</span>
             </Link>
-            {subscribed ? (
-              <Button variant="dark"><BadgeCheck className="size-4" /> Assinatura ativa</Button>
-            ) : (
-              <Link href={`/checkout?kind=subscription&id=${creator.id}&return=/creator/${creator.username}`}>
-                <Button><Sparkles className="size-4" /> {creator.free ? "Assinar grátis" : `Assinar · ${brl(creator.price)}`}</Button>
-              </Link>
-            )}
-          </div>
-        </div>
-
-        <div className="mt-5 flex items-center gap-1.5">
-          <h1 className="text-3xl font-extrabold tracking-[-.045em] sm:text-4xl">{creator.name}</h1>
-          {creator.verified && <BadgeCheck className="size-5 fill-primary text-white" />}
-        </div>
-        <p className="mt-1 text-sm text-muted sm:text-base">@{creator.username}</p>
-        <p className="mt-4 max-w-2xl text-base leading-7">{creator.bio}</p>
-        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[10px] text-muted">
-          <span className="flex items-center gap-1.5"><MapPin className="size-3.5" /> {creator.city}</span>
-          <span className="flex items-center gap-1.5"><CalendarDays className="size-3.5" /> No Mimelux desde 2025</span>
-          <Pill>{creator.category}</Pill>
-          <Pill>Perfil fictício · imagem gerada por IA</Pill>
-        </div>
-
-        <div className="mt-7 grid grid-cols-4 rounded-[24px] bg-surface/65 p-4 text-center dark:bg-white/5">
-          <div><b className="block text-base sm:text-lg">{compact(creator.subscribers)}</b><span className="text-[11px] text-muted sm:text-xs">membros</span></div>
-          <div className="border-x border-black/8"><b className="block text-base sm:text-lg">{creator.posts}</b><span className="text-[11px] text-muted sm:text-xs">publicações</span></div>
-          <div className="border-r border-black/8"><b data-testid="profile-likes" className="block text-base sm:text-lg">{compact(likeTotal)}</b><span className="text-[11px] text-muted sm:text-xs">curtidas</span></div>
-          <div><b data-testid="profile-rating" className="block text-base sm:text-lg">{averageRating.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}</b><span className="text-[11px] text-muted sm:text-xs">avaliação</span></div>
-        </div>
-
-        {!subscribed && (
-          <div className="mt-6">
-            {promotionActive && (
-              <div data-testid="promotion-banner" className="mb-4 flex flex-col gap-3 rounded-[24px] bg-gradient-to-r from-primary/20 to-accent/20 p-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[.16em] text-primary-strong">Oferta por tempo limitado</p>
-                  <p className="mt-1 text-base font-extrabold sm:text-lg">{promotion.discountPercent}% OFF no primeiro período</p>
-                  <p className="mt-1 text-xs text-muted">Termina em 31/12/2027 · {promotion.subscriberCap! - promotion.redeemedCount} vagas demo</p>
+          )}
+          <button type="button" aria-expanded={promosOpen} onClick={() => setPromosOpen((value) => !value)} className="flex w-full items-center justify-between py-1 text-sm font-semibold">
+            {t("promotions")}
+            <ChevronDown className={`size-4 transition ${promosOpen ? "rotate-180" : ""}`} />
+          </button>
+          {promosOpen && (
+            <div className="space-y-3">
+              {promotionActive && (
+                <div data-testid="promotion-banner" className="rounded-[22px] bg-gradient-to-r from-primary/25 to-accent/25 px-4 py-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[.14em] text-primary-strong">{t("promoLabel")}</p>
+                  <p className="mt-1 text-sm font-semibold">{t("promoBody", { percent: promotion.discountPercent })}</p>
+                  <p className="mt-1 text-xs text-muted">{t("promoMeta", { spots: (promotion.subscriberCap ?? 0) - promotion.redeemedCount })}</p>
                 </div>
-                <Pill active>Oferta fictícia</Pill>
-              </div>
-            )}
-            <div className="flex items-end justify-between">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[.16em] text-primary-strong">Escolha seu acesso</p>
-                <h2 className="mt-1 text-lg font-extrabold">Planos de assinatura demo</h2>
-              </div>
-              <Pill>Oferta fictícia</Pill>
-            </div>
-            <div className="mt-3 grid gap-3 sm:grid-cols-3">
-              {plans.map((plan, index) => {
-                const total = creator.free
-                  ? 0
-                  : Math.round(
-                      monetization.monthlyPriceCents *
-                        plan.months *
-                        (1 - (monetization.bundleDiscounts[String(plan.months) as "1" | "3" | "6" | "12"] ?? plan.discount) / 100) *
-                        (promotionActive ? 1 - promotion.discountPercent / 100 : 1),
-                    );
-                return (
-                  <article key={plan.id} className={`rounded-[22px] border p-4 ${index === 1 ? "border-primary/35 bg-primary/10" : "border-black/5 bg-white/55 dark:bg-white/5"}`}>
-                    {index === 1 && <Pill active>Mais escolhido</Pill>}
-                    <p className="mt-3 text-sm font-extrabold">{plan.name}</p>
-                    <p className="mt-1 text-xl font-extrabold">{creator.free ? "Grátis" : brl(total)}</p>
-                    <p className="mt-1 text-xs text-muted">{plan.discount ? `${plan.discount}% no pacote${promotionActive ? ` + ${promotion.discountPercent}% promocional` : ""}` : "Acesso por 30 dias"}</p>
-                    <Link href={`/checkout?kind=subscription&id=${creator.id}&plan=${plan.id}&return=/creator/${creator.username}`}>
-                      <Button variant={index === 1 ? "primary" : "outline"} size="sm" className="mt-4 w-full">Escolher</Button>
-                    </Link>
-                  </article>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        <section className="mt-7 rounded-[28px] border border-black/5 bg-white/60 p-5 dark:bg-white/5">
-          <div className="flex items-end justify-between gap-3">
-            <div><p className="text-[10px] font-black uppercase tracking-[.16em] text-primary-strong">Coleção premium</p><h2 className="mt-1 text-lg font-extrabold">Pacote Bastidores de Verão</h2></div>
-            <p className="text-base font-black">{brl(4_990)}</p>
-          </div>
-          <p className="mt-2 text-sm leading-6 text-muted">6 fotos e 2 vídeos fictícios para desbloquear de uma vez.</p>
-          <Link href={`/checkout?kind=pack&id=summer-pack&creator=${creator.id}&return=/creator/${creator.username}`}>
-            <Button variant="outline" className="mt-4">Desbloquear pacote</Button>
-          </Link>
-        </section>
-
-        {requests.length > 0 && (
-          <section className="mt-5 rounded-[28px] border border-black/5 bg-white/60 p-5 dark:bg-white/5">
-            <h2 className="text-sm font-extrabold">Seus pedidos especiais</h2>
-            <div className="mt-4 space-y-3">
-              {requests.map((request) => (
-                <article key={request.id} className="rounded-[20px] bg-surface/60 p-4 dark:bg-white/5">
-                  <div className="flex items-start justify-between gap-3"><p className="line-clamp-2 text-[10px] font-bold">{request.description}</p><Pill>{request.status}</Pill></div>
-                  {request.status === "quoted" && request.quotedPriceCents && (
-                    <div className="mt-3 flex items-center justify-between gap-3"><p className="text-xs font-extrabold">Contraproposta: {brl(request.quotedPriceCents)}</p><Link href={`/checkout?kind=special_request&id=${request.id}&creator=${creator.id}&amount=${request.quotedPriceCents}&return=/creator/${creator.username}`}><Button size="sm">Aceitar e simular pagamento</Button></Link></div>
-                  )}
-                  {request.status === "delivered" && <p className="mt-2 text-[9px] text-emerald-600">Conteúdo fictício entregue no thread do pedido.</p>}
-                </article>
+              )}
+              {([3, 6, 12] as const).map((months) => (
+                <Link key={months} href={planHref(months)} className="flex h-14 w-full items-center justify-between rounded-full border border-primary/40 bg-primary/15 px-6 text-base font-semibold">
+                  <span>{months} {t("months")}</span>
+                  <span>{creator.free ? t("free") : brl(planTotal(months))}</span>
+                </Link>
               ))}
+              <Link href={`/checkout?kind=pack&id=summer-pack&creator=${creator.id}&return=/creator/${creator.username}`} className="flex h-14 w-full items-center justify-between rounded-full border border-border bg-elevated px-6 text-sm font-semibold">
+                <span>Pacote Bastidores</span>
+                <span>{brl(4_990)}</span>
+              </Link>
             </div>
-          </section>
-        )}
+          )}
+        </div>
+        <Button variant="outline" className="mt-4 h-12 w-full rounded-full" onClick={() => setRequestOpen(true)}>
+          <Sparkles className="size-4" /> {t("special")}
+        </Button>
+      </section>
 
-        <section data-testid="profile-reviews" className="mt-7 rounded-[28px] border border-black/5 bg-white/60 p-5 dark:bg-white/5">
-          <div className="flex items-end justify-between gap-3">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[.16em] text-primary-strong">Avaliações</p>
-              <h2 className="mt-1 text-lg font-extrabold">Quem assina</h2>
-            </div>
-            <p className="text-sm font-bold text-muted">{visibleReviews.length}</p>
-          </div>
+      {requests.length > 0 && (
+        <section className="mt-5 rounded-[28px] border border-border bg-elevated p-5">
+          <h2 className="text-sm font-semibold">Seus pedidos especiais</h2>
           <div className="mt-4 space-y-3">
-            {visibleReviews.map((review) => (
-              <article key={review.id} data-testid="review-card" className="rounded-[20px] bg-surface/60 p-4 dark:bg-white/5">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-extrabold">{review.authorName}</p>
-                  <p className="text-sm font-bold text-primary-strong" aria-label={`${review.rating} de 5`}>{"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</p>
-                </div>
-                <p className="mt-2 text-sm leading-6">{review.body}</p>
+            {requests.map((request) => (
+              <article key={request.id} className="rounded-[20px] bg-surface/70 p-4">
+                <div className="flex items-start justify-between gap-3"><p className="line-clamp-2 text-xs font-semibold">{request.description}</p><Pill>{request.status}</Pill></div>
+                {request.status === "quoted" && request.quotedPriceCents && (
+                  <div className="mt-3 flex items-center justify-between gap-3"><p className="text-xs font-semibold">Contraproposta: {brl(request.quotedPriceCents)}</p><Link href={`/checkout?kind=special_request&id=${request.id}&creator=${creator.id}&amount=${request.quotedPriceCents}&return=/creator/${creator.username}`}><Button size="sm">Aceitar e simular pagamento</Button></Link></div>
+                )}
               </article>
             ))}
           </div>
-          {subscribed ? (
-            <form
-              data-testid="review-form"
-              className="mt-4"
-              onSubmit={(event) => {
-                event.preventDefault();
-                submitReview();
-              }}
-            >
-              <div className="flex gap-1">
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <button key={value} type="button" aria-label={`Nota ${value}`} onClick={() => setReviewRating(value)}>
-                    <Star className={`size-5 ${value <= reviewRating ? "fill-primary text-primary-strong" : "text-muted"}`} />
-                  </button>
-                ))}
-              </div>
-              <textarea value={reviewBody} onChange={(event) => setReviewBody(event.target.value)} className="mt-3 min-h-24 w-full rounded-2xl border border-black/10 bg-surface/60 p-3 text-sm outline-none focus:ring-2 focus:ring-primary" placeholder="Conte como foi acompanhar este criador..." />
-              <Button type="submit" className="mt-3">Publicar avaliação</Button>
-            </form>
-          ) : (
-            <p className="mt-4 text-sm text-muted">Assine para deixar uma avaliação.</p>
-          )}
         </section>
+      )}
 
-        <div className="mt-8 flex items-center gap-6 border-b border-black/8">
-          <button onClick={() => setTab("posts")} className={`flex items-center gap-2 px-1 pb-3 text-xs ${tab === "posts" ? "border-b-2 border-primary font-bold" : "font-semibold text-muted"}`}><Grid3X3 className="size-4" /> Postagens</button>
-          <button onClick={() => setTab("media")} className={`flex items-center gap-2 px-1 pb-3 text-xs ${tab === "media" ? "border-b-2 border-primary font-bold" : "font-semibold text-muted"}`}><ImageIcon className="size-4" /> Mídias</button>
+      <div className="mt-8 grid grid-cols-2 rounded-[22px] bg-surface/70 p-1">
+        <button type="button" onClick={() => setTab("posts")} className={`flex h-12 items-center justify-center gap-2 rounded-[18px] text-sm ${tab === "posts" ? "bg-elevated font-semibold shadow-sm" : "text-muted"}`}>
+          <ImageIcon className="size-4" /> {posts.length} {t("posts")}
+        </button>
+        <button type="button" onClick={() => setTab("media")} className={`flex h-12 items-center justify-center gap-2 rounded-[18px] text-sm ${tab === "media" ? "bg-elevated font-semibold shadow-sm" : "text-muted"}`}>
+          <Video className="size-4" /> {photoCount + videoCount} {t("media")}
+        </button>
+      </div>
+
+      <div className="mt-4 grid grid-cols-3 gap-1.5">
+        {visiblePosts.map((post) => {
+          const locked = post.visibility === "subscriber" ? !subscribed : post.visibility === "ppv" ? !unlocks.includes(post.id) : false;
+          return (
+            <div key={post.id} data-testid="profile-post" data-locked={locked} className="group relative aspect-[3/4] overflow-hidden rounded-[16px] bg-surface">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={post.image} alt={post.caption} className={`h-full w-full object-cover ${locked ? "scale-105 blur-[10px]" : ""}`} />
+              {locked && (
+                <div className="absolute inset-0 grid place-items-center bg-ink/25 p-2 text-center text-white">
+                  <div>
+                    <span className="mx-auto grid size-8 place-items-center rounded-full bg-black/40"><LockKeyhole className="size-3.5" /></span>
+                    <Link href={post.visibility === "subscriber" ? planHref(1) : `/checkout?kind=post&id=${post.id}&creator=${creator.id}&return=/creator/${creator.username}`}>
+                      <span className="mt-2 inline-block text-[10px] font-semibold">{post.visibility === "subscriber" ? "Assine para desbloquear" : "Desbloquear conteúdo"}</span>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <section data-testid="profile-reviews" className="mt-8 rounded-[28px] border border-border bg-elevated p-5">
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[.14em] text-primary-strong">{t("reviews")}</p>
+            <h2 className="mt-1 text-lg font-semibold">{t("reviewers")}</h2>
+          </div>
+          <p data-testid="profile-rating" className="text-sm font-semibold">{averageRating.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}</p>
         </div>
-
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-          {[
-            ["all", "Todos"],
-            ["photos", "Fotos"],
-            ["videos", "Vídeos"],
-            ["paid", "Pagos"],
-          ].map(([value, label]) => (
-            <button key={value} onClick={() => setFilter(value as typeof filter)}>
-              <Pill active={filter === value}>{label}</Pill>
-            </button>
+        <div className="mt-4 space-y-3">
+          {visibleReviews.map((review) => (
+            <article key={review.id} data-testid="review-card" className="rounded-[20px] bg-surface/70 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold">{review.authorName}</p>
+                <p className="text-sm font-semibold text-primary-strong" aria-label={`${review.rating} de 5`}>{"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</p>
+              </div>
+              <p className="mt-2 text-sm leading-6">{review.body}</p>
+            </article>
           ))}
         </div>
-
-        <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {filteredPosts.map((post) => {
-            const locked = post.visibility === "subscriber" ? !subscribed : post.visibility === "ppv" ? !unlocks.includes(post.id) : false;
-            return (
-              <div key={post.id} data-testid="profile-post" data-locked={locked} className="group relative aspect-[4/5] overflow-hidden rounded-[18px] bg-surface sm:rounded-[24px]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={post.image} alt={post.caption} className={`h-full w-full object-cover transition duration-500 group-hover:scale-105 ${locked ? "scale-105 blur-[10px]" : ""}`} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
-                {locked ? (
-                  <div className="absolute inset-0 grid place-items-center p-3 text-center text-white">
-                    <div>
-                      <span className="mx-auto grid size-10 place-items-center rounded-full bg-black/35 backdrop-blur"><LockKeyhole className="size-4" /></span>
-                      <p className="mt-2 text-[9px] font-bold">{post.visibility === "subscriber" ? "Para assinantes" : brl(post.price || 0)}</p>
-                      <Link href={post.visibility === "subscriber" ? `/checkout?kind=subscription&id=${creator.id}&return=/creator/${creator.username}` : `/checkout?kind=post&id=${post.id}&creator=${creator.id}&return=/creator/${creator.username}`}>
-                        <span className="mt-2 inline-block rounded-full bg-primary px-3 py-1.5 text-[8px] font-black text-ink">{post.visibility === "subscriber" ? "Assine para desbloquear" : "Desbloquear conteúdo"}</span>
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="absolute inset-x-3 bottom-3 line-clamp-2 text-[9px] font-semibold leading-4 text-white">{post.caption}</p>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        {filteredPosts.length === 0 && (
-          <div className="mt-4 rounded-[24px] bg-surface/50 px-6 py-12 text-center">
-            <ImageIcon className="mx-auto size-7 text-muted" />
-            <p className="mt-3 text-xs font-extrabold">Nenhuma mídia nesta categoria</p>
-            <p className="mt-1 text-[9px] text-muted">Escolha outro filtro para continuar.</p>
-          </div>
+        {subscribed ? (
+          <form data-testid="review-form" className="mt-4" onSubmit={(event) => { event.preventDefault(); submitReview(); }}>
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map((value) => (
+                <button key={value} type="button" aria-label={`Nota ${value}`} onClick={() => setReviewRating(value)}>
+                  <Star className={`size-5 ${value <= reviewRating ? "fill-primary text-primary-strong" : "text-muted"}`} />
+                </button>
+              ))}
+            </div>
+            <textarea value={reviewBody} onChange={(event) => setReviewBody(event.target.value)} className="mt-3 min-h-24 w-full rounded-2xl border border-border bg-surface/60 p-3 text-sm outline-none focus:ring-2 focus:ring-primary" placeholder={t("reviewPlaceholder")} />
+            <Button type="submit" className="mt-3">{t("reviewPublish")}</Button>
+          </form>
+        ) : (
+          <p className="mt-4 text-sm text-muted">{t("reviewGate")}</p>
         )}
       </section>
-      <PremiumModal open={requestOpen} onClose={() => setRequestOpen(false)} title="Pedido especial" description="Descreva sua ideia. O criador poderá aceitar, recusar ou enviar uma contraproposta. Tudo aqui é simulado.">
+
+      <PremiumModal open={requestOpen} onClose={() => setRequestOpen(false)} title={t("special")} description="Descreva sua ideia. O criador poderá aceitar, recusar ou enviar uma contraproposta. Tudo aqui é simulado.">
         <label className="block text-[10px] font-bold text-muted">Descrição
-          <textarea value={requestDescription} onChange={(event) => setRequestDescription(event.target.value)} className="mt-2 min-h-28 w-full rounded-2xl border border-black/10 bg-surface/60 p-3 text-xs outline-none focus:ring-2 focus:ring-primary" placeholder="Conte o que você gostaria de receber..." />
+          <textarea value={requestDescription} onChange={(event) => setRequestDescription(event.target.value)} className="mt-2 min-h-28 w-full rounded-2xl border border-border bg-surface/60 p-3 text-xs outline-none focus:ring-2 focus:ring-primary" placeholder="Conte o que você gostaria de receber..." />
         </label>
         <label className="mt-4 block text-[10px] font-bold text-muted">Orçamento opcional (R$)
-          <input value={requestBudget} onChange={(event) => setRequestBudget(event.target.value)} type="number" min="1" className="mt-2 h-11 w-full rounded-2xl border border-black/10 bg-surface/60 px-3 text-xs outline-none focus:ring-2 focus:ring-primary" placeholder="150,00" />
+          <input value={requestBudget} onChange={(event) => setRequestBudget(event.target.value)} type="number" min="1" className="mt-2 h-11 w-full rounded-2xl border border-border bg-surface/60 px-3 text-xs outline-none focus:ring-2 focus:ring-primary" placeholder="150,00" />
         </label>
         <Button className="mt-5 w-full" onClick={submitSpecialRequest}>Enviar pedido demo</Button>
       </PremiumModal>

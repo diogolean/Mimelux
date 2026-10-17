@@ -29,7 +29,7 @@ export function LanguageSwitcher({
           onClick={() => select(item)}
           aria-pressed={locale === item}
           className={`rounded-full font-bold transition ${
-            compact ? "h-8 px-2.5 text-[10px]" : "h-9 px-3 text-[11px]"
+            compact ? "h-8 px-2 text-[10px]" : "h-9 px-3 text-[11px]"
           } ${locale === item ? "bg-ink text-white dark:bg-primary dark:text-ink" : "text-muted hover:text-foreground"}`}
         >
           {item === "pt-BR" ? "PT" : item.toUpperCase()}

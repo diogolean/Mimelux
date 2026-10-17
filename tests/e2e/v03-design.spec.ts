@@ -41,7 +41,8 @@ test("each demo account reaches and is guarded to its own home", async ({ page }
 
 test("social signup keeps the selected affiliate role", async ({ page }) => {
   await page.goto("/auth?route=sign-up");
-  await page.getByRole("button", { name: /^Afiliado/ }).click();
+  await page.getByRole("switch", { name: "Criador ou afiliado" }).click();
+  await page.getByRole("button", { name: "Afiliado", exact: true }).click();
   await page.getByRole("button", { name: "Entrar com Google" }).click();
   await expect(page).toHaveURL(/\/onboarding$/);
   await page.getByRole("button", { name: /Pular tutorial/ }).click();
@@ -64,7 +65,7 @@ test("featured section renders and carousel advances", async ({ page }) => {
   const section = page.getByTestId("monetize-section");
   await section.scrollIntoViewIfNeeded();
   await expect(
-    page.getByRole("heading", { name: "Criadores em destaque" }),
+    page.getByRole("heading", { name: "Transforme atenção em renda." }),
   ).toBeVisible();
   const first = page.getByRole("button", { name: "Mostrar Luna Ferraz" });
   const second = page.getByRole("button", { name: "Mostrar Bella Monroe" });

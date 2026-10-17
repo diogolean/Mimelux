@@ -22,7 +22,6 @@ test("new account completes verification, onboarding, and discovery coach marks"
   page,
 }) => {
   await page.goto("/auth?route=sign-up");
-  await page.getByRole("button", { name: "Fã" }).click();
   await page.getByLabel("Seu nome").fill("Pessoa Demo");
   await page.getByLabel("Email ou CPF").fill("pessoa.demo@mimelux.test");
   await page.locator('input[name="password"]').fill("mimelux123");
@@ -56,7 +55,7 @@ test("creator subscription unlocks subscriber posts while PPV stays separate", a
   await expect(page.locator('[data-testid="profile-post"][data-locked="true"]')).toHaveCount(4);
   await expect(page.getByText("Assine para desbloquear").first()).toBeVisible();
 
-  await page.getByRole("button", { name: "Escolher" }).first().click();
+  await page.getByRole("link", { name: /1 mês/ }).click();
   await expect(page).toHaveURL(/\/checkout/);
   await page.getByRole("button", { name: "Simular pagamento" }).click();
   await expect(page.getByText("Você faz parte!")).toBeVisible();

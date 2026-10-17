@@ -7,12 +7,15 @@ test.beforeEach(async ({ page }) => {
 
 test("signup offers fan, creator, and affiliate areas", async ({ page }) => {
   await page.goto("/auth?route=sign-up");
-  await expect(page.getByRole("heading", { name: "Como você quer usar a Mimelux?" })).toBeVisible();
-  await page.getByRole("button", { name: "Afiliado" }).click();
   await expect(page.getByRole("heading", { name: "Crie sua conta" })).toBeVisible();
-  await page.getByRole("button", { name: "Voltar" }).click();
-  await page.getByRole("button", { name: /^Criador/ }).click();
-  await expect(page.getByRole("heading", { name: "Crie sua conta" })).toBeVisible();
+  const toggle = page.getByRole("switch", { name: "Criador ou afiliado" });
+  await expect(toggle).toHaveAttribute("aria-checked", "false");
+  await expect(page.getByRole("button", { name: "Afiliado", exact: true })).toHaveCount(0);
+  await toggle.click();
+  await page.getByRole("button", { name: "Afiliado", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Afiliado", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Criador", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Criador", exact: true })).toHaveAttribute("aria-pressed", "true");
 });
 
 test("affiliate link signup and simulated subscription create a commission", async ({ page }) => {
@@ -39,7 +42,7 @@ test("affiliate link signup and simulated subscription create a commission", asy
   await page.getByRole("button", { name: /Pular tutorial/ }).click();
 
   await page.goto("/creator/lunaferraz");
-  await page.getByRole("button", { name: "Escolher" }).first().click();
+  await page.getByRole("link", { name: /1 mês/ }).click();
   await page.getByRole("button", { name: "Simular pagamento" }).click();
   await expect(page.getByText("Você faz parte!")).toBeVisible();
 

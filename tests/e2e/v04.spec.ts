@@ -86,24 +86,27 @@ test("creator profile shows likes and subscriber reviews", async ({ page }) => {
 test("logged-out marketing hero and editorial render in both viewports", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/auth?route=sign-in");
+  await page.getByRole("button", { name: "Entendi" }).click();
   await page.getByTestId("creator-hero").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("heading", { name: "O lugar para transformar atenção em renda." })).toBeVisible();
-  await expect(page.getByTestId("payout-stat")).toContainText("R$ 12 mi");
+  await expect(page.getByRole("heading", { name: "Transforme atenção em renda." })).toBeVisible();
+  await expect(page.getByTestId("creator-slideshow")).toBeVisible();
+  await expect(page.getByTestId("payout-stat")).toHaveCount(0);
   await shot(page, "v4-hero-desktop");
-  await page.getByRole("heading", { name: "Lance o próximo sucesso." }).scrollIntoViewIfNeeded();
+  await page.getByTestId("monetize-section").getByRole("heading", { name: "Monetize com a gente, do seu jeito" }).scrollIntoViewIfNeeded();
   await shot(page, "v4-editorial-desktop");
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(500);
   await page.getByTestId("creator-hero").scrollIntoViewIfNeeded();
   await shot(page, "v4-hero-mobile");
-  await page.getByRole("heading", { name: "Lance o próximo sucesso." }).scrollIntoViewIfNeeded();
+  await page.getByTestId("monetize-section").getByRole("heading", { name: "Monetize com a gente, do seu jeito" }).scrollIntoViewIfNeeded();
   await shot(page, "v4-editorial-mobile");
 });
 
 test("switching locale does not bring back gendered creator wording", async ({ page }) => {
   await page.getByRole("button", { name: "FR", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Commencer comme créateur" }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Transformez l'attention en revenu." })).toBeVisible();
   await expect(page.locator("body")).not.toContainText(/criadora|créatrice/i);
   await page.getByRole("button", { name: "DE", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Als Creator starten" }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Aus Aufmerksamkeit wird Einkommen." })).toBeVisible();
   await expect(page.locator("body")).not.toContainText(/criadora|Creatorin/i);
 });

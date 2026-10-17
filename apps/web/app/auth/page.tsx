@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, Suspense, useState } from "react";
+import { FormEvent, Suspense, useState, useSyncExternalStore } from "react";
 import {
   Apple,
   Eye,
   EyeOff,
-  Handshake,
-  Heart,
   LoaderCircle,
   Music2,
   ShieldCheck,
@@ -32,16 +30,14 @@ function AuthContent() {
   const t = useTranslations("auth");
   const signUp = params.get("route") === "sign-up";
   const requestedRole = params.get("role");
-  const [role, setRole] = useState<AccountRole | null>(
-    requestedRole === "fan" || requestedRole === "creator" || requestedRole === "affiliate"
-      ? requestedRole
-      : null,
-  );
+  const preset = requestedRole === "creator" || requestedRole === "affiliate" ? requestedRole : "fan";
+  const [role, setRole] = useState<AccountRole>(preset);
+  const [professional, setProfessional] = useState(preset !== "fan");
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [social, setSocial] = useState("");
   const [error, setError] = useState("");
-  const [cookie, setCookie] = useState(() => !readDemo().cookieAccepted);
+  const cookie = useSyncExternalStore(subscribeDemo, cookieOpen, () => true);
   const featuredCreator = creators[0]!;
   const featuredPost = posts[0]!;
 
@@ -71,13 +67,16 @@ function AuthContent() {
       setError("No demo, use a senha mimelux123.");
       return;
     }
+    const chosen: AccountRole = professional ? (role === "affiliate" ? "affiliate" : "creator") : "fan";
     const nextRole: AccountRole = !signUp
-      ? isDemoCreatorEmail(email)
-        ? "creator"
-        : email.trim().toLowerCase() === DEMO_ACCOUNTS.affiliate.email
-          ? "affiliate"
-          : "fan"
-      : role ?? "fan";
+      ? professional
+        ? chosen
+        : isDemoCreatorEmail(email)
+          ? "creator"
+          : email.trim().toLowerCase() === DEMO_ACCOUNTS.affiliate.email
+            ? "affiliate"
+            : "fan"
+      : chosen;
     const current = readDemo();
     writeDemo({
       signedIn: true,
@@ -93,7 +92,7 @@ function AuthContent() {
   async function socialLogin(name: string) {
     setSocial(name);
     await mockDelay(850);
-    const nextRole = role ?? "fan";
+    const nextRole: AccountRole = professional ? (role === "affiliate" ? "affiliate" : "creator") : "fan";
     writeDemo({
       signedIn: true,
       role: nextRole,
@@ -106,10 +105,10 @@ function AuthContent() {
 
   return (
     <main className="bg-background">
-      <div className="relative grid min-h-dvh overflow-hidden lg:grid-cols-[minmax(480px,0.9fr)_1.1fr]">
-      <section className="relative z-10 flex min-h-dvh items-center justify-center px-5 py-10 sm:px-10 lg:px-14">
-        <div className="w-full max-w-[440px] animate-enter">
-          <div className="mb-10 flex items-center justify-between gap-3">
+      <div className="relative grid min-h-dvh w-full grid-cols-1 overflow-x-hidden lg:grid-cols-[minmax(480px,0.9fr)_1.1fr]">
+      <section className="relative z-10 flex min-h-dvh w-full min-w-0 items-center justify-center px-4 py-8 sm:px-10 sm:py-10 lg:px-14">
+        <div className="w-full min-w-0 max-w-[440px] animate-enter">
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
             <Logo />
             <div className="flex items-center gap-1">
               <ThemeToggle />
@@ -120,34 +119,12 @@ function AuthContent() {
             {signUp ? t("signupEyebrow") : t("loginEyebrow")}
           </p>
           <h1 className="text-3xl font-extrabold tracking-[-.04em] sm:text-4xl">
-            {signUp && !role ? t("roleQuestion") : signUp ? t("signupTitle") : t("loginTitle")}
+            {signUp ? t("signupTitle") : t("loginTitle")}
           </h1>
           <p className="mt-3 text-sm leading-6 text-muted">
-            {signUp && !role ? t("roleBody") : signUp ? t("signupBody") : t("loginBody")}
+            {signUp ? t("signupBody") : t("loginBody")}
           </p>
 
-          {signUp && !role ? (
-            <div className="mt-8 space-y-3">
-              {([
-                ["fan", Heart, t("fan"), t("fanBody")],
-                ["creator", Sparkles, t("creator"), t("creatorBody")],
-                ["affiliate", Handshake, t("affiliate"), t("affiliateBody")],
-              ] as const).map(([value, Icon, title, body]) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setRole(value)}
-                  className="flex w-full items-center gap-4 rounded-[24px] border border-black/8 bg-white/70 p-4 text-left transition hover:-translate-y-0.5 hover:border-primary dark:bg-white/5"
-                >
-                  <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary/20 text-primary-strong"><Icon className="size-5" /></span>
-                  <span>
-                    <span className="block text-sm font-extrabold">{title}</span>
-                    <span className="mt-1 block text-[11px] leading-5 text-muted">{body}</span>
-                  </span>
-                </button>
-              ))}
-            </div>
-          ) : (
           <form onSubmit={submit} className="mt-8 space-y-3">
             {signUp && (
               <input
@@ -185,9 +162,6 @@ function AuthContent() {
                 {visible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
             </div>
-            {signUp && (
-              <button type="button" onClick={() => setRole(null)} className="text-xs font-bold text-muted">{t("back")}</button>
-            )}
             {!signUp && (
               <div className="flex justify-end">
                 <button type="button" onClick={() => toast.info(t("forgotDemo"))} className="text-xs font-semibold text-muted hover:text-foreground">
@@ -200,12 +174,24 @@ function AuthContent() {
                 {error}
               </p>
             )}
+            <RoleSwitch
+              professional={professional}
+              role={role}
+              label={t("roleSwitch")}
+              hint={t("roleSwitchHint")}
+              creatorLabel={t("creator")}
+              affiliateLabel={t("affiliate")}
+              onProfessional={(next) => {
+                setProfessional(next);
+                setRole(next ? (role === "affiliate" ? "affiliate" : "creator") : "fan");
+              }}
+              onRole={setRole}
+            />
             <Button type="submit" size="lg" className="mt-2 w-full" disabled={loading}>
               {loading ? <LoaderCircle className="size-4 animate-spin" /> : null}
               {signUp ? t("continue") : t("enter")}
             </Button>
           </form>
-          )}
 
           <div className="my-6 flex items-center gap-3 text-[11px] text-muted before:h-px before:flex-1 before:bg-black/10 after:h-px after:flex-1 after:bg-black/10">
             ou entre com
@@ -291,10 +277,7 @@ function AuthContent() {
           </p>
           <Button
             size="sm"
-            onClick={() => {
-              writeDemo({ cookieAccepted: true });
-              setCookie(false);
-            }}
+            onClick={() => writeDemo({ cookieAccepted: true })}
           >
             Entendi
           </Button>
@@ -313,6 +296,76 @@ function AuthContent() {
         </div>
       )}
     </main>
+  );
+}
+
+function subscribeDemo(callback: () => void) {
+  window.addEventListener("mimelux:state", callback);
+  return () => window.removeEventListener("mimelux:state", callback);
+}
+
+function cookieOpen() {
+  return !readDemo().cookieAccepted;
+}
+
+function RoleSwitch({
+  professional,
+  role,
+  label,
+  hint,
+  creatorLabel,
+  affiliateLabel,
+  onProfessional,
+  onRole,
+}: {
+  professional: boolean;
+  role: AccountRole;
+  label: string;
+  hint: string;
+  creatorLabel: string;
+  affiliateLabel: string;
+  onProfessional: (next: boolean) => void;
+  onRole: (role: AccountRole) => void;
+}) {
+  return (
+    <div data-testid="role-switch" className="pt-2">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold">{label}</p>
+          <p className="mt-0.5 text-[11px] text-muted">{hint}</p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={professional}
+          aria-label={label}
+          onClick={() => onProfessional(!professional)}
+          className={`relative h-7 w-12 shrink-0 rounded-full transition ${professional ? "bg-primary-strong" : "bg-muted/30"}`}
+        >
+          <span className={`absolute top-1 size-5 rounded-full bg-white shadow transition-all ${professional ? "left-6" : "left-1"}`} />
+        </button>
+      </div>
+      {professional && (
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          {([
+            ["creator", creatorLabel],
+            ["affiliate", affiliateLabel],
+          ] as const).map(([value, text]) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={role === value}
+              onClick={() => onRole(value)}
+              className={`h-11 rounded-full text-sm font-semibold transition ${
+                role === value ? "bg-ink text-white dark:bg-primary dark:text-ink" : "border border-border bg-elevated text-foreground"
+              }`}
+            >
+              {text}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
