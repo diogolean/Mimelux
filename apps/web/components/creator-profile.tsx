@@ -87,7 +87,7 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
 
   return (
     <div className="mx-auto w-full max-w-5xl pb-12">
-      <div className="relative h-56 overflow-hidden sm:h-80 sm:rounded-b-[38px] lg:mt-6 lg:rounded-[38px]">
+      <div className="relative z-0 h-56 overflow-hidden sm:h-80 sm:rounded-b-[38px] lg:mt-6 lg:h-96 lg:rounded-[38px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={creator.cover} alt={`Capa de ${creator.name}`} className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-black/10" />
@@ -98,12 +98,13 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
       </div>
 
       <section className="px-4 sm:px-7">
-        <div className="relative z-10 flex items-end justify-between gap-3">
+        <div className="relative z-20 flex items-end justify-between gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
+            data-testid="profile-avatar"
             src={creator.avatar}
             alt={creator.name}
-            className="-mt-16 size-40 rounded-full border-[7px] border-background object-cover shadow-[0_20px_50px_rgba(24,23,37,.24)] sm:-mt-20 sm:size-44"
+            className="relative z-20 -mt-16 size-40 shrink-0 rounded-full border-[7px] border-background bg-background object-cover shadow-[0_20px_50px_rgba(12,13,20,.24)] sm:-mt-20 sm:size-44"
           />
           <div className="flex gap-2 pb-1">
             <Button variant="outline" onClick={() => setRequestOpen(true)}>

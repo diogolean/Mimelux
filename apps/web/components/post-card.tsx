@@ -74,11 +74,11 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
       : `/checkout?kind=post&id=${post.id}&creator=${creator.id}&return=/feed`;
 
   return (
-    <article className="overflow-hidden rounded-[30px] border border-border bg-elevated/80 shadow-sm">
-      <header className="flex items-center gap-4 p-5">
-        <Link href={`/creator/${creator.username}`}>
+    <article className="overflow-visible rounded-[30px] border border-border bg-elevated shadow-sm">
+      <header className="relative z-20 flex items-center gap-4 px-5 pb-1 pt-5">
+        <Link href={`/creator/${creator.username}`} className="relative z-20 shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={creator.avatar} alt={creator.name} className="size-16 rounded-full border-2 border-background object-cover shadow-md" />
+          <img data-testid="feed-avatar" src={creator.avatar} alt={creator.name} className="size-20 translate-y-8 rounded-full border-4 border-elevated bg-elevated object-cover shadow-[0_14px_30px_rgba(12,13,20,.22)] sm:size-24 sm:translate-y-10" />
         </Link>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1">
@@ -92,7 +92,7 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
         <button aria-label="Mais opções" className="grid size-9 place-items-center rounded-full hover:bg-black/5"><MoreHorizontal className="size-4" /></button>
       </header>
 
-      <div className="relative mx-2 overflow-hidden rounded-[20px] bg-surface" style={{ aspectRatio: "4 / 4.35" }}>
+      <div className="relative z-0 mx-2 overflow-hidden rounded-[20px] bg-surface" style={{ aspectRatio: "4 / 4.35" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={post.image} alt={post.caption} className={`h-full w-full object-cover transition duration-500 ${locked ? "scale-105 blur-[15px]" : ""}`} />
         {locked && (

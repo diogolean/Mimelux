@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useSyncExternalStore } from "react";
 import {
   ArrowRight,
   BadgeCheck,
@@ -19,21 +19,28 @@ function TopCreatorsContent() {
   const router = useRouter();
   const search = useSearchParams();
   const tab = search.get("tab") === "destaques" ? "destaques" : "top-creators";
-  const [tour, setTour] = useState(() =>
-    search.get("tour") === "1" || !readDemo().coachSeen ? 1 : 0,
+  const coachSeen = useSyncExternalStore(
+    (callback) => {
+      window.addEventListener("mimelux:state", callback);
+      return () => window.removeEventListener("mimelux:state", callback);
+    },
+    () => readDemo().coachSeen,
+    () => true,
   );
+  const [tourOverride, setTourOverride] = useState<number | null>(null);
+  const tour = tourOverride ?? (search.get("tour") === "1" || !coachSeen ? 1 : 0);
 
   function setTab(next: "top-creators" | "destaques") {
     router.push(`/topcreators?tab=${next}`);
   }
 
   function finishTour() {
-    setTour(0);
+    setTourOverride(0);
     writeDemo({ coachSeen: true });
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 lg:py-9">
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-8 lg:px-10 lg:py-10">
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary-strong">Descubra agora</p>
@@ -52,11 +59,11 @@ function TopCreatorsContent() {
       </div>
 
       {tab === "top-creators" ? (
-        <section className="mt-6 grid gap-5 sm:grid-cols-2">
+        <section className="mt-6 grid gap-5 sm:grid-cols-2 sm:gap-6 lg:gap-8">
           {creators.map((creator, index) => (
             <Link key={creator.id} href={`/creator/${creator.username}`} className="group min-w-0">
-              <article className="card-lift relative min-h-64 overflow-hidden rounded-[30px] border border-border bg-elevated/75 shadow-sm">
-                <div className="relative h-40 overflow-hidden">
+              <article data-testid="ranking-card" className="card-lift relative overflow-visible rounded-[32px] border border-border bg-elevated shadow-sm">
+                <div className="relative z-0 h-48 overflow-hidden rounded-t-[32px] sm:h-56 lg:h-[272px]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={creator.cover} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
@@ -67,9 +74,9 @@ function TopCreatorsContent() {
                     </span>
                   )}
                 </div>
-                <div className="flex items-end gap-4 px-5 pb-5">
+                <div className="relative z-20 flex items-end gap-3 px-4 pb-5 sm:gap-4 sm:px-5 sm:pb-6">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={creator.avatar} alt={creator.name} className="-mt-10 size-20 shrink-0 rounded-full border-4 border-elevated object-cover shadow-lg" />
+                  <img data-testid="ranking-avatar" src={creator.avatar} alt={creator.name} className="relative z-20 -mt-10 size-20 shrink-0 rounded-full border-4 border-elevated bg-elevated object-cover shadow-[0_14px_30px_rgba(12,13,20,.22)] sm:-mt-12 sm:size-24 lg:-mt-14 lg:size-28" />
                   <div className="min-w-0 flex-1 pt-4">
                     <div className="flex items-center gap-1">
                       <h2 className="truncate text-sm font-extrabold">{creator.name}</h2>
@@ -105,7 +112,7 @@ function TopCreatorsContent() {
                 <i className={`h-1.5 rounded-full ${tour === 1 ? "w-5 bg-primary" : "w-1.5 bg-black/15"}`} />
                 <i className={`h-1.5 rounded-full ${tour === 2 ? "w-5 bg-primary" : "w-1.5 bg-black/15"}`} />
               </div>
-              <Button size="sm" onClick={() => tour === 1 ? (setTour(2), setTab("destaques")) : finishTour()}>
+              <Button size="sm" onClick={() => tour === 1 ? (setTourOverride(2), setTab("destaques")) : finishTour()}>
                 {tour === 1 ? "Próxima" : "Entendi"} <ArrowRight className="size-3.5" />
               </Button>
             </div>

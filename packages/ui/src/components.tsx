@@ -168,20 +168,30 @@ export function CreatorAvatar({
   alt,
   size = "md",
   active,
+  className,
 }: {
   src: string;
   alt: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   active?: boolean;
+  className?: string;
 }) {
-  const sizes = { sm: "size-10", md: "size-14", lg: "size-28" };
+  const sizes = {
+    sm: "size-10",
+    md: "size-14",
+    lg: "size-20 sm:size-24 lg:size-28",
+    xl: "size-40 sm:size-44",
+  };
   return (
-    <span className={cx("inline-flex rounded-full", active && "bg-gradient-to-br from-primary to-accent p-0.5")}>
+    <span className={cx("relative z-20 inline-flex shrink-0 rounded-full", active && "bg-gradient-to-br from-primary to-accent p-0.5", className)}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt={alt}
-        className={cx(sizes[size], "rounded-full border-2 border-background object-cover")}
+        className={cx(
+          sizes[size],
+          "rounded-full border-4 border-elevated bg-elevated object-cover shadow-[0_14px_30px_rgba(12,13,20,.22)]",
+        )}
       />
     </span>
   );
@@ -197,16 +207,16 @@ export function CreatorCard({
   action?: ReactNode;
 }) {
   return (
-    <article className="card-lift overflow-hidden rounded-[26px] border border-black/5 bg-white/65 dark:bg-white/5">
+    <article className="card-lift relative overflow-visible rounded-[30px] border border-border bg-elevated">
       {creator.cover && (
-        <div className="relative h-28 overflow-hidden">
+        <div className="relative z-0 h-40 overflow-hidden rounded-t-[30px] sm:h-48 lg:h-56">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={creator.cover} alt="" className="h-full w-full object-cover" />
           {rank && <b className="absolute right-4 top-3 text-3xl text-white">#{rank}</b>}
         </div>
       )}
-      <div className="flex items-center gap-3 p-4">
-        <CreatorAvatar src={creator.avatar} alt={creator.name} />
+      <div className="relative z-20 flex items-end gap-3 px-4 pb-4 sm:px-5">
+        <CreatorAvatar src={creator.avatar} alt={creator.name} size="lg" className={creator.cover ? "-mt-10 sm:-mt-12 lg:-mt-14" : undefined} />
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-sm font-extrabold">{creator.name}</h3>
           <p className="truncate text-[9px] text-muted">@{creator.username}</p>
@@ -233,10 +243,10 @@ export function CreatorProfileHeader({
     <section>
       {creator.cover && (
         /* eslint-disable-next-line @next/next/no-img-element */
-        <img src={creator.cover} alt="" className="h-52 w-full rounded-[28px] object-cover" />
+        <img src={creator.cover} alt="" className="relative z-0 h-56 w-full rounded-[28px] object-cover sm:h-72" />
       )}
-      <div className="flex items-end justify-between gap-3 px-4">
-        <div className="-mt-12"><CreatorAvatar src={creator.avatar} alt={creator.name} size="lg" /></div>
+      <div className="relative z-20 flex items-end justify-between gap-3 px-4">
+        <CreatorAvatar src={creator.avatar} alt={creator.name} size="xl" className="-mt-16 sm:-mt-20" />
         {actions}
       </div>
       <div className="mt-4 px-4">

@@ -48,11 +48,16 @@ export default function FeedPage() {
             <h3 className="text-xs font-extrabold">Sugestões para você</h3>
             <div className="mt-3 space-y-4">
               {creators.slice(4, 7).map((creator) => (
-                <Link key={creator.id} href={`/creator/${creator.username}`} className="flex items-center gap-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={creator.avatar} alt="" className="size-10 rounded-full object-cover" />
-                  <span className="min-w-0 flex-1"><b className="block truncate text-[10px]">{creator.name}</b><small className="block truncate text-[8px] text-muted">{creator.category}</small></span>
-                  <span className="text-[9px] font-bold text-primary-strong">Ver</span>
+                <Link key={creator.id} href={`/creator/${creator.username}`} className="block overflow-visible">
+                  <span className="relative z-0 block h-24 overflow-hidden rounded-2xl">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={creator.cover} alt="" className="h-full w-full object-cover" />
+                  </span>
+                  <span className="relative z-20 -mt-5 flex items-end gap-3 px-1">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={creator.avatar} alt="" className="relative z-20 size-16 shrink-0 rounded-full border-4 border-elevated bg-elevated object-cover shadow-[0_14px_30px_rgba(12,13,20,.22)]" />
+                    <span className="min-w-0 flex-1 pb-1"><b className="block truncate text-[10px]">{creator.name}</b><small className="block truncate text-[8px] text-muted">{creator.category}</small></span>
+                  </span>
                 </Link>
               ))}
             </div>
