@@ -52,11 +52,11 @@ function TopCreatorsContent() {
       </div>
 
       {tab === "top-creators" ? (
-        <section className="mt-6 grid gap-3 sm:grid-cols-2">
+        <section className="mt-6 grid gap-5 sm:grid-cols-2">
           {creators.map((creator, index) => (
-            <Link key={creator.id} href={`/creator/${creator.username}`} className="group">
-              <article className="card-lift relative min-h-48 overflow-hidden rounded-[26px] border border-black/5 bg-white/65 shadow-sm dark:bg-white/5">
-                <div className="relative h-28 overflow-hidden">
+            <Link key={creator.id} href={`/creator/${creator.username}`} className="group min-w-0">
+              <article className="card-lift relative min-h-64 overflow-hidden rounded-[30px] border border-border bg-elevated/75 shadow-sm">
+                <div className="relative h-40 overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={creator.cover} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
@@ -67,10 +67,10 @@ function TopCreatorsContent() {
                     </span>
                   )}
                 </div>
-                <div className="flex items-end gap-3 px-4 pb-4">
+                <div className="flex items-end gap-4 px-5 pb-5">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={creator.avatar} alt={creator.name} className="-mt-7 size-16 shrink-0 rounded-full border-4 border-white object-cover shadow-md dark:border-ink" />
-                  <div className="min-w-0 flex-1 pt-3">
+                  <img src={creator.avatar} alt={creator.name} className="-mt-10 size-20 shrink-0 rounded-full border-4 border-elevated object-cover shadow-lg" />
+                  <div className="min-w-0 flex-1 pt-4">
                     <div className="flex items-center gap-1">
                       <h2 className="truncate text-sm font-extrabold">{creator.name}</h2>
                       {creator.verified && <BadgeCheck className="size-3.5 shrink-0 fill-primary text-white" />}

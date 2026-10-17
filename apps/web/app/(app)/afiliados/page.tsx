@@ -10,9 +10,11 @@ import { affiliateLink, affiliateSummary, demoAffiliate } from "@/lib/affiliates
 import { brl, creators } from "@/lib/gateway";
 import { readDemo, writeDemo } from "@/lib/demo-store";
 import { paymentGateway } from "@/lib/payments";
+import { useRoleGuard } from "@/lib/use-role-guard";
 import { toast } from "sonner";
 
 export default function AffiliateDashboardPage() {
+  const allowed = useRoleGuard("affiliate");
   const t = useTranslations("affiliate");
   const locale = useLocale();
   const [state, setState] = useState(() => readDemo());
@@ -66,6 +68,8 @@ export default function AffiliateDashboardPage() {
     });
     toast.success(t("withdrawDemo"));
   }
+
+  if (!allowed) return <div className="m-6 h-[70vh] rounded-[30px] skeleton" />;
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 lg:py-9">

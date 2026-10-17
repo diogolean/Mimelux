@@ -47,14 +47,14 @@ export function Button({
 }: ButtonProps) {
   const variants = {
     primary:
-      "bg-primary text-ink shadow-[0_10px_28px_rgba(233,161,94,.28)] hover:brightness-105",
+      "bg-primary text-ink shadow-[0_10px_28px_color-mix(in_srgb,var(--primary)_28%,transparent)] hover:brightness-105",
     secondary:
-      "bg-surface text-ink hover:bg-[#eaded0] dark:bg-white/10 dark:text-background",
+      "bg-surface text-foreground hover:bg-primary/15",
     outline:
-      "border border-black/10 bg-white/55 text-ink hover:bg-white dark:border-white/15 dark:bg-white/5 dark:text-background",
+      "border border-border bg-elevated/65 text-foreground hover:bg-elevated",
     ghost:
-      "bg-transparent text-ink hover:bg-black/5 dark:text-background dark:hover:bg-white/10",
-    dark: "bg-ink text-background shadow-xl hover:bg-[#303039] dark:bg-background dark:text-ink",
+      "bg-transparent text-foreground hover:bg-surface",
+    dark: "bg-foreground text-background shadow-xl hover:opacity-90",
   };
   const sizes = {
     sm: "h-9 px-4 text-xs",

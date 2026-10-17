@@ -16,9 +16,11 @@ import {
 import { Button, Pill } from "@mimelux/ui";
 import { brl, creators, dashboardMetrics, posts } from "@/lib/gateway";
 import { readDemo, writeDemo } from "@/lib/demo-store";
+import { useRoleGuard } from "@/lib/use-role-guard";
 import { toast } from "sonner";
 
 export default function DashboardPage() {
+  const allowed = useRoleGuard("creator");
   const creator = creators[0]!;
   const inputRef = useRef<HTMLInputElement>(null);
   const programCopy = useTranslations("creatorProgram");
@@ -26,6 +28,8 @@ export default function DashboardPage() {
   const [acceptsAffiliates, setAcceptsAffiliates] = useState(() => readDemo().creatorProgram.acceptsAffiliates);
   const [commission, setCommission] = useState(() => readDemo().creatorProgram.commissionBps / 100);
   const max = Math.max(...dashboardMetrics.monthlySeries);
+
+  if (!allowed) return <div className="m-6 h-[70vh] rounded-[30px] skeleton" />;
 
   function selectUpload(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];

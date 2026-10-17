@@ -45,7 +45,7 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
 
   return (
     <div className="mx-auto w-full max-w-5xl pb-12">
-      <div className="relative h-48 overflow-hidden sm:h-72 sm:rounded-b-[34px] lg:mt-6 lg:rounded-[34px]">
+      <div className="relative h-56 overflow-hidden sm:h-80 sm:rounded-b-[38px] lg:mt-6 lg:rounded-[38px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={creator.cover} alt={`Capa de ${creator.name}`} className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-black/10" />
@@ -56,9 +56,13 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
       </div>
 
       <section className="px-4 sm:px-7">
-        <div className="flex items-end justify-between gap-3">
+        <div className="relative z-10 flex items-end justify-between gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={creator.avatar} alt={creator.name} className="-mt-14 size-28 rounded-full border-[5px] border-background object-cover shadow-xl sm:-mt-16 sm:size-32" />
+          <img
+            src={creator.avatar}
+            alt={creator.name}
+            className="-mt-16 size-40 rounded-full border-[7px] border-background object-cover shadow-[0_20px_50px_rgba(24,23,37,.24)] sm:-mt-20 sm:size-44"
+          />
           <div className="flex gap-2 pb-1">
             <Link href={`/chat/${creator.id}`}>
               <Button variant="outline" size="icon" aria-label="Conversar"><MessageCircle className="size-4" /></Button>

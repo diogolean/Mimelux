@@ -8,6 +8,7 @@
   --font-sans: var(--font-poppins);
   --color-background: var(--background);
   --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
   --color-primary: var(--primary);
   --color-primary-strong: var(--primary-strong);
   --color-accent: var(--accent);
@@ -19,25 +20,32 @@
 }
 
 :root {
-  --background: #faf8f5;
-  --surface: #f0e8de;
-  --primary: #e9a15e;
-  --primary-strong: #b16e35;
-  --accent: #e9b0a7;
-  --accent-strong: #d37f73;
-  --ink: #202027;
-  --foreground: #202027;
-  --muted: #6f6b69;
-  --border: rgba(32, 32, 39, 0.1);
+  --background: #f7f7fb;
+  --surface: #ececf5;
+  --elevated: #ffffff;
+  --primary: #a996ff;
+  --primary-strong: #5437d1;
+  --accent: #62d4c8;
+  --accent-strong: #08766f;
+  --ink: #181725;
+  --foreground: #181725;
+  --muted: #625f73;
+  --border: rgba(24, 23, 37, 0.11);
   color-scheme: light;
 }
 
 .dark {
-  --background: #151519;
-  --surface: #202027;
-  --foreground: #faf8f5;
-  --muted: #bcb5ae;
-  --border: rgba(250, 248, 245, 0.12);
+  --background: #0c0d14;
+  --surface: #171925;
+  --elevated: #202331;
+  --primary: #a996ff;
+  --primary-strong: #c0b5ff;
+  --accent: #62d4c8;
+  --accent-strong: #7ee6dc;
+  --ink: #181725;
+  --foreground: #f6f4ff;
+  --muted: #aaa7b8;
+  --border: rgba(246, 244, 255, 0.13);
   color-scheme: dark;
 }
 
@@ -55,7 +63,8 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at 12% -10%, rgba(233, 176, 167, 0.22), transparent 28rem),
+    radial-gradient(circle at 10% -12%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 30rem),
+    radial-gradient(circle at 92% 8%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 24rem),
     var(--background);
   color: var(--foreground);
   font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
@@ -80,7 +89,7 @@ a {
 }
 
 ::selection {
-  background: rgba(233, 161, 94, 0.35);
+  background: color-mix(in srgb, var(--primary) 45%, transparent);
 }
 
 ::-webkit-scrollbar {
@@ -107,11 +116,11 @@ a {
 
 .card-lift:hover {
   transform: translateY(-3px);
-  box-shadow: 0 24px 56px rgba(32, 32, 39, 0.11);
+  box-shadow: 0 24px 56px color-mix(in srgb, var(--ink) 13%, transparent);
 }
 
 .skeleton {
-  background: linear-gradient(90deg, var(--surface), rgba(255,255,255,.58), var(--surface));
+  background: linear-gradient(90deg, var(--surface), color-mix(in srgb, var(--elevated) 70%, transparent), var(--surface));
   background-size: 220% 100%;
   animation: shimmer 1.15s linear infinite;
 }

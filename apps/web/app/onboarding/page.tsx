@@ -66,7 +66,7 @@ export default function OnboardingPage() {
         ? "/afiliados"
         : nextRole === "creator"
           ? "/painel"
-          : "/topcreators?tab=top-creators&tour=1",
+          : "/feed",
     );
   }
 
@@ -83,7 +83,7 @@ export default function OnboardingPage() {
                 ? "/afiliados"
                 : nextRole === "creator"
                   ? "/painel"
-                  : "/topcreators?tab=top-creators&tour=1",
+                  : "/feed",
             );
           }}
           className="text-xs font-bold text-muted transition hover:text-foreground"

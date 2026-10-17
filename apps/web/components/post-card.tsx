@@ -74,11 +74,11 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
       : `/checkout?kind=post&id=${post.id}&creator=${creator.id}&return=/feed`;
 
   return (
-    <article className="overflow-hidden rounded-[26px] border border-black/5 bg-white/70 shadow-sm dark:bg-white/5">
-      <header className="flex items-center gap-3 p-4">
+    <article className="overflow-hidden rounded-[30px] border border-border bg-elevated/80 shadow-sm">
+      <header className="flex items-center gap-4 p-5">
         <Link href={`/creator/${creator.username}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={creator.avatar} alt={creator.name} className="size-11 rounded-full object-cover" />
+          <img src={creator.avatar} alt={creator.name} className="size-16 rounded-full border-2 border-background object-cover shadow-md" />
         </Link>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1">

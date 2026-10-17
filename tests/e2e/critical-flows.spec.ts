@@ -8,14 +8,14 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => localStorage.clear());
 });
 
-test("root redirects to login and demo login opens discovery", async ({ page }) => {
+test("root redirects to login and demo fan login opens feed", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveURL(/\/auth\?route=sign-in/);
   await expect(page.getByRole("heading", { name: "Que bom ter você aqui." })).toBeVisible();
 
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
-  await expect(page).toHaveURL(/\/topcreators/);
-  await expect(page.getByRole("heading", { name: "Em alta", exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/\/feed/);
+  await expect(page.getByRole("heading", { name: "Seu feed", exact: true })).toBeVisible();
 });
 
 test("new account completes verification, onboarding, and discovery coach marks", async ({
@@ -39,7 +39,8 @@ test("new account completes verification, onboarding, and discovery coach marks"
   }
   await page.getByRole("button", { name: "Concluir" }).click();
 
-  await expect(page).toHaveURL(/\/topcreators/);
+  await expect(page).toHaveURL(/\/feed/);
+  await page.goto("/topcreators?tab=top-creators");
   await expect(page.getByText("Quem tá em alta agora")).toBeVisible();
   await page.getByRole("button", { name: "Próxima" }).click();
   await expect(page.getByText("Descubra de tudo um pouco")).toBeVisible();
@@ -87,6 +88,10 @@ test("search filters fixtures and chat message persists", async ({ page }) => {
 test("creator dashboard keeps uploads local and generated media loads", async ({
   page,
 }) => {
+  await page.evaluate(() => {
+    const state = JSON.parse(localStorage.getItem("mimelux-demo") || "{}");
+    localStorage.setItem("mimelux-demo", JSON.stringify({ ...state, role: "creator" }));
+  });
   await page.goto("/painel");
   await page.locator('input[type="file"]').setInputFiles(
     "apps/web/public/media/generated/creator-luna-ferraz-avatar.jpg",

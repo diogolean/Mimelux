@@ -22,7 +22,9 @@ import { mockDelay, readDemo, writeDemo } from "@/lib/demo-store";
 import { creators, posts } from "@/lib/gateway";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { MonetizeSection } from "@/components/monetize-section";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { toast } from "sonner";
+import { roleHome } from "@/lib/use-role-guard";
 
 function AuthContent() {
   const router = useRouter();
@@ -84,21 +86,21 @@ function AuthContent() {
       onboarding: !signUp,
       ...(signUp ? bindAttribution(current, email) : {}),
     });
-    const destination = signUp
-      ? "/verificacao"
-      : nextRole === "creator"
-        ? "/painel"
-        : nextRole === "affiliate"
-          ? "/afiliados"
-          : "/topcreators?tab=top-creators";
+    const destination = signUp ? "/verificacao" : roleHome(nextRole);
     router.push(destination);
   }
 
   async function socialLogin(name: string) {
     setSocial(name);
     await mockDelay(850);
-    writeDemo({ signedIn: true, verified: true, onboarding: true });
-    router.push("/topcreators?tab=top-creators");
+    const nextRole = role ?? "fan";
+    writeDemo({
+      signedIn: true,
+      role: nextRole,
+      verified: true,
+      onboarding: !signUp,
+    });
+    router.push(signUp ? "/onboarding" : roleHome(nextRole));
   }
 
   return (
@@ -108,7 +110,10 @@ function AuthContent() {
         <div className="w-full max-w-[440px] animate-enter">
           <div className="mb-10 flex items-center justify-between gap-3">
             <Logo />
-            <LanguageSwitcher compact />
+            <div className="flex items-center gap-1">
+              <ThemeToggle />
+              <LanguageSwitcher compact />
+            </div>
           </div>
           <p className="mb-2 text-xs font-bold uppercase tracking-[.22em] text-primary-strong">
             {signUp ? t("signupEyebrow") : t("loginEyebrow")}
