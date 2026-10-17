@@ -1,4 +1,4 @@
-# Mimelux V0.1
+# Mimelux V0.3
 
 Premium, mobile-first creator subscription prototype for Brazil. It is a working mock-first demo: the web runs without PostgreSQL, NestJS, payment credentials, or external services. All people and metrics are fictitious; creator images are AI-generated and SFW.
 
@@ -6,7 +6,7 @@ Premium, mobile-first creator subscription prototype for Brazil. It is a working
 
 - pnpm 10 + Turborepo 2
 - Next.js 16, React 19, TypeScript 5, Tailwind CSS 4, shadcn/ui and Lucide
-- NestJS 11 REST shell under `/v1`, with Swagger
+- NestJS 11 REST API under `/v1`, with Swagger and PostgreSQL-backed creators/auth
 - Prisma 6 schema for PostgreSQL 16
 - Shared contracts in `packages/core`, UI/tokens in `packages/ui`, config in `packages/config`
 
@@ -45,7 +45,8 @@ On macOS/Linux, replace `copy` with `cp`.
 - API: [http://localhost:3334/v1/health](http://localhost:3334/v1/health)
 - Swagger: [http://localhost:3334/v1/docs](http://localhost:3334/v1/docs)
 
-PostgreSQL is optional for V0.1. No real payment, authentication, upload, or payout occurs.
+PostgreSQL is optional for the web demo. The API uses it for seeded creators and
+test-only password/JWT authentication. No live payment, upload, or payout occurs.
 
 ## Demo accounts
 
@@ -64,8 +65,10 @@ Registration uses mock verification code `224488`, then four onboarding steps. C
 1. `/` → login/registration.
 2. Registration → mock verification → onboarding → coach marks → Em Alta.
 3. Ranking/search → creator profile → plan → simulated checkout.
-4. A creator's designated public post stays visible; all additional profile posts unlock after simulated subscription.
-5. Feed interactions, chat, locked chat media, dashboard upload, and payout actions are local simulations.
+4. Public posts stay visible; subscription posts, PPV posts, and packs use separate simulated unlock paths.
+5. Fans can send a special request; creators can quote, decline, and mark paid requests as delivered.
+6. Creators configure bundle discounts, time-limited promotions, affiliate commission scope, and demo offers.
+7. Feed interactions, chat, dashboard upload, and payout actions remain local simulations.
 
 ## Commands
 
@@ -73,6 +76,8 @@ Registration uses mock verification code `224488`, then four onboarding steps. C
 pnpm lint
 pnpm typecheck
 pnpm build
+pnpm test:unit
+pnpm test:e2e
 pnpm dev:web
 pnpm --filter @mimelux/api dev
 pnpm db:generate
@@ -85,14 +90,20 @@ The image script reads `GEMINI_API_KEY` only when explicitly invoked. Supplied V
 
 ```text
 apps/web        Next.js UI and mock adapter
-apps/api        NestJS versioned REST/OpenAPI shell
+apps/api        NestJS versioned REST/OpenAPI API
 packages/ui     Shared components and design tokens
 packages/core   Framework-neutral contracts and schemas
 packages/db     PostgreSQL Prisma schema and seed
 packages/config Shared TypeScript/ESLint/Tailwind config
 ```
 
-V0.1 keeps presentation separate from `MockGateway`/`ApiGateway`. The target stack adds Redis + BullMQ, Auth.js with MFA/passkeys, Backblaze B2 private storage behind signed CDN URLs, HLS, WebSocket chat, and a formally approved Pix/card/recurring/split PSP on Oracle Cloud.
+V0.3 keeps presentation separate from `MockGateway`/`ApiGateway`. The web uses
+an API-first adapter with transparent mock fallback. The API includes seeded
+PostgreSQL creators, password hashing, access/refresh JWTs, and a Stripe
+test-mode gateway. The target stack adds Redis + BullMQ, Auth.js with
+MFA/passkeys, Backblaze B2 private storage behind signed CDN URLs, HLS,
+WebSocket chat, and a formally approved Pix/card/recurring/split PSP on Oracle
+Cloud.
 
 Content policy is configurable through `CONTENT_MODE=general|adult|hybrid`. Legal, age-verification, moderation, KYC, and PSP decisions must be resolved before production.
 
@@ -102,6 +113,7 @@ See:
 - [`docs/RELATORIO-TECNICO.md`](docs/RELATORIO-TECNICO.md)
 - [`docs/STATUS_V01.md`](docs/STATUS_V01.md)
 - [`docs/STATUS_V02.md`](docs/STATUS_V02.md)
+- [`docs/STATUS_V03.md`](docs/STATUS_V03.md)
 - [`docs/AFFILIATES.md`](docs/AFFILIATES.md)
 - [`docs/PROXIMOS_PASSOS.md`](docs/PROXIMOS_PASSOS.md)
 - Original research report: [`uploads/relatorio-privacy-arquitetura_b5c7.md`](uploads/relatorio-privacy-arquitetura_b5c7.md)
@@ -115,13 +127,15 @@ validate its PostgreSQL datasource.
 pnpm lint
 pnpm typecheck
 pnpm build
+pnpm test:unit
 pnpm test:e2e
 ```
 
 The Playwright suite covers login navigation, role selection, affiliate
 attribution through a simulated subscription, locale switching, the monetize
 section, subscription unlock and refresh persistence, creator search, local
-chat persistence, responsive overflow at 360/390/768/1024/1440 px, key
+chat persistence, PPV unlock, promotions, the full special-request demo flow,
+demo/real isolation, responsive overflow at 360/390/768/1024/1440 px, key
 screenshots, and the 404 response. Broader accessibility coverage and k6 load
 tests remain planned; this demo is not production-ready.
 

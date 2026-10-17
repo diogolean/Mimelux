@@ -1,11 +1,17 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
+import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@mimelux/ui";
 
 export function ThemeToggle({ label = "Alternar tema" }: { label?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
+  const mounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
   return (
     <Button
       variant="ghost"
@@ -13,7 +19,7 @@ export function ThemeToggle({ label = "Alternar tema" }: { label?: string }) {
       aria-label={label}
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
-      {resolvedTheme === "dark" ? (
+      {mounted && resolvedTheme === "dark" ? (
         <Sun className="size-[18px]" />
       ) : (
         <Moon className="size-[18px]" />

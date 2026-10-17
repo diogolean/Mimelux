@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "turbo dev",
     "dev:web": "pnpm --filter @mimelux/web dev",
+    "postinstall": "pnpm --filter @mimelux/core build && pnpm --filter @mimelux/db build",
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",

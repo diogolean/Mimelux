@@ -11,8 +11,8 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@mimelux/core": ["../../packages/core/src/index.ts"],
-      "@mimelux/db": ["../../packages/db/src/index.ts"]
+      "@mimelux/core/monetization": ["../../packages/core/dist/monetization.d.ts"],
+      "@mimelux/db/runtime": ["../../packages/db/dist/index.d.ts"]
     },
     "incremental": true,
     "isolatedModules": false,

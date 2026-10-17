@@ -52,6 +52,7 @@ class MockGateway implements MimeluxGateway {
   }
 
   async listFeed(_cursor?: string): Promise<Paginated<PostDto>> {
+    void _cursor;
     return {
       items: this.posts.map((post) => ({
         id: post.id,
@@ -80,10 +81,13 @@ class MockGateway implements MimeluxGateway {
   }
 
   async simulateSubscription(_creatorId?: string, _planId?: string) {
+    void _creatorId;
+    void _planId;
     return Promise.resolve();
   }
 
   async simulatePurchase(_contentId?: string) {
+    void _contentId;
     return Promise.resolve();
   }
 }

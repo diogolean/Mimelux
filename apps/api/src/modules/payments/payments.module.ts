@@ -1,10 +1,10 @@
 import { Body, Controller, Headers, HttpCode, Module, Param, Post, RawBodyRequest, Req } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
-import { database } from "@mimelux/db";
+import { database } from "@mimelux/db/runtime";
 import Stripe from "stripe";
 import type { Request } from "express";
-import { createDoubleEntryLedger, calculateCommission } from "@mimelux/core";
+import { createDoubleEntryLedger, calculateCommission } from "@mimelux/core/monetization";
 import { paymentProvider } from "./payment-gateways";
 
 const demoPurchaseSchema = z.object({ mode: z.literal("demo") });

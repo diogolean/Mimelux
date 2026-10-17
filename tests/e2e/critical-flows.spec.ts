@@ -48,7 +48,7 @@ test("new account completes verification, onboarding, and discovery coach marks"
   await expect(page.getByRole("heading", { name: "Em alta", exact: true })).toBeVisible();
 });
 
-test("creator subscription unlocks locked posts and persists", async ({ page }) => {
+test("creator subscription unlocks subscriber posts while PPV stays separate", async ({ page }) => {
   await page.goto("/creator/lunaferraz");
   const posts = page.getByTestId("profile-post");
   await expect(posts).toHaveCount(5);
@@ -64,10 +64,11 @@ test("creator subscription unlocks locked posts and persists", async ({ page }) 
 
   await expect(page).toHaveURL((url) => url.pathname === "/creator/lunaferraz");
   await expect(page.getByRole("button", { name: "Assinatura ativa", exact: true })).toBeVisible();
-  await expect(page.locator('[data-testid="profile-post"][data-locked="true"]')).toHaveCount(0);
+  await expect(page.locator('[data-testid="profile-post"][data-locked="true"]')).toHaveCount(1);
+  await expect(page.getByText("Desbloquear conteúdo")).toBeVisible();
   await page.reload();
   await expect(page.getByRole("button", { name: "Assinatura ativa", exact: true })).toBeVisible();
-  await expect(page.locator('[data-testid="profile-post"][data-locked="true"]')).toHaveCount(0);
+  await expect(page.locator('[data-testid="profile-post"][data-locked="true"]')).toHaveCount(1);
 });
 
 test("search filters fixtures and chat message persists", async ({ page }) => {

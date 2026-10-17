@@ -1,7 +1,7 @@
 import { Controller, Get, Module, Param, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
-import { database } from "@mimelux/db";
+import { database } from "@mimelux/db/runtime";
 
 const discoveryQuerySchema = z.object({
   search: z.string().max(80).optional(),

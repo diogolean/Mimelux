@@ -2,9 +2,12 @@
   "name": "@mimelux/core",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./monetization": {
+      "types": "./dist/monetization.d.ts",
+      "default": "./dist/monetization.js"
+    }
   },
   "dependencies": {
     "zod": "4.6.7"
@@ -14,7 +17,7 @@
     "typescript": "5.9.3"
   },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc -p tsconfig.runtime.json",
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit"
   }

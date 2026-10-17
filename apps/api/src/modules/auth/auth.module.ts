@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, Module, Post, UnauthorizedException } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { database } from "@mimelux/db";
+import { database } from "@mimelux/db/runtime";
 import { compare, hash } from "bcryptjs";
 import { sign, verify } from "jsonwebtoken";
 import { z } from "zod";

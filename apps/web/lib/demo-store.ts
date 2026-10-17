@@ -40,6 +40,7 @@ export type DemoCommission = {
   rateBps: number;
   status: "pending" | "approved" | "paid" | "rejected";
   kind: "first_sale" | "renewal";
+  transactionKind?: "subscription" | "ppv" | "pack" | "special_request";
   holdUntil: string;
   renewalUntil: string;
   createdAt: string;

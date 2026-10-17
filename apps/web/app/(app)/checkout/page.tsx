@@ -85,23 +85,38 @@ function CheckoutContent() {
       idempotencyKey: `${kind}-${creator.id}-${id}`,
     });
     const state = readDemo();
+    const transactionKind =
+      kind === "subscription"
+        ? "subscription"
+        : kind === "pack"
+          ? "pack"
+          : kind === "special_request"
+            ? "special_request"
+            : "ppv";
+    const commissionPatch = commissionForSale(state, {
+      creatorId: creator.id,
+      creatorName: creator.name,
+      amountCents: amount,
+      transactionKind,
+      reference: id,
+    });
     if (kind === "subscription") {
       writeDemo({
         subscriptions: Array.from(new Set([...state.subscriptions, creator.id])),
-        ...commissionForSale(state, {
-          creatorId: creator.id,
-          creatorName: creator.name,
-          amountCents: amount,
-        }),
+        ...commissionPatch,
       });
     } else if (specialRequest) {
       writeDemo({
         specialRequests: state.specialRequests.map((request) =>
           request.id === id ? { ...request, status: "paid" as const } : request,
         ),
+        ...commissionPatch,
       });
     } else {
-      writeDemo({ unlocks: Array.from(new Set([...state.unlocks, id])) });
+      writeDemo({
+        unlocks: Array.from(new Set([...state.unlocks, id])),
+        ...commissionPatch,
+      });
     }
     setPaying(false);
     setPaid(true);

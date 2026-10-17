@@ -156,7 +156,14 @@ export function bindAttribution(state: DemoState, email: string): Partial<DemoSt
 
 export function commissionForSale(
   state: DemoState,
-  sale: { creatorId: string; creatorName: string; amountCents: number; kind?: DemoCommission["kind"] },
+  sale: {
+    creatorId: string;
+    creatorName: string;
+    amountCents: number;
+    kind?: DemoCommission["kind"];
+    transactionKind?: DemoCommission["transactionKind"];
+    reference?: string;
+  },
 ): Partial<DemoState> {
   const attribution = state.activeAttribution;
   if (!attribution || attribution.creatorId !== sale.creatorId || attribution.blockedReason) return {};
@@ -164,17 +171,24 @@ export function commissionForSale(
   const clickedAt = new Date(attribution.clickedAt).getTime();
   if (Date.now() - clickedAt > attributionWindowDays * day) return {};
   const kind = sale.kind ?? "first_sale";
+  const transactionKind = sale.transactionKind ?? "subscription";
+  if (transactionKind === "ppv" && !state.creatorMonetization.commissionOnPpv) return {};
+  if (transactionKind === "pack" && !state.creatorMonetization.commissionOnPacks) return {};
+  if (transactionKind === "special_request" && !state.creatorMonetization.commissionOnRequests) return {};
   if (kind === "renewal" && Date.now() > new Date(clickedAt + renewalCommissionMonths * 30 * day).getTime()) {
     return {};
   }
   const duplicate = state.commissions.some(
-    (item) => item.creatorId === sale.creatorId && item.subId === attribution.subId && item.kind === kind && item.id.startsWith("live-"),
+    (item) =>
+      item.creatorId === sale.creatorId &&
+      item.subId === attribution.subId &&
+      item.id === `live-${attribution.clickId}-${transactionKind}-${sale.reference ?? kind}`,
   );
   if (duplicate) return {};
   const rateBps = state.creatorProgram.commissionBps;
   const createdAt = new Date();
   const next: DemoCommission = {
-    id: `live-${attribution.clickId}-${kind}`,
+    id: `live-${attribution.clickId}-${transactionKind}-${sale.reference ?? kind}`,
     affiliateCode: attribution.code,
     creatorId: sale.creatorId,
     creatorName: sale.creatorName,
@@ -184,6 +198,7 @@ export function commissionForSale(
     rateBps,
     status: attribution.blockedReason ? "rejected" : "pending",
     kind,
+    transactionKind,
     holdUntil: new Date(createdAt.getTime() + commissionHoldDays * day).toISOString(),
     renewalUntil: new Date(clickedAt + renewalCommissionMonths * 30 * day).toISOString(),
     createdAt: createdAt.toISOString(),

@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { mkdir } from "node:fs/promises";
+
+const artifactDir = "/opt/cursor/artifacts/screenshots";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/auth?route=sign-in");
@@ -86,4 +89,33 @@ test("desktop sidebar collapses manually and when content scrolls", async ({
   await expect
     .poll(() => page.evaluate(() => localStorage.getItem("mimelux-sidebar-collapsed")))
     .toBe("true");
+});
+
+test("captures V0.3 light and dark theme evidence", async ({ page }) => {
+  await mkdir(artifactDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/auth?route=sign-in");
+  await page.evaluate(() => localStorage.setItem("theme", "dark"));
+  await page.reload();
+  await expect(page.locator("html")).toHaveClass(/dark/);
+  await page.screenshot({
+    path: `${artifactDir}/mimelux-v03-login-dark-mobile-390.png`,
+    fullPage: true,
+  });
+
+  await page.evaluate(() => {
+    localStorage.setItem("theme", "light");
+    const state = JSON.parse(localStorage.getItem("mimelux-demo") || "{}");
+    localStorage.setItem(
+      "mimelux-demo",
+      JSON.stringify({ ...state, signedIn: true, role: "fan" }),
+    );
+  });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/creator/lunaferraz");
+  await expect(page.locator("html")).not.toHaveClass(/dark/);
+  await page.screenshot({
+    path: `${artifactDir}/mimelux-v03-profile-light-desktop-1440.png`,
+    fullPage: true,
+  });
 });
