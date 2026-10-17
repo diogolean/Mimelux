@@ -11,7 +11,7 @@ test("signup offers fan, creator, and affiliate areas", async ({ page }) => {
   await page.getByRole("button", { name: "Afiliado" }).click();
   await expect(page.getByRole("heading", { name: "Crie sua conta" })).toBeVisible();
   await page.getByRole("button", { name: "Voltar" }).click();
-  await page.getByRole("button", { name: /^Criadora/ }).click();
+  await page.getByRole("button", { name: /^Criador/ }).click();
   await expect(page.getByRole("heading", { name: "Crie sua conta" })).toBeVisible();
 });
 

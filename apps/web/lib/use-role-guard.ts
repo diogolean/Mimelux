@@ -17,7 +17,7 @@ function subscribe(callback: () => void) {
 export function roleHome(role: AccountRole) {
   if (role === "creator") return "/painel";
   if (role === "affiliate") return "/afiliados";
-  return "/feed";
+  return "/topcreators?tab=top-creators";
 }
 
 export function useRoleGuard(required: AccountRole) {
@@ -25,11 +25,12 @@ export function useRoleGuard(required: AccountRole) {
   const role = useSyncExternalStore(
     subscribe,
     () => readDemo().role,
-    () => "fan" as AccountRole,
+    () => null as AccountRole | null,
   );
 
   useEffect(() => {
-    if (role !== required) router.replace(roleHome(role));
+    if (!role || role === required) return;
+    router.replace(roleHome(role));
   }, [required, role, router]);
 
   return role === required;

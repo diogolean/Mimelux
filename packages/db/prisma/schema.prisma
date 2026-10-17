@@ -148,6 +148,7 @@ model Creator {
   promotions           Promotion[]
   contentPacks         ContentPack[]
   specialRequests      SpecialRequest[]
+  reviews              Review[]
 
   @@map("creators")
 }
@@ -216,6 +217,7 @@ model Post {
   caption     String
   visibility  ContentVisibility @default(FREE)
   priceCents  Int?
+  likeCount   Int               @default(0)
   isDemo      Boolean           @default(false)
   publishedAt DateTime?
   createdAt   DateTime          @default(now())
@@ -224,6 +226,7 @@ model Post {
   purchases   Purchase[]
   reports     Report[]
   packItems   ContentPackItem[]
+  comments    PostComment[]
 
   @@index([creatorId, publishedAt])
   @@map("posts")
@@ -588,4 +591,32 @@ model Payout {
 
   @@index([affiliateId, status])
   @@map("payouts")
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  creatorId  String
+  creator    Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  authorName String
+  rating     Int
+  body       String
+  subscriber Boolean  @default(true)
+  isDemo     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([creatorId, createdAt])
+  @@map("reviews")
+}
+
+model PostComment {
+  id         String   @id @default(cuid())
+  postId     String
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorName String
+  body       String
+  isDemo     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([postId, createdAt])
+  @@map("post_comments")
 }

@@ -22,9 +22,9 @@ async function loginAs(
 
 test("each demo account reaches and is guarded to its own home", async ({ page }) => {
   await loginAs(page, "fan@mimelux.com.br");
-  await expect(page).toHaveURL(/\/feed$/);
+  await expect(page).toHaveURL(/\/topcreators/);
   await page.goto("/painel");
-  await expect(page).toHaveURL(/\/feed$/);
+  await expect(page).toHaveURL(/\/topcreators/);
 
   await page.goto("/auth?route=sign-in");
   await loginAs(page, "criadora@mimelux.com.br");
@@ -64,7 +64,7 @@ test("featured section renders and carousel advances", async ({ page }) => {
   const section = page.getByTestId("monetize-section");
   await section.scrollIntoViewIfNeeded();
   await expect(
-    page.getByRole("heading", { name: "Criadoras em destaque" }),
+    page.getByRole("heading", { name: "Criadores em destaque" }),
   ).toBeVisible();
   const first = page.getByRole("button", { name: "Mostrar Luna Ferraz" });
   const second = page.getByRole("button", { name: "Mostrar Bella Monroe" });

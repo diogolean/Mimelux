@@ -1,18 +1,23 @@
 import type {
+  CommentDto,
   CreatorDto,
   DiscoveryQuery,
   MimeluxGateway,
   Paginated,
   PostDto,
+  ReviewDto,
 } from "@mimelux/core";
 import {
   categories,
   conversations,
   creators,
+  creatorLikeTotal,
   dashboardMetrics,
   notifications,
   plans,
   posts,
+  reviews,
+  seedComments,
 } from "./fixtures";
 
 class MockGateway implements MimeluxGateway {
@@ -80,6 +85,18 @@ class MockGateway implements MimeluxGateway {
     }));
   }
 
+  async listReviews(creatorId: string): Promise<ReviewDto[]> {
+    return reviews
+      .filter((review) => review.creatorId === creatorId)
+      .map((review) => ({ ...review }));
+  }
+
+  async listComments(postId: string): Promise<CommentDto[]> {
+    return seedComments
+      .filter((comment) => comment.postId === postId)
+      .map((comment) => ({ ...comment }));
+  }
+
   async simulateSubscription(_creatorId?: string, _planId?: string) {
     void _creatorId;
     void _planId;
@@ -128,6 +145,18 @@ class ApiGateway implements MimeluxGateway {
     );
   }
 
+  listReviews(creatorId: string) {
+    return this.request<{ items: ReviewDto[] }>(`/reviews?creatorId=${encodeURIComponent(creatorId)}`).then(
+      (payload) => payload.items ?? [],
+    );
+  }
+
+  listComments(postId: string) {
+    return this.request<{ items: CommentDto[] }>(`/posts/${encodeURIComponent(postId)}/comments`).then(
+      (payload) => payload.items ?? [],
+    );
+  }
+
   async simulateSubscription(creatorId: string, planId: string) {
     await this.request("/subscriptions/checkout", {
       method: "POST",
@@ -158,6 +187,7 @@ function toCreatorDto(creator: (typeof creators)[number]): CreatorDto {
     monthlyPriceCents: creator.price,
     subscriberCount: creator.subscribers,
     postCount: creator.posts,
+    likeCount: creatorLikeTotal(creator.id),
     fictitious: creator.fictitious,
     aiGenerated: creator.aiGenerated,
   };
@@ -201,6 +231,18 @@ class FallbackGateway implements MimeluxGateway {
       () => mockGateway.listConversations(),
     );
   }
+  listReviews(creatorId: string) {
+    return this.fallback(
+      () => apiGateway.listReviews(creatorId),
+      () => mockGateway.listReviews(creatorId),
+    );
+  }
+  listComments(postId: string) {
+    return this.fallback(
+      () => apiGateway.listComments(postId),
+      () => mockGateway.listComments(postId),
+    );
+  }
   simulateSubscription(creatorId: string, planId: string) {
     return this.fallback(
       () => apiGateway.simulateSubscription(creatorId, planId),
@@ -222,10 +264,14 @@ export {
   categories,
   conversations,
   creators,
+  creatorLikeTotal,
   dashboardMetrics,
   notifications,
   plans,
   posts,
+  reviews,
+  reviewsFor,
+  seedComments,
   brl,
   compact,
 } from "./fixtures";

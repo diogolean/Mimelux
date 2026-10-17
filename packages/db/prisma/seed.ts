@@ -83,12 +83,56 @@ async function main() {
             creatorId: creator.id,
             caption: `Conteúdo aberto de ${name} · perfil fictício gerado por IA.`,
             visibility: "FREE",
+            likeCount: 1240,
             publishedAt: new Date(),
             isDemo: true,
             media: { create: { kind: "IMAGE", storageKey: `/media/generated/${postFile}`, mimeType: "image/jpeg", isDemo: true } },
           },
         });
       }
+    }
+
+    const creatorPosts = await prisma.post.findMany({ where: { creatorId: creator.id }, orderBy: { createdAt: "asc" } });
+    for (const [postIndex, post] of creatorPosts.entries()) {
+      await prisma.post.update({
+        where: { id: post.id },
+        data: { likeCount: 1240 + postIndex * 317 },
+      });
+      const comment = await prisma.postComment.findFirst({ where: { postId: post.id, isDemo: true } });
+      if (!comment) {
+        await prisma.postComment.create({
+          data: {
+            postId: post.id,
+            authorName: "Marina Costa",
+            body: "Que luz linda nesse registro.",
+            isDemo: true,
+          },
+        });
+      }
+    }
+
+    const review = await prisma.review.findFirst({ where: { creatorId: creator.id, isDemo: true } });
+    if (!review) {
+      await prisma.review.createMany({
+        data: [
+          {
+            creatorId: creator.id,
+            authorName: "Marina Costa",
+            rating: 5,
+            body: "Acompanhar de perto vale cada detalhe.",
+            subscriber: true,
+            isDemo: true,
+          },
+          {
+            creatorId: creator.id,
+            authorName: "Pedro Almeida",
+            rating: 4,
+            body: "A rotina publicada aqui parece feita com cuidado.",
+            subscriber: true,
+            isDemo: true,
+          },
+        ],
+      });
     }
   }
 

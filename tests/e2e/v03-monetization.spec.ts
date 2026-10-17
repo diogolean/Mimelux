@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await page.reload();
   await page.getByLabel("Email ou CPF").fill("fan@mimelux.com.br");
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
-  await expect(page).toHaveURL(/\/feed$/);
+  await expect(page).toHaveURL(/\/topcreators/);
 });
 
 test("promotion price is visible and PPV unlock persists", async ({ page }) => {

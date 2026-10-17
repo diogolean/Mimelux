@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@mimelux/ui";
-import { brl, compact, creators } from "@/lib/gateway";
+import { brl, compact, creatorLikeTotal, creators } from "@/lib/gateway";
 import { readDemo, writeDemo } from "@/lib/demo-store";
 
 function TopCreatorsContent() {
@@ -44,7 +44,7 @@ function TopCreatorsContent() {
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary-strong">Descubra agora</p>
-          <h1 className="mt-1 text-2xl font-extrabold tracking-[-.04em] sm:text-3xl">Em alta</h1>
+          <h1 className="mt-1 text-3xl font-extrabold tracking-[-.045em] sm:text-4xl">Em alta</h1>
           <p className="mt-2 text-xs text-muted">Pessoas e experiências que estão movimentando a comunidade.</p>
         </div>
         <div className="hidden items-center gap-1 rounded-full bg-surface p-1 sm:flex dark:bg-white/5">
@@ -70,23 +70,26 @@ function TopCreatorsContent() {
                   <span className="absolute right-4 top-3 text-3xl font-black tracking-[-.07em] text-white drop-shadow">#{index + 1}</span>
                   {index < 3 && (
                     <span className="absolute left-3 top-3 rounded-full bg-primary px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-ink">
-                      {index === 0 ? "subiu 3" : index === 1 ? "em ascensão" : "favorita"}
+                      {index === 0 ? "subiu 3" : index === 1 ? "em ascensão" : "destaque"}
                     </span>
                   )}
                 </div>
-                <div className="relative z-20 flex items-end gap-3 px-4 pb-5 sm:gap-4 sm:px-5 sm:pb-6">
+                <div className="relative z-20 flex items-start gap-3 px-4 pb-5 sm:gap-4 sm:px-5 sm:pb-6">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img data-testid="ranking-avatar" src={creator.avatar} alt={creator.name} className="relative z-20 -mt-10 size-20 shrink-0 rounded-full border-4 border-elevated bg-elevated object-cover shadow-[0_14px_30px_rgba(12,13,20,.22)] sm:-mt-12 sm:size-24 lg:-mt-14 lg:size-28" />
                   <div className="min-w-0 flex-1 pt-4">
                     <div className="flex items-center gap-1">
-                      <h2 className="truncate text-sm font-extrabold">{creator.name}</h2>
-                      {creator.verified && <BadgeCheck className="size-3.5 shrink-0 fill-primary text-white" />}
+                      <h2 className="truncate text-base font-extrabold sm:text-lg">{creator.name}</h2>
+                      {creator.verified && <BadgeCheck className="size-4 shrink-0 fill-primary text-white" />}
                     </div>
-                    <p className="truncate text-[10px] text-muted">@{creator.username} · {creator.category}</p>
+                    <p className="truncate text-xs text-muted sm:text-sm">@{creator.username}</p>
+                    <p className="truncate text-xs text-muted sm:text-sm">{creator.city}</p>
                   </div>
                   <div className="pb-0.5 text-right">
-                    <p className="text-[10px] font-extrabold">{compact(creator.subscribers)}</p>
-                    <p className="text-[8px] text-muted">membros</p>
+                    <p className="text-sm font-extrabold">{compact(creator.subscribers)}</p>
+                    <p className="text-[11px] text-muted">membros</p>
+                    <p data-testid="ranking-likes" className="mt-1 text-sm font-extrabold">{compact(creatorLikeTotal(creator.id))}</p>
+                    <p className="text-[11px] text-muted">curtidas</p>
                   </div>
                 </div>
               </article>

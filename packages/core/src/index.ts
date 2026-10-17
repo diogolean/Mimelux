@@ -50,9 +50,26 @@ export type TokenPair = {
 
 export const DEMO_ACCOUNTS = {
   fan: { email: "fan@mimelux.com.br", password: "mimelux123" },
-  creator: { email: "criadora@mimelux.com.br", password: "mimelux123" },
+  creator: {
+    email: "criadora@mimelux.com.br",
+    alias: "creator@mimelux.com.br",
+    password: "mimelux123",
+  },
   affiliate: { email: "afiliado@mimelux.com.br", password: "mimelux123" },
 } as const;
+
+export function isDemoCreatorEmail(email: string) {
+  const value = email.trim().toLowerCase();
+  return (
+    value === DEMO_ACCOUNTS.creator.email || value === DEMO_ACCOUNTS.creator.alias
+  );
+}
+
+export function canonicalDemoEmail(email: string) {
+  return isDemoCreatorEmail(email)
+    ? DEMO_ACCOUNTS.creator.email
+    : email.trim().toLowerCase();
+}
 
 export const paymentProviders = ["pix", "stripe", "crypto"] as const;
 export type PaymentProviderId = (typeof paymentProviders)[number];

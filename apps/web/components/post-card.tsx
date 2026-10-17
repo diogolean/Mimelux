@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Button, Pill } from "@mimelux/ui";
 import type { Creator, Post } from "@/lib/gateway";
-import { brl } from "@/lib/gateway";
+import { brl, seedComments } from "@/lib/gateway";
 import { readDemo, writeDemo } from "@/lib/demo-store";
 
 export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
@@ -135,13 +135,18 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
             <Bookmark className={`size-[19px] ${saved ? "fill-primary text-primary-strong" : ""}`} />
           </button>
         </div>
-        <p className="mt-1 text-[10px] font-bold">{(post.likes + (liked ? 1 : 0)).toLocaleString("pt-BR")} curtidas</p>
+        <p data-testid="post-likes" className="mt-1 text-xs font-bold">{(post.likes + (liked ? 1 : 0)).toLocaleString("pt-BR")} curtidas</p>
         <p className="mt-2 text-xs leading-5">
           <b className="mr-1.5">{creator.name}</b>
           {post.caption}
         </p>
+        {seedComments.filter((comment) => comment.postId === post.id).map((comment) => (
+          <p key={comment.id} data-testid="post-comment" className="mt-2 text-xs leading-5">
+            <b className="mr-1.5">{comment.authorName}</b>{comment.body}
+          </p>
+        ))}
         {comments.map((comment, index) => (
-          <p key={`${comment}-${index}`} className="mt-2 text-[10px] leading-5">
+          <p key={`${comment}-${index}`} data-testid="post-comment" className="mt-2 text-xs leading-5">
             <b className="mr-1.5">você</b>{comment}
           </p>
         ))}

@@ -38,7 +38,11 @@ class CreatorsController {
             }
           : {}),
       },
-      include: { user: { include: { profile: true } }, plans: { where: { active: true } } },
+      include: {
+        user: { include: { profile: true } },
+        plans: { where: { active: true } },
+        posts: { select: { likeCount: true } },
+      },
       take: 50,
       orderBy: { createdAt: "asc" },
     });
@@ -64,6 +68,7 @@ class CreatorsController {
         plans: { where: { active: true } },
         promotions: { where: { active: true } },
         contentPacks: { where: { active: true } },
+        posts: { select: { likeCount: true } },
       },
     });
     return creator ? this.present(creator) : null;
@@ -76,6 +81,7 @@ class CreatorsController {
     fictitious: boolean;
     user: { profile: { name: string; username: string; bio: string | null; city: string | null; avatarUrl: string | null; coverUrl: string | null } | null };
     plans: { id: string; name: string; priceCents: number; durationMonths: number; discountPercent: number }[];
+    posts?: { likeCount: number }[];
   }) {
     const profile = creator.user.profile;
     return {
@@ -91,7 +97,8 @@ class CreatorsController {
       isFree: (creator.plans[0]?.priceCents ?? 0) === 0,
       monthlyPriceCents: creator.plans.find((plan) => plan.durationMonths === 1)?.priceCents ?? 0,
       subscriberCount: 0,
-      postCount: 0,
+      postCount: creator.posts?.length ?? 0,
+      likeCount: creator.posts?.reduce((total, post) => total + post.likeCount, 0) ?? 0,
       aiGenerated: creator.aiGenerated,
       fictitious: creator.fictitious,
     };

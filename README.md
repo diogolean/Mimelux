@@ -53,7 +53,7 @@ test-only password/JWT authentication. No live payment, upload, or payout occurs
 | Role | Email | Password |
 |---|---|---|
 | Fan | `fan@mimelux.com.br` | `mimelux123` |
-| Creator | `criadora@mimelux.com.br` | `mimelux123` |
+| Creator | `criadora@mimelux.com.br` (alias `creator@mimelux.com.br`) | `mimelux123` |
 | Affiliate | `afiliado@mimelux.com.br` | `mimelux123` |
 
 The affiliate demo identity is Nara Costa, code `nara`. Promotion links look like `/r/nara/lunaferraz?lang=pt-BR&sub=tiktok`. See [`docs/AFFILIATES.md`](docs/AFFILIATES.md).

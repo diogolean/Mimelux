@@ -24,7 +24,7 @@ const links = {
   ],
   creators: [
     ["about", "/auth?route=sign-up&role=creator"],
-    ["program", "/legal/criadoras"],
+    ["program", "/legal/criadores"],
   ],
   affiliates: [
     ["program", "/auth?route=sign-up&role=affiliate"],
@@ -40,26 +40,79 @@ const links = {
 export function MonetizeSection() {
   const t = useTranslations("monetize");
   const footer = useTranslations("footer");
+  const hero = creators[0]!;
+  const editorial = creators[15] ?? creators[4]!;
+  const values = [t("valueOne"), t("valueTwo"), t("valueThree")];
 
   return (
     <div data-testid="monetize-section" className="relative z-10 bg-background">
-      <section className="mx-auto grid min-h-[720px] w-full max-w-7xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-center lg:py-24">
+      <section data-testid="creator-hero" className="mx-auto grid w-full max-w-7xl gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[1.15fr_.85fr] lg:items-end lg:py-24">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[.22em] text-primary-strong">{t("heroEyebrow")}</p>
+          <h2 className="mt-4 max-w-4xl text-5xl font-extrabold leading-[0.92] tracking-[-.065em] sm:text-7xl lg:text-8xl">
+            {t("heroTitle")}
+          </h2>
+          <p className="mt-6 max-w-lg text-base leading-7 text-muted">{t("heroBody")}</p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link href="/auth?route=sign-up&role=creator"><Button size="lg">{t("creatorCta")}</Button></Link>
+            <Link href="/auth?route=sign-up&role=affiliate"><Button size="lg" variant="outline">{t("affiliateCta")}</Button></Link>
+          </div>
+        </div>
+        <div data-testid="payout-stat" className="relative min-h-[420px] overflow-hidden rounded-[36px] bg-ink text-white shadow-[0_32px_90px_rgba(24,23,37,.22)]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={hero.cover} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-ink/15" />
+          <div className="relative flex min-h-[420px] flex-col justify-end p-7 sm:p-9">
+            <p className="text-sm font-semibold text-white/80">{t("statLabel")}</p>
+            <p className="mt-2 text-6xl font-black tracking-[-.07em] sm:text-8xl">{t("statValue")}</p>
+            <p className="mt-4 max-w-sm text-sm leading-6 text-white/75">{t("statDetail")}</p>
+            <p className="mt-5 text-xs font-semibold text-accent">{t("statMeta")}</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto grid w-full max-w-7xl gap-3 px-5 pb-6 sm:grid-cols-3 sm:px-8">
+        {values.map((label) => (
+          <article key={label} className="rounded-[24px] border border-border bg-elevated p-5">
+            <p className="text-[10px] font-bold uppercase tracking-[.16em] text-primary-strong">{t("qualityTitle")}</p>
+            <p className="mt-3 text-base font-extrabold leading-6">{label}</p>
+          </article>
+        ))}
+      </section>
+
+      <section className="mx-auto grid min-h-[720px] w-full max-w-7xl gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-center lg:py-20">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[.22em] text-primary-strong">
             {t("featuredEyebrow")}
           </p>
           <h2 className="mt-4 text-4xl font-extrabold tracking-[-.055em] sm:text-6xl">
-            Criadoras em destaque
+            {t("featuredHeadline")}
           </h2>
           <p className="mt-5 max-w-md text-sm leading-7 text-muted">
             {t("featuredTitle")} {t("featuredBody")}
           </p>
           <div className="mt-8 flex items-center gap-3 text-xs font-bold text-muted">
             <span className="size-2 rounded-full bg-accent" />
-            Atualizações automáticas · deslize para explorar
+            {t("swipeHint")}
           </div>
         </div>
         <FeaturedCarousel demoLabel={t("demo")} />
+      </section>
+
+      <section className="relative min-h-[680px] overflow-hidden bg-ink text-white">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={editorial.cover} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/55 to-ink/10" />
+        <div className="relative mx-auto flex min-h-[680px] max-w-7xl flex-col justify-end px-5 py-16 sm:px-8 sm:py-24">
+          <p className="text-xs font-bold uppercase tracking-[.22em] text-accent">{t("editorialEyebrow")}</p>
+          <h2 className="mt-4 max-w-4xl text-5xl font-extrabold leading-[0.92] tracking-[-.065em] sm:text-7xl lg:text-8xl">
+            {t("editorialTitle")}
+          </h2>
+          <p className="mt-5 max-w-lg text-base leading-7 text-white/75">{t("editorialBody")}</p>
+          <Link href="/auth?route=sign-up&role=creator" className="mt-8 w-fit">
+            <Button size="lg" data-testid="editorial-cta">{t("creatorCta")}</Button>
+          </Link>
+        </div>
       </section>
 
       <section className="bg-surface/70 px-5 py-16 dark:bg-white/5 sm:px-8">

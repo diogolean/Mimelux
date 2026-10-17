@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button, Logo } from "@mimelux/ui";
-import { DEMO_ACCOUNTS, loginSchema, registerSchema, type AccountRole } from "@mimelux/core";
+import { DEMO_ACCOUNTS, isDemoCreatorEmail, loginSchema, registerSchema, type AccountRole } from "@mimelux/core";
 import { bindAttribution } from "@/lib/affiliates";
 import { mockDelay, readDemo, writeDemo } from "@/lib/demo-store";
 import { creators, posts } from "@/lib/gateway";
@@ -72,9 +72,9 @@ function AuthContent() {
       return;
     }
     const nextRole: AccountRole = !signUp
-      ? email === DEMO_ACCOUNTS.creator.email
+      ? isDemoCreatorEmail(email)
         ? "creator"
-        : email === DEMO_ACCOUNTS.affiliate.email
+        : email.trim().toLowerCase() === DEMO_ACCOUNTS.affiliate.email
           ? "affiliate"
           : "fan"
       : role ?? "fan";
@@ -84,7 +84,7 @@ function AuthContent() {
       role: nextRole,
       verified: !signUp,
       onboarding: !signUp,
-      ...(signUp ? bindAttribution(current, email) : {}),
+      ...(signUp ? bindAttribution(current, email) : { coachSeen: true }),
     });
     const destination = signUp ? "/verificacao" : roleHome(nextRole);
     router.push(destination);
@@ -99,6 +99,7 @@ function AuthContent() {
       role: nextRole,
       verified: true,
       onboarding: !signUp,
+      ...(signUp ? {} : { coachSeen: true }),
     });
     router.push(signUp ? "/onboarding" : roleHome(nextRole));
   }

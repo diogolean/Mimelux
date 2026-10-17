@@ -12,6 +12,7 @@ export type CreatorDto = {
   monthlyPriceCents: number;
   subscriberCount: number;
   postCount: number;
+  likeCount: number;
   fictitious: boolean;
   aiGenerated: boolean;
 };
@@ -49,11 +50,29 @@ export type Paginated<T> = {
   nextCursor: string | null;
 };
 
+export type ReviewDto = {
+  id: string;
+  creatorId: string;
+  authorName: string;
+  rating: number;
+  body: string;
+  subscriber: boolean;
+};
+
+export type CommentDto = {
+  id: string;
+  postId: string;
+  authorName: string;
+  body: string;
+};
+
 export interface MimeluxGateway {
   listCreators(query?: DiscoveryQuery): Promise<Paginated<CreatorDto>>;
   getCreator(username: string): Promise<CreatorDto | null>;
   listFeed(cursor?: string): Promise<Paginated<PostDto>>;
   listConversations(): Promise<ConversationDto[]>;
+  listReviews(creatorId: string): Promise<ReviewDto[]>;
+  listComments(postId: string): Promise<CommentDto[]>;
   simulateSubscription(creatorId: string, planId: string): Promise<void>;
   simulatePurchase(contentId: string): Promise<void>;
 }

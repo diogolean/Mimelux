@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@mimelux/ui";
 
-const pages = ["sobre", "privacidade", "termos", "cookies", "reclamacoes", "criadoras", "afiliados"] as const;
+const pages = ["sobre", "privacidade", "termos", "cookies", "reclamacoes", "criadores", "criadoras", "afiliados"] as const;
 
 export default async function LegalPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params;

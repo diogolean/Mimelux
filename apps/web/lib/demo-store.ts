@@ -80,6 +80,14 @@ export type CreatorMonetizationSettings = {
   commissionOnRequests: boolean;
 };
 
+export type DemoReview = {
+  id: string;
+  creatorId: string;
+  authorName: string;
+  rating: number;
+  body: string;
+};
+
 export type DemoState = {
   signedIn: boolean;
   role: AccountRole;
@@ -91,6 +99,8 @@ export type DemoState = {
   likes: string[];
   saves: string[];
   comments: Record<string, string[]>;
+  reviews: DemoReview[];
+  enabledCreatorIds: string[];
   sentMessages: Record<string, string[]>;
   cookieAccepted: boolean;
   clicks: DemoClick[];
@@ -117,6 +127,8 @@ const defaults: DemoState = {
   likes: [],
   saves: [],
   comments: {},
+  reviews: [],
+  enabledCreatorIds: [],
   sentMessages: {},
   cookieAccepted: false,
   clicks: affiliateSeed.clicks,

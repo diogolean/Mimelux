@@ -117,6 +117,70 @@ const subscriberPosts: Post[] = creators.flatMap((creator, creatorIndex) =>
 
 export const posts: Post[] = [...publicPosts, ...subscriberPosts];
 
+export type Review = {
+  id: string;
+  creatorId: string;
+  authorName: string;
+  rating: number;
+  body: string;
+  subscriber: true;
+};
+
+const reviewCopy = [
+  "Acompanhar de perto vale cada detalhe.",
+  "A rotina publicada aqui parece feita com cuidado.",
+  "Os bastidores deixam o plano demo ainda mais interessante.",
+  "Conteúdo consistente, sem pressa e fácil de acompanhar.",
+] as const;
+
+export const reviews: Review[] = creators.flatMap((creator, index) => [
+  {
+    id: `review-${creator.id}-1`,
+    creatorId: creator.id,
+    authorName: "Marina Costa",
+    rating: 5,
+    body: reviewCopy[index % reviewCopy.length]!,
+    subscriber: true,
+  },
+  {
+    id: `review-${creator.id}-2`,
+    creatorId: creator.id,
+    authorName: "Pedro Almeida",
+    rating: index % 3 === 0 ? 4 : 5,
+    body: reviewCopy[(index + 1) % reviewCopy.length]!,
+    subscriber: true,
+  },
+]);
+
+export type SeedComment = {
+  id: string;
+  postId: string;
+  authorName: string;
+  body: string;
+};
+
+export const seedComments: SeedComment[] = posts
+  .filter((post) => post.visibility === "free")
+  .map((post, index) => ({
+    id: `comment-${post.id}`,
+    postId: post.id,
+    authorName: index % 2 === 0 ? "Marina Costa" : "Pedro Almeida",
+    body:
+      index % 2 === 0
+        ? "Que luz linda nesse registro."
+        : "Assinei o demo e esse foi o post que me prendeu.",
+  }));
+
+export function creatorLikeTotal(creatorId: string) {
+  return posts
+    .filter((post) => post.creatorId === creatorId)
+    .reduce((total, post) => total + post.likes, 0);
+}
+
+export function reviewsFor(creatorId: string) {
+  return reviews.filter((review) => review.creatorId === creatorId);
+}
+
 export const conversations = creators.slice(0, 7).map((creator, index) => ({
   id: creator.id,
   creatorId: creator.id,

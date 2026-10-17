@@ -1,25 +1,29 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import {
   ArrowLeft,
   ArrowRight,
   Check,
   Heart,
+  Link2,
   LockKeyhole,
   MessageCircle,
   Sparkles,
   Star,
   Users,
+  Wallet,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import type { AccountRole } from "@mimelux/core";
 import { Button, Logo, Pill } from "@mimelux/ui";
 import { creators } from "@/lib/gateway";
 import { readDemo, writeDemo } from "@/lib/demo-store";
 
 const interests = ["Lifestyle", "Fitness", "Música", "Gastronomia", "Moda", "Arte", "Viagem", "Bem-estar"];
 
-const steps = [
+const fanSteps = [
   {
     eyebrow: "Você chegou!",
     title: "Um espaço para chegar mais perto.",
@@ -46,28 +50,49 @@ const steps = [
   },
 ];
 
+function subscribe(callback: () => void) {
+  window.addEventListener("mimelux:state", callback);
+  return () => window.removeEventListener("mimelux:state", callback);
+}
+
+function currentRole(): AccountRole {
+  const fromQuery = new URLSearchParams(window.location.search).get("role");
+  if (fromQuery === "affiliate" || fromQuery === "creator" || fromQuery === "fan") return fromQuery;
+  return readDemo().role;
+}
+
+function finish(router: ReturnType<typeof useRouter>) {
+  writeDemo({ onboarding: true, coachSeen: false });
+  const nextRole = readDemo().role;
+  router.push(
+    nextRole === "affiliate"
+      ? "/afiliados"
+      : nextRole === "creator"
+        ? "/painel"
+        : "/topcreators?tab=top-creators",
+  );
+}
+
 export default function OnboardingPage() {
+  const role = useSyncExternalStore(subscribe, currentRole, () => "fan" as AccountRole);
+  if (role === "affiliate") return <AffiliateOnboarding />;
+  return <FanOnboarding />;
+}
+
+function FanOnboarding() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [selected, setSelected] = useState(["Lifestyle", "Música", "Viagem"]);
   const [following, setFollowing] = useState(["luna-ferraz", "bella-monroe"]);
-  const current = steps[step]!;
+  const current = fanSteps[step]!;
   const Icon = current.icon;
 
   function next() {
-    if (step < steps.length - 1) {
+    if (step < fanSteps.length - 1) {
       setStep((value) => value + 1);
       return;
     }
-    writeDemo({ onboarding: true, coachSeen: false });
-    const nextRole = readDemo().role;
-    router.push(
-      nextRole === "affiliate"
-        ? "/afiliados"
-        : nextRole === "creator"
-          ? "/painel"
-          : "/feed",
-    );
+    finish(router);
   }
 
   return (
@@ -75,17 +100,7 @@ export default function OnboardingPage() {
       <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-5 py-5 sm:px-10">
         <Logo compact />
         <button
-          onClick={() => {
-            writeDemo({ onboarding: true, coachSeen: false });
-            const nextRole = readDemo().role;
-            router.push(
-              nextRole === "affiliate"
-                ? "/afiliados"
-                : nextRole === "creator"
-                  ? "/painel"
-                  : "/feed",
-            );
-          }}
+          onClick={() => finish(router)}
           className="text-xs font-bold text-muted transition hover:text-foreground"
         >
           Pular tutorial <ArrowRight className="ml-1 inline size-3.5" />
@@ -201,13 +216,69 @@ export default function OnboardingPage() {
         </Button>
         <div className="text-center">
           <div className="flex gap-1.5">
-            {steps.map((_, index) => (
+            {fanSteps.map((_, index) => (
               <i key={index} className={`h-1.5 rounded-full transition-all ${index === step ? "w-7 bg-primary" : "w-1.5 bg-black/15 dark:bg-white/20"}`} />
             ))}
           </div>
           <p className="mt-2 text-[10px] font-semibold text-muted">Passo {step + 1}/4</p>
         </div>
         <Button size="icon" onClick={next} aria-label={step === 3 ? "Concluir" : "Próximo passo"}>
+          {step === 3 ? <Check className="size-4" /> : <ArrowRight className="size-4" />}
+        </Button>
+      </footer>
+    </main>
+  );
+}
+
+function AffiliateOnboarding() {
+  const router = useRouter();
+  const t = useTranslations("affiliateOnboarding");
+  const [step, setStep] = useState(0);
+  const steps = [
+    { eyebrow: t("s1eyebrow"), title: t("s1title"), body: t("s1body"), icon: Sparkles },
+    { eyebrow: t("s2eyebrow"), title: t("s2title"), body: t("s2body"), icon: Users },
+    { eyebrow: t("s3eyebrow"), title: t("s3title"), body: t("s3body"), icon: Link2 },
+    { eyebrow: t("s4eyebrow"), title: t("s4title"), body: t("s4body"), icon: Wallet },
+  ];
+  const current = steps[step]!;
+  const Icon = current.icon;
+
+  function next() {
+    if (step < steps.length - 1) {
+      setStep((value) => value + 1);
+      return;
+    }
+    finish(router);
+  }
+
+  return (
+    <main data-testid="affiliate-onboarding" className="relative min-h-dvh overflow-hidden bg-background">
+      <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-5 py-5 sm:px-10">
+        <Logo compact />
+        <button
+          onClick={() => finish(router)}
+          className="text-xs font-bold text-muted transition hover:text-foreground"
+        >
+          {t("skip")} <ArrowRight className="ml-1 inline size-3.5" />
+        </button>
+      </header>
+      <div className="absolute left-1/2 top-[10%] size-[520px] -translate-x-1/2 rounded-full bg-primary/20 blur-[100px]" />
+      <section className="relative z-10 mx-auto flex min-h-dvh w-full max-w-3xl flex-col items-center justify-center px-5 pb-28 pt-24 text-center">
+        <div key={step} className="w-full animate-enter">
+          <div className="mx-auto grid size-16 place-items-center rounded-[24px] bg-accent/20 text-accent-strong">
+            <Icon className="size-7" />
+          </div>
+          <p className="mt-7 text-xs font-extrabold uppercase tracking-[.24em] text-primary-strong">{current.eyebrow}</p>
+          <h1 className="mx-auto mt-3 max-w-2xl text-3xl font-extrabold leading-tight tracking-[-.05em] sm:text-5xl">{current.title}</h1>
+          <p className="mx-auto mt-4 max-w-lg text-sm leading-6 text-muted sm:text-base">{current.body}</p>
+        </div>
+      </section>
+      <footer className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-between border-t border-black/5 bg-background/85 px-5 py-5 backdrop-blur sm:px-10">
+        <Button variant="outline" size="icon" disabled={step === 0} onClick={() => setStep((value) => value - 1)} aria-label={t("back")}>
+          <ArrowLeft className="size-4" />
+        </Button>
+        <p className="text-[10px] font-semibold text-muted">{t("step", { current: step + 1 })}</p>
+        <Button size="icon" onClick={next} aria-label={step === 3 ? t("done") : t("next")}>
           {step === 3 ? <Check className="size-4" /> : <ArrowRight className="size-4" />}
         </Button>
       </footer>

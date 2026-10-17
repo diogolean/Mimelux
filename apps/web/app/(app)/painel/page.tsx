@@ -173,7 +173,7 @@ export default function DashboardPage() {
             <label className="mt-4 block text-[10px] font-bold text-muted">Desconto promocional: {monetization.promotion.discountPercent}%
               <input type="range" min={5} max={80} value={monetization.promotion.discountPercent} onChange={(event) => setMonetization({ ...monetization, promotion: { ...monetization.promotion, discountPercent: Number(event.target.value) } })} className="mt-2 w-full accent-primary" />
             </label>
-            <p className="mt-3 text-[9px] text-muted">Período e limite de novas assinantes ficam prontos para integração com a API.</p>
+            <p className="mt-3 text-[9px] text-muted">Período e limite de novas assinaturas ficam prontos para integração com a API.</p>
           </div>
           <Button className="mt-5 w-full" onClick={saveMonetization}>Salvar monetização</Button>
         </div>

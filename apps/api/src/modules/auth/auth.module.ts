@@ -1,6 +1,11 @@
 import { Body, Controller, HttpCode, Module, Post, UnauthorizedException } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { database } from "@mimelux/db/runtime";
+
+function canonicalDemoEmail(email: string) {
+  const value = email.trim().toLowerCase();
+  return value === "creator@mimelux.com.br" ? "criadora@mimelux.com.br" : value;
+}
 import { compare, hash } from "bcryptjs";
 import { sign, verify } from "jsonwebtoken";
 import { z } from "zod";
@@ -34,7 +39,9 @@ class AuthController {
   @ApiOperation({ summary: "Authenticate with credentials and return native-ready tokens" })
   async login(@Body() body: unknown) {
     const input = credentialsSchema.parse(body);
-    const user = await database.user.findUnique({ where: { email: input.email.toLowerCase() } });
+    const user = await database.user.findUnique({
+      where: { email: canonicalDemoEmail(input.email) },
+    });
     if (!user || !(await compare(input.password, user.passwordHash))) {
       throw new UnauthorizedException("Invalid credentials");
     }
