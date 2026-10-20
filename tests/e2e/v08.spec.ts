@@ -65,12 +65,18 @@ test("home, login, profile, and logo boards use Patrocino", async ({ page }) => 
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await expect(page).toHaveURL(/\/topcreators/);
   await expect(page.getByRole("heading", { name: "Em alta" })).toBeVisible();
-  await expect(page.getByText("Patrocino").first()).toBeVisible();
+  await expect(page.locator("header p").filter({ hasText: "Patrocino" })).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  const expand = page.getByRole("button", { name: "Expandir menu lateral" });
+  if (await expand.isVisible()) await expand.click();
+  await expect(page.locator("aside").getByText("Patrocino")).toBeVisible();
   await page.waitForTimeout(450);
   await shot(page, "em-alta");
 
   await page.goto("/creator/lunaferraz");
-  await expect(page.getByText("No Patrocino desde 2025")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Luna Ferraz" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Pedido especial" })).toBeVisible();
+  await expect(page.locator("aside").getByText("Patrocino")).toBeVisible();
   await expect(page.getByText("FanMimo")).toHaveCount(0);
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForTimeout(300);
