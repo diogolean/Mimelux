@@ -13,11 +13,11 @@ export type MarkVariant = "heart" | "spark";
 const patronageStem =
   "M7 5.2h9.4c4.35 0 7.15 2.55 7.15 6.35s-2.8 6.35-7.15 6.35H11.35V26.8H7V5.2zm4.35 3.35v6h4.85c1.95 0 3.15-1.1 3.15-2.95s-1.2-2.95-3.15-2.95H11.35z";
 
-/** Concept A, default: a mint heart large enough to read at 16px. */
+/** Apoio, kept as an alternative: a mint heart under the bowl. */
 const patronageHeart =
   "M22.4 15.2c1.55-1.85 4.55-1.7 6.05.25 1.15 1.5 1.05 3.65-.15 5.15L22.4 27.2l-5.9-6.6c-1.2-1.5-1.3-3.65-.15-5.15 1.5-1.95 4.5-2.1 6.05-.25z";
 
-/** Concept B: the same P with a four-point spark instead of the heart. */
+/** Centelha, the default: the same P with a mint four-point spark. */
 const patronageSpark =
   "M23.2 13.6l1.85 4.85 5.05 1.85-5.05 1.85-1.85 4.85-1.85-4.85-5.05-1.85 5.05-1.85z";
 
@@ -142,7 +142,7 @@ export function StarMark({
 }
 
 export function Mark({
-  variant = "heart",
+  variant = "spark",
   className,
   title,
 }: {
@@ -172,7 +172,7 @@ export function Logo({
   compact = false,
   className,
   tone = "auto",
-  mark = "heart",
+  mark = "spark",
 }: {
   compact?: boolean;
   className?: string;

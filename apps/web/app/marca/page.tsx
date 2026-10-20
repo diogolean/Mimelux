@@ -44,8 +44,21 @@ function Board({
     >
       <p className="text-[10px] font-bold uppercase tracking-[.22em] text-muted">{label}</p>
       <div className="mt-8 grid gap-8 sm:grid-cols-2">
+        <div data-testid={`${id}-spark`}>
+          <p className="text-xs font-semibold text-primary-strong">Centelha · padrão</p>
+          <div className="mt-4 flex items-end gap-6">
+            <span className="grid size-16 place-items-center rounded-[18px] bg-foreground text-background">
+              <Mark className="size-11" />
+            </span>
+            <Mark title="Centelha" className="size-16" />
+            <Mark className="size-4" />
+          </div>
+          <div className="mt-6">
+            <Logo />
+          </div>
+        </div>
         <div data-testid={`${id}-heart`}>
-          <p className="text-xs font-semibold text-primary-strong">Apoio · padrão</p>
+          <p className="text-xs font-semibold text-muted">Apoio · alternativa</p>
           <div className="mt-4 flex items-end gap-6">
             <span className="grid size-16 place-items-center rounded-[18px] bg-foreground text-background">
               <Mark variant="heart" className="size-11" />
@@ -54,20 +67,7 @@ function Board({
             <Mark variant="heart" className="size-4" />
           </div>
           <div className="mt-6">
-            <Logo />
-          </div>
-        </div>
-        <div data-testid={`${id}-spark`}>
-          <p className="text-xs font-semibold text-muted">Centelha · alternativa</p>
-          <div className="mt-4 flex items-end gap-6">
-            <span className="grid size-16 place-items-center rounded-[18px] bg-foreground text-background">
-              <Mark variant="spark" className="size-11" />
-            </span>
-            <Mark variant="spark" title="Centelha" className="size-16" />
-            <Mark variant="spark" className="size-4" />
-          </div>
-          <div className="mt-6">
-            <Logo mark="spark" />
+            <Logo mark="heart" />
           </div>
         </div>
       </div>
@@ -91,7 +91,7 @@ function Options({
       className="rounded-[28px] bg-background px-5 py-8 text-foreground sm:px-8"
     >
       <p className="text-[10px] font-bold uppercase tracking-[.22em] text-muted">{label}</p>
-      <p className="mt-2 text-xs text-muted">Apoio continua como padrão. Estas são alternativas com estrela.</p>
+      <p className="mt-2 text-xs text-muted">Estudos A a F. O padrão atual é Centelha.</p>
       <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {starConcepts.map((concept) => (
           <div key={concept.id} data-testid={`${id}-${concept.id}`}>
@@ -118,9 +118,24 @@ export default function BrandPage() {
         <p className="text-[11px] font-medium uppercase tracking-[.28em] text-primary-strong">Identidade</p>
         <h1 className="mt-3 text-4xl font-medium tracking-[-.04em]">Patrocino</h1>
         <p className="mt-3 max-w-xl text-sm leading-6 text-muted">
-          Apoio, o P com um coração, segue como padrão. A a F são estudos de P com estrela.
+          Centelha, o P com uma faísca de quatro pontas, é o padrão. Apoio e os estudos A a F ficam como alternativas.
         </p>
       </header>
+      <section
+        data-testid="favicon-preview"
+        style={lightVars}
+        className="rounded-[28px] bg-background px-6 py-8 text-foreground"
+      >
+        <p className="text-[10px] font-bold uppercase tracking-[.22em] text-muted">Favicon · Centelha</p>
+        <div className="mt-6 flex items-end gap-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icon.svg" alt="Favicon 64" width={64} height={64} className="size-16" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icon.svg" alt="Favicon 32" width={32} height={32} className="size-8" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icon.svg" alt="Favicon 16" width={16} height={16} className="size-4" />
+        </div>
+      </section>
       <Options id="logo-options-light" vars={lightVars} label="Fundo claro" />
       <Options id="logo-options-dark" vars={darkVars} label="Fundo escuro" />
       <Board id="logo-board-light" vars={lightVars} label="Padrão atual · fundo claro" />

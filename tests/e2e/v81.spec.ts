@@ -61,7 +61,8 @@ test("star concepts stay labelled and the heart mark stays default", async ({ pa
     await expect(page.getByTestId("logo-options-light").getByText(`${letter} ·`)).toBeVisible();
     await expect(page.getByTestId("logo-options-dark").getByText(`${letter} ·`)).toBeVisible();
   }
-  await expect(page.getByTestId("logo-board-light").getByText("Apoio · padrão")).toBeVisible();
+  await expect(page.getByTestId("logo-board-light").getByText("Centelha · padrão")).toBeVisible();
+  await expect(page.getByTestId("logo-board-light").getByText("Apoio · alternativa")).toBeVisible();
   await page.getByTestId("logo-options-light").screenshot({ path: `${shots}/logo-options-light.png` });
   await page.getByTestId("logo-options-dark").screenshot({ path: `${shots}/logo-options-dark.png` });
 });
