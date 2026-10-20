@@ -18,16 +18,22 @@ export const metadata: Metadata = {
     default: "Patrocino — perto de quem inspira",
     template: "%s · Patrocino",
   },
-  description:
-    "Assine experiências exclusivas e apoie seus criadores favoritos.",
+  description: "Monetize com a gente do seu jeito. Conteúdo exclusivo, assinaturas e apoio direto aos criadores.",
   applicationName: "Patrocino",
   openGraph: {
-    title: "Patrocino — perto de quem inspira",
-    description: "Assine experiências exclusivas e apoie seus criadores favoritos.",
+    title: "Patrocino — Monetize com a gente do seu jeito",
+    description: "Monetize com a gente do seu jeito. Conteúdo exclusivo, assinaturas e apoio direto aos criadores.",
     siteName: "Patrocino",
     url: "https://patrocino.com",
     locale: "pt_BR",
     type: "website",
+    images: [{ url: "/og-patrocino.png", width: 1200, height: 630, alt: "Patrocino — Monetize com a gente do seu jeito" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Patrocino — Monetize com a gente do seu jeito",
+    description: "Monetize com a gente do seu jeito. Conteúdo exclusivo, assinaturas e apoio direto aos criadores.",
+    images: ["/og-patrocino.png"],
   },
 };
 
