@@ -1,10 +1,10 @@
-import type { AccountRole } from "@mimelux/core";
+import type { AccountRole, SessionRole } from "@mimelux/core";
 import { upstreamAuthHeaders } from "./client-ip";
 
 export type SessionUser = {
   id: string;
   email: string;
-  role: AccountRole;
+  role: SessionRole;
   emailVerified: boolean;
 };
 
@@ -19,10 +19,11 @@ export function apiBase() {
   return (process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:3334/v1").replace(/\/$/, "");
 }
 
-export function toAccountRole(role: string): AccountRole {
+export function toAccountRole(role: string): SessionRole {
   const value = role.toLowerCase();
   if (value === "creator") return "creator";
   if (value === "affiliate") return "affiliate";
+  if (value === "admin") return "admin";
   return "fan";
 }
 

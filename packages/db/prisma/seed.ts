@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
 const demoPasswordHash =
@@ -151,6 +152,43 @@ async function main() {
     update: { isDemo: true },
     create: { userId: affiliateUser.id, code: "LUXDEMO", displayName: "Afiliado Demo", isDemo: true },
   });
+  await ensureSeedAdmins();
+}
+
+async function ensureSeedAdmins() {
+  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const password = process.env.ADMIN_PASSWORD;
+  if (email && password) {
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (!existing) {
+      const suffix = Date.now().toString(36);
+      await prisma.user.create({
+        data: {
+          email,
+          passwordHash: await hash(password, 12),
+          role: "ADMIN",
+          emailVerifiedAt: new Date(),
+          profile: { create: { name: "Admin", username: `admin-${suffix}` } },
+        },
+      });
+    }
+  }
+  if (process.env.DEMO_MODE === "true" && process.env.NODE_ENV !== "production") {
+    const existing = await prisma.user.findUnique({ where: { email: "admin@patrocino.com" } });
+    if (!existing) {
+      const suffix = Date.now().toString(36);
+      await prisma.user.create({
+        data: {
+          email: "admin@patrocino.com",
+          passwordHash: demoPasswordHash,
+          role: "ADMIN",
+          emailVerifiedAt: new Date(),
+          isDemo: true,
+          profile: { create: { name: "Admin Demo", username: `admin-${suffix}`, isDemo: true } },
+        },
+      });
+    }
+  }
 }
 
 main()

@@ -23,6 +23,7 @@ export const loginSchema = z.object({
 
 export const accountRoles = ["fan", "creator", "affiliate"] as const;
 export type AccountRole = (typeof accountRoles)[number];
+export type SessionRole = AccountRole | "admin";
 
 export const registerSchema = z.object({
   name: z.string().min(2).max(80),

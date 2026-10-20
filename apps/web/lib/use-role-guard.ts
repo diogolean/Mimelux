@@ -2,10 +2,11 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import type { AccountRole } from "@mimelux/core";
+import type { AccountRole, SessionRole } from "@mimelux/core";
 import { getServerSessionSnapshot, getSessionSnapshot, refreshSession, subscribeSession } from "./session";
 
-export function roleHome(role: AccountRole) {
+export function roleHome(role: SessionRole) {
+  if (role === "admin") return "/admin";
   if (role === "creator") return "/painel";
   if (role === "affiliate") return "/afiliados";
   return "/topcreators?tab=top-creators";

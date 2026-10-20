@@ -1,0 +1,3 @@
+ALTER TABLE "users" ADD COLUMN "suspendedAt" TIMESTAMP(3);
+ALTER TABLE "users" ADD COLUMN "deletedAt" TIMESTAMP(3);
+ALTER TABLE "users" ADD COLUMN "mustResetPassword" BOOLEAN NOT NULL DEFAULT false;

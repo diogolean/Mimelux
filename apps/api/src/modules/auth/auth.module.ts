@@ -209,7 +209,7 @@ class AuthController {
       throw new HttpException("Too many attempts", HttpStatus.TOO_MANY_REQUESTS);
     }
     const user = await database.user.findUnique({ where: { email } });
-    if (!user || !(await compare(input.password, user.passwordHash))) {
+    if (!user || user.deletedAt || user.suspendedAt || !(await compare(input.password, user.passwordHash))) {
       recordEmailLoginFailure(email);
       throw new UnauthorizedException("Invalid credentials");
     }
@@ -222,6 +222,9 @@ class AuthController {
   @ApiOperation({ summary: "Register a user and return a token pair" })
   async register(@Body() body: unknown) {
     const input = parseBody(registerSchema, body);
+    if (input.role !== "FAN" && input.role !== "CREATOR" && input.role !== "AFFILIATE") {
+      throw new BadRequestException("Role is not allowed");
+    }
     const email = canonicalDemoEmail(input.email);
     try {
       const user = await database.user.create({

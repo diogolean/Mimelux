@@ -1,11 +1,11 @@
-import { Body, Controller, Headers, HttpCode, Module, Param, Post, RawBodyRequest, Req } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Headers, HttpCode, Module, Param, Post, RawBodyRequest, Req } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
 import { database } from "@mimelux/db/runtime";
 import Stripe from "stripe";
 import type { Request } from "express";
 import { createDoubleEntryLedger, calculateCommission } from "@mimelux/core/monetization";
-import { paymentProvider } from "./payment-gateways";
+import { paymentProvider, readStripePublishable, readStripeSecret, readStripeWebhookSecret } from "./payment-gateways";
 
 const demoPurchaseSchema = z.object({ mode: z.literal("demo") });
 const checkoutSchema = z.object({
@@ -18,10 +18,22 @@ const checkoutSchema = z.object({
 @ApiTags("payments")
 @Controller()
 class PaymentsController {
+  @Get("payments/config")
+  @ApiOperation({ summary: "Tell the client whether Stripe is configured" })
+  config() {
+    const secret = readStripeSecret();
+    const publishable = readStripePublishable();
+    if (!secret.ok || !publishable.ok) return { enabled: false, publishableKey: null, live: false };
+    return { enabled: true, publishableKey: publishable.key, live: secret.live };
+  }
+
   @Post("payments/checkout")
-  @ApiOperation({ summary: "Create a test checkout through the provider abstraction" })
+  @ApiOperation({ summary: "Create a checkout through the provider abstraction" })
   async createCheckout(@Body() body: unknown) {
     const input = checkoutSchema.parse(body);
+    if (input.provider === "stripe" && !readStripeSecret().ok) {
+      throw new BadRequestException("Stripe is not configured");
+    }
     return paymentProvider(input.provider).createCheckout({
       purchaseId: input.purchaseId,
       amountCents: input.amountCents,
@@ -50,13 +62,19 @@ class PaymentsController {
     @Req() request: RawBodyRequest<Request>,
   ) {
     if (provider !== "stripe") return { accepted: false, reason: "provider_stubbed" };
-    const secret = process.env.STRIPE_WEBHOOK_SECRET;
-    const key = process.env.STRIPE_SECRET_KEY;
-    if (!secret || !signature || !request.rawBody || !key?.startsWith("sk_test_")) {
-      return { accepted: false, reason: "stripe_test_webhook_not_configured" };
+    const secret = readStripeWebhookSecret();
+    const key = readStripeSecret();
+    if (!secret.ok || !key.ok || !request.rawBody) {
+      return { accepted: false, reason: "stripe_webhook_not_configured" };
     }
-    const stripe = new Stripe(key);
-    const event = stripe.webhooks.constructEvent(request.rawBody, signature, secret);
+    if (!signature) throw new BadRequestException("Invalid Stripe signature");
+    const stripe = new Stripe(key.key);
+    let event: Stripe.Event;
+    try {
+      event = stripe.webhooks.constructEvent(request.rawBody, signature, secret.key);
+    } catch {
+      throw new BadRequestException("Invalid Stripe signature");
+    }
     const existing = await database.paymentEvent.findUnique({
       where: { provider_providerId: { provider: "stripe", providerId: event.id } },
     });

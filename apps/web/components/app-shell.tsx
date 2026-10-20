@@ -19,7 +19,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { Button, Logo, Mark } from "@mimelux/ui";
-import type { AccountRole } from "@mimelux/core";
+import type { SessionRole } from "@mimelux/core";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { readDemo, writeDemo } from "@/lib/demo-store";
@@ -39,7 +39,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const t = useTranslations("nav");
   const currentCreator = creators[0]!;
   const session = useSyncExternalStore(subscribeSession, getSessionSnapshot, getServerSessionSnapshot);
-  const role: AccountRole = session.user?.role ?? "fan";
+  const role: SessionRole = session.user?.role ?? "fan";
   const [demoMode, setDemoMode] = useState(true);
   const [collapsed, setCollapsed] = useState(() =>
     typeof window === "undefined"
@@ -64,7 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  const areaHref = role === "affiliate" ? "/afiliados" : "/painel";
+  const areaHref = role === "admin" ? "/admin" : role === "affiliate" ? "/afiliados" : "/painel";
 
   return (
     <div className="min-h-dvh" data-testid="session-user" data-email={session.user?.email ?? ""} data-role={role}>

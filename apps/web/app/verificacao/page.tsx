@@ -6,6 +6,7 @@ import { ArrowLeft, CheckCircle2, Mail, ShieldCheck } from "lucide-react";
 import { Button, Logo } from "@mimelux/ui";
 import { contentMode } from "@mimelux/core";
 import { mockDelay, writeDemo } from "@/lib/demo-store";
+import { getSessionSnapshot } from "@/lib/session";
 
 export default function VerificationPage() {
   const router = useRouter();
@@ -38,7 +39,8 @@ export default function VerificationPage() {
     setLoading(true);
     await mockDelay();
     writeDemo({ verified: true });
-    router.push("/onboarding");
+    const role = getSessionSnapshot().user?.role ?? "fan";
+    router.push(`/onboarding?role=${role}`);
   }
 
   return (

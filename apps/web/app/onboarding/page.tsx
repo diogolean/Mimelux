@@ -59,7 +59,9 @@ function subscribe(callback: () => void) {
 function currentRole(): AccountRole {
   const fromQuery = new URLSearchParams(window.location.search).get("role");
   if (fromQuery === "affiliate" || fromQuery === "creator" || fromQuery === "fan") return fromQuery;
-  return getSessionSnapshot().user?.role ?? "fan";
+  const sessionRole = getSessionSnapshot().user?.role;
+  if (sessionRole === "affiliate" || sessionRole === "creator" || sessionRole === "fan") return sessionRole;
+  return "fan";
 }
 
 function finish(router: ReturnType<typeof useRouter>) {

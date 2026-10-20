@@ -1,5 +1,37 @@
 import Stripe from "stripe";
 
+type Env = Record<string, string | undefined>;
+
+function usable(value: string | undefined) {
+  const key = value?.trim() ?? "";
+  if (!key || key.includes("replace_me")) return "";
+  return key;
+}
+
+export function readStripeSecret(env: Env = process.env) {
+  const key = usable(env.STRIPE_SECRET_KEY);
+  if (!key) return { ok: false as const, reason: "missing" };
+  const live = key.startsWith("sk_live_");
+  if (live && env.STRIPE_ALLOW_LIVE !== "true") return { ok: false as const, reason: "live_disabled" };
+  if (!live && !key.startsWith("sk_test_")) return { ok: false as const, reason: "invalid" };
+  return { ok: true as const, key, live };
+}
+
+export function readStripePublishable(env: Env = process.env) {
+  const key = usable(env.STRIPE_PUBLISHABLE_KEY ?? env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+  if (!key) return { ok: false as const, reason: "missing" };
+  const live = key.startsWith("pk_live_");
+  if (live && env.STRIPE_ALLOW_LIVE !== "true") return { ok: false as const, reason: "live_disabled" };
+  if (!live && !key.startsWith("pk_test_")) return { ok: false as const, reason: "invalid" };
+  return { ok: true as const, key, live };
+}
+
+export function readStripeWebhookSecret(env: Env = process.env) {
+  const key = usable(env.STRIPE_WEBHOOK_SECRET);
+  if (!key) return { ok: false as const, reason: "missing" };
+  return { ok: true as const, key };
+}
+
 export type PaymentCheckout = {
   purchaseId: string;
   amountCents: number;
@@ -18,11 +50,11 @@ export interface PaymentProviderGateway {
 
 export class StripeTestGateway implements PaymentProviderGateway {
   async createCheckout(input: PaymentCheckout) {
-    const key = process.env.STRIPE_SECRET_KEY;
-    if (!key?.startsWith("sk_test_")) {
-      throw new Error("Stripe requires an sk_test_ key. Live keys are rejected.");
+    const key = readStripeSecret();
+    if (!key.ok) {
+      throw new Error(`Stripe is not configured (${key.reason})`);
     }
-    const stripe = new Stripe(key);
+    const stripe = new Stripe(key.key);
     const intent = await stripe.paymentIntents.create(
       {
         amount: input.amountCents,
