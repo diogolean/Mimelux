@@ -88,11 +88,10 @@ test("search filters fixtures and chat message persists", async ({ page }) => {
 test("creator dashboard keeps uploads local and generated media loads", async ({
   page,
 }) => {
-  await page.evaluate(() => {
-    const state = JSON.parse(localStorage.getItem("mimelux-demo") || "{}");
-    localStorage.setItem("mimelux-demo", JSON.stringify({ ...state, role: "creator" }));
-  });
-  await page.goto("/painel");
+  await page.goto("/auth?route=sign-in");
+  await page.getByLabel("Email ou CPF").fill("criadora@mimelux.com.br");
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
+  await expect(page).toHaveURL(/\/painel/);
   await page.locator('input[type="file"]').setInputFiles(
     "apps/web/public/media/generated/creator-luna-ferraz-avatar.jpg",
   );

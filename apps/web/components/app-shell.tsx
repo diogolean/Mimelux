@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -22,7 +22,8 @@ import { Button, Logo, Mark } from "@mimelux/ui";
 import type { AccountRole } from "@mimelux/core";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { readDemo, resetDemo, writeDemo } from "@/lib/demo-store";
+import { readDemo, writeDemo } from "@/lib/demo-store";
+import { getServerSessionSnapshot, getSessionSnapshot, logoutAccount, refreshSession, subscribeSession } from "@/lib/session";
 import { creators } from "@/lib/gateway";
 
 const items = [
@@ -37,7 +38,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const t = useTranslations("nav");
   const currentCreator = creators[0]!;
-  const [role, setRole] = useState<AccountRole>("fan");
+  const session = useSyncExternalStore(subscribeSession, getSessionSnapshot, getServerSessionSnapshot);
+  const role: AccountRole = session.user?.role ?? "fan";
   const [demoMode, setDemoMode] = useState(true);
   const [collapsed, setCollapsed] = useState(() =>
     typeof window === "undefined"
@@ -49,12 +51,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     window.localStorage.setItem("mimelux-sidebar-collapsed", String(next));
   }
   useEffect(() => {
-    const sync = () => {
-      const state = readDemo();
-      setRole(state.role);
-      setDemoMode(state.demoMode);
-    };
+    const sync = () => setDemoMode(readDemo().demoMode);
     sync();
+    void refreshSession();
     window.addEventListener("mimelux:state", sync);
     return () => window.removeEventListener("mimelux:state", sync);
   }, []);
@@ -68,7 +67,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const areaHref = role === "affiliate" ? "/afiliados" : "/painel";
 
   return (
-    <div className="min-h-dvh">
+    <div className="min-h-dvh" data-testid="session-user" data-email={session.user?.email ?? ""} data-role={role}>
       <aside
         data-collapsed={collapsed}
         className={`fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-border bg-background/92 backdrop-blur-xl transition-[width,padding] duration-300 lg:flex ${
@@ -136,16 +135,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <p className="truncate text-xs font-extrabold">{currentCreator.name}</p>
             <p className="truncate text-[10px] text-muted">@{currentCreator.username}</p>
           </div>}
-          {!collapsed && <button
+          <button
             aria-label={t("logout")}
             onClick={() => {
-              resetDemo();
-              router.push("/auth?route=sign-in");
+              void logoutAccount().then(() => router.push("/auth?route=sign-in"));
             }}
             className="grid size-9 place-items-center rounded-full text-muted hover:bg-black/5"
           >
             <LogOut className="size-4" />
-          </button>}
+          </button>
         </div>
       </aside>
 
@@ -180,6 +178,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <UserRound className="size-[18px]" />
             </Button>
           </Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t("logout")}
+            className="lg:hidden"
+            onClick={() => {
+              void logoutAccount().then(() => router.push("/auth?route=sign-in"));
+            }}
+          >
+            <LogOut className="size-[18px]" />
+          </Button>
           <Button variant="ghost" size="icon" aria-label="Menu" className="lg:hidden">
             <Menu className="size-[18px]" />
           </Button>

@@ -13,9 +13,10 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button, Logo, Mark } from "@mimelux/ui";
-import { DEMO_ACCOUNTS, isDemoAffiliateEmail, isDemoCreatorEmail, loginSchema, registerSchema, type AccountRole } from "@mimelux/core";
+import { DEMO_ACCOUNTS, loginSchema, registerSchema, type AccountRole } from "@mimelux/core";
 import { bindAttribution } from "@/lib/affiliates";
-import { mockDelay, readDemo, writeDemo } from "@/lib/demo-store";
+import { readDemo, writeDemo } from "@/lib/demo-store";
+import { loginAccount, registerAccount, socialAccount } from "@/lib/session";
 import { creators, posts } from "@/lib/gateway";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { MonetizeSection } from "@/components/monetize-section";
@@ -60,46 +61,39 @@ function AuthContent() {
       return;
     }
     setLoading(true);
-    await mockDelay();
-    if (!signUp && password !== DEMO_ACCOUNTS.fan.password) {
-      setLoading(false);
-      setError("No demo, use a senha mimelux123.");
-      return;
-    }
     const chosen: AccountRole = professional ? (role === "affiliate" ? "affiliate" : "creator") : "fan";
-    const nextRole: AccountRole = !signUp
-      ? professional
-        ? chosen
-        : isDemoCreatorEmail(email)
-          ? "creator"
-          : isDemoAffiliateEmail(email)
-            ? "affiliate"
-            : "fan"
-      : chosen;
-    const current = readDemo();
-    writeDemo({
-      signedIn: true,
-      role: nextRole,
-      verified: !signUp,
-      onboarding: !signUp,
-      ...(signUp ? bindAttribution(current, email) : { coachSeen: true }),
-    });
-    const destination = signUp ? "/verificacao" : roleHome(nextRole);
-    router.push(destination);
+    try {
+      if (signUp && result.success && "name" in result.data) {
+        writeDemo(bindAttribution(readDemo(), email));
+        await registerAccount({
+          name: result.data.name,
+          email: result.data.email,
+          password,
+          role: chosen,
+        });
+        router.push("/verificacao");
+        return;
+      }
+      const user = await loginAccount(email, password);
+      writeDemo({ onboarding: true, coachSeen: true });
+      router.push(roleHome(user.role));
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Não foi possível entrar.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function socialLogin(name: string) {
     setSocial(name);
-    await mockDelay(850);
     const nextRole: AccountRole = professional ? (role === "affiliate" ? "affiliate" : "creator") : "fan";
-    writeDemo({
-      signedIn: true,
-      role: nextRole,
-      verified: true,
-      onboarding: !signUp,
-      ...(signUp ? {} : { coachSeen: true }),
-    });
-    router.push(signUp ? "/onboarding" : roleHome(nextRole));
+    try {
+      const user = await socialAccount(name, nextRole);
+      router.push(signUp ? "/onboarding" : roleHome(user.role));
+    } catch (caught) {
+      setSocial("");
+      setError(caught instanceof Error ? caught.message : "Não foi possível entrar.");
+    }
   }
 
   return (

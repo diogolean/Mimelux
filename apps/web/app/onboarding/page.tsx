@@ -19,7 +19,8 @@ import { useTranslations } from "next-intl";
 import type { AccountRole } from "@mimelux/core";
 import { Button, Logo, Pill } from "@mimelux/ui";
 import { creators } from "@/lib/gateway";
-import { readDemo, writeDemo } from "@/lib/demo-store";
+import { writeDemo } from "@/lib/demo-store";
+import { getSessionSnapshot } from "@/lib/session";
 
 const interests = ["Lifestyle", "Fitness", "Música", "Gastronomia", "Moda", "Arte", "Viagem", "Bem-estar"];
 
@@ -58,12 +59,12 @@ function subscribe(callback: () => void) {
 function currentRole(): AccountRole {
   const fromQuery = new URLSearchParams(window.location.search).get("role");
   if (fromQuery === "affiliate" || fromQuery === "creator" || fromQuery === "fan") return fromQuery;
-  return readDemo().role;
+  return getSessionSnapshot().user?.role ?? "fan";
 }
 
 function finish(router: ReturnType<typeof useRouter>) {
   writeDemo({ onboarding: true, coachSeen: false });
-  const nextRole = readDemo().role;
+  const nextRole = getSessionSnapshot().user?.role ?? currentRole();
   router.push(
     nextRole === "affiliate"
       ? "/afiliados"

@@ -46,11 +46,10 @@ test("affiliate link signup and simulated subscription create a commission", asy
   await page.getByRole("button", { name: "Simular pagamento" }).click();
   await expect(page.getByText("Você faz parte!")).toBeVisible();
 
-  await page.evaluate(() => {
-    const state = JSON.parse(localStorage.getItem("mimelux-demo") || "{}");
-    localStorage.setItem("mimelux-demo", JSON.stringify({ ...state, role: "affiliate" }));
-  });
-  await page.goto("/afiliados");
+  await page.goto("/auth?route=sign-in");
+  await page.getByLabel("Email ou CPF").fill("afiliado@mimelux.com.br");
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
+  await expect(page).toHaveURL(/\/afiliados/);
   await expect(page.getByText("qa-tiktok").first()).toBeVisible();
   await expect(page.getByText("R$ 5,98").first()).toBeVisible();
 });

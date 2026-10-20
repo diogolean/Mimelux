@@ -3,16 +3,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import type { AccountRole } from "@mimelux/core";
-import { readDemo } from "./demo-store";
-
-function subscribe(callback: () => void) {
-  window.addEventListener("mimelux:state", callback);
-  window.addEventListener("storage", callback);
-  return () => {
-    window.removeEventListener("mimelux:state", callback);
-    window.removeEventListener("storage", callback);
-  };
-}
+import { getServerSessionSnapshot, getSessionSnapshot, refreshSession, subscribeSession } from "./session";
 
 export function roleHome(role: AccountRole) {
   if (role === "creator") return "/painel";
@@ -22,16 +13,20 @@ export function roleHome(role: AccountRole) {
 
 export function useRoleGuard(required: AccountRole) {
   const router = useRouter();
-  const role = useSyncExternalStore(
-    subscribe,
-    () => readDemo().role,
-    () => null as AccountRole | null,
-  );
+  const session = useSyncExternalStore(subscribeSession, getSessionSnapshot, getServerSessionSnapshot);
 
   useEffect(() => {
-    if (!role || role === required) return;
-    router.replace(roleHome(role));
-  }, [required, role, router]);
+    if (session.status === "loading") void refreshSession();
+  }, [session.status]);
 
-  return role === required;
+  useEffect(() => {
+    if (session.status !== "ready") return;
+    if (!session.user) {
+      router.replace("/auth?route=sign-in");
+      return;
+    }
+    if (session.user.role !== required) router.replace(roleHome(session.user.role));
+  }, [required, router, session]);
+
+  return session.status === "ready" && session.user?.role === required;
 }

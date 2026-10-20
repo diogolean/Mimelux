@@ -37,26 +37,19 @@ test("special request follows request, quote, pay and delivery states", async ({
   await page.getByLabel("Orçamento opcional").fill("120");
   await page.getByRole("button", { name: "Enviar pedido demo" }).click();
 
-  await page.evaluate(() => {
-    const state = JSON.parse(localStorage.getItem("mimelux-demo") || "{}");
-    localStorage.setItem(
-      "mimelux-demo",
-      JSON.stringify({ ...state, role: "creator" }),
-    );
-  });
-  await page.goto("/painel");
+  await page.goto("/auth?route=sign-in");
+  await page.getByLabel("Email ou CPF").fill("criadora@mimelux.com.br");
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
+  await expect(page).toHaveURL(/\/painel/);
   await page
     .getByTestId("special-request-card")
     .getByRole("button", { name: "Contrapropor R$ 150" })
     .click();
 
-  await page.evaluate(() => {
-    const state = JSON.parse(localStorage.getItem("mimelux-demo") || "{}");
-    localStorage.setItem(
-      "mimelux-demo",
-      JSON.stringify({ ...state, role: "fan" }),
-    );
-  });
+  await page.goto("/auth?route=sign-in");
+  await page.getByLabel("Email ou CPF").fill("fan@mimelux.com.br");
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
+  await expect(page).toHaveURL(/\/topcreators/);
   await page.goto("/creator/lunaferraz");
   await page
     .getByRole("button", { name: "Aceitar e simular pagamento" })
@@ -64,14 +57,10 @@ test("special request follows request, quote, pay and delivery states", async ({
   await page.getByRole("button", { name: "Simular pagamento" }).click();
   await expect(page.getByText("Pedido confirmado")).toBeVisible();
 
-  await page.evaluate(() => {
-    const state = JSON.parse(localStorage.getItem("mimelux-demo") || "{}");
-    localStorage.setItem(
-      "mimelux-demo",
-      JSON.stringify({ ...state, role: "creator" }),
-    );
-  });
-  await page.goto("/painel");
+  await page.goto("/auth?route=sign-in");
+  await page.getByLabel("Email ou CPF").fill("criadora@mimelux.com.br");
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
+  await expect(page).toHaveURL(/\/painel/);
   await page.getByRole("button", { name: "Marcar como entregue" }).click();
   await expect(page.getByTestId("special-request-card")).toContainText("delivered");
 });
