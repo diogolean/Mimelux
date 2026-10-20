@@ -4,6 +4,10 @@ import { database } from "@mimelux/db/runtime";
 
 const demoEmailAliases: Record<string, string> = {
   "creator@mimelux.com.br": "criadora@mimelux.com.br",
+  "creator@patrocino.com": "criadora@mimelux.com.br",
+  "criadora@patrocino.com": "criadora@mimelux.com.br",
+  "fan@patrocino.com": "fan@mimelux.com.br",
+  "afiliado@patrocino.com": "afiliado@mimelux.com.br",
   "creator@fanmimo.com": "criadora@mimelux.com.br",
   "creator@fanmimo.com.br": "criadora@mimelux.com.br",
   "criadora@fanmimo.com": "criadora@mimelux.com.br",

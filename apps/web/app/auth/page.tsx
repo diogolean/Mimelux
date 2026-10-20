@@ -138,7 +138,7 @@ function AuthContent() {
             <input
               name="email"
               aria-label="Email ou CPF"
-              defaultValue={signUp ? "" : "fan@fanmimo.com.br"}
+              defaultValue={signUp ? "" : "fan@patrocino.com"}
               placeholder={signUp ? "E-mail" : "E-mail ou CPF"}
               autoComplete="email"
               className="h-13 w-full rounded-full border border-black/8 bg-white/70 px-5 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15 dark:bg-white/5"

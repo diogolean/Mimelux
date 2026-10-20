@@ -13,19 +13,19 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://fanmimo.com.br"),
+  metadataBase: new URL("https://patrocino.com"),
   title: {
-    default: "FanMimo — perto de quem inspira",
-    template: "%s · FanMimo",
+    default: "Patrocino — perto de quem inspira",
+    template: "%s · Patrocino",
   },
   description:
     "Assine experiências exclusivas e apoie seus criadores favoritos.",
-  applicationName: "FanMimo",
+  applicationName: "Patrocino",
   openGraph: {
-    title: "FanMimo — perto de quem inspira",
+    title: "Patrocino — perto de quem inspira",
     description: "Assine experiências exclusivas e apoie seus criadores favoritos.",
-    siteName: "FanMimo",
-    url: "https://fanmimo.com.br",
+    siteName: "Patrocino",
+    url: "https://patrocino.com",
     locale: "pt_BR",
     type: "website",
   },

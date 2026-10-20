@@ -12,8 +12,8 @@ async function bootstrap() {
   });
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle("FanMimo API")
-    .setDescription("Versioned API contract for the FanMimo prototype.")
+    .setTitle("Patrocino API")
+    .setDescription("Versioned API contract for the Patrocino prototype.")
     .setVersion("0.1")
     .addBearerAuth()
     .build();

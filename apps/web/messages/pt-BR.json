@@ -25,7 +25,7 @@
     "signupTitle": "Crie sua conta",
     "loginBody": "Entre para descobrir conteúdos e experiências que não estão em nenhum outro lugar.",
     "signupBody": "Entre para uma comunidade feita de conexões reais e conteúdo único.",
-    "roleQuestion": "Como você quer usar a FanMimo?",
+    "roleQuestion": "Como você quer usar o Patrocino?",
     "roleBody": "Escolha uma área. Você pode conhecer as outras depois, neste demo.",
     "fan": "Fã",
     "fanBody": "Descubra criadores, assine e converse.",
@@ -91,7 +91,7 @@
     "socialX": "X",
     "socialTikTok": "TikTok",
     "fictitious": "Perfil fictício · imagem gerada por IA",
-    "since": "Na FanMimo desde 2025",
+    "since": "No Patrocino desde 2025",
     "chat": "Conversar"
   },
   "monetize": {
@@ -162,7 +162,7 @@
     "note": "Protótipo fictício. Estes links não são documentos jurídicos finais."
   },
   "landing": {
-    "presents": "Um criador FanMimo",
+    "presents": "Um criador Patrocino",
     "fictitious": "Perfil fictício · imagem gerada por IA",
     "promoted": "Link de divulgação de {affiliate}",
     "cta": "Quero fazer parte",
@@ -196,7 +196,7 @@
     "qr": "QR do link de divulgação",
     "breakdown": "Por criador e canal",
     "kit": "Kit de divulgação",
-    "kitCopy": "Acompanhe {name} na FanMimo. Perfil fictício, experiência premium e conteúdo no seu ritmo.",
+    "kitCopy": "Acompanhe {name} no Patrocino. Perfil fictício, experiência premium e conteúdo no seu ritmo.",
     "copyKit": "Copiar texto",
     "payouts": "Repasses simulados",
     "method": "Forma de recebimento",
@@ -244,6 +244,6 @@
     "saved": "Regra de afiliados salva na demonstração."
   },
   "legal": {
-    "demo": "Texto provisório de demonstração da FanMimo. Não é um documento jurídico."
+    "demo": "Texto provisório de demonstração do Patrocino. Não é um documento jurídico."
   }
 }

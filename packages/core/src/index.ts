@@ -51,13 +51,15 @@ export type TokenPair = {
 export const DEMO_ACCOUNTS = {
   fan: {
     email: "fan@mimelux.com.br",
-    aliases: ["fan@fanmimo.com", "fan@fanmimo.com.br"],
+    aliases: ["fan@patrocino.com", "fan@fanmimo.com", "fan@fanmimo.com.br"],
     password: "mimelux123",
   },
   creator: {
     email: "criadora@mimelux.com.br",
     alias: "creator@mimelux.com.br",
     aliases: [
+      "creator@patrocino.com",
+      "criadora@patrocino.com",
       "creator@fanmimo.com",
       "creator@fanmimo.com.br",
       "criadora@fanmimo.com",
@@ -67,7 +69,7 @@ export const DEMO_ACCOUNTS = {
   },
   affiliate: {
     email: "afiliado@mimelux.com.br",
-    aliases: ["afiliado@fanmimo.com", "afiliado@fanmimo.com.br"],
+    aliases: ["afiliado@patrocino.com", "afiliado@fanmimo.com", "afiliado@fanmimo.com.br"],
     password: "mimelux123",
   },
 } as const;

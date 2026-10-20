@@ -171,7 +171,7 @@ export default function AffiliateDashboardPage() {
               <Button className="mt-4" onClick={() => copy(absoluteLink)}><Copy className="size-4" /> {t("copy")}</Button>
               <div className="mt-5 flex items-center gap-4">
                 <div className="rounded-2xl bg-white p-3">
-                  <QRCodeSVG value={absoluteLink || "https://fanmimo.com.br"} size={112} includeMargin={false} />
+                  <QRCodeSVG value={absoluteLink || "https://patrocino.com"} size={112} includeMargin={false} />
                 </div>
                 <p className="text-[10px] leading-5 text-muted">{t("qr")}</p>
               </div>

@@ -1,4 +1,4 @@
-# FanMimo — next steps
+# Patrocino — next steps
 
 ## V0.1 follow-up
 

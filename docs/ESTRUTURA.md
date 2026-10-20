@@ -1,4 +1,4 @@
-# FanMimo — estrutura do MVP
+# Patrocino — estrutura do MVP
 
 Documento de arquitetura para revisão externa. Estado: protótipo mock-first; decisões de produção estão explicitamente separadas.
 

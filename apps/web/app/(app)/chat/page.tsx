@@ -56,7 +56,7 @@ export default function ChatPage() {
       </section>
       <div className="mt-6 flex items-center gap-3 rounded-[24px] bg-gradient-to-r from-primary/18 to-accent/20 p-4">
         <span className="grid size-10 place-items-center rounded-2xl bg-white/60"><MessageCircle className="size-4 text-primary-strong" /></span>
-        <div><p className="text-[10px] font-extrabold">Dica da FanMimo</p><p className="mt-1 text-[9px] text-muted">Criadores nunca pedirão dados de pagamento pelo chat.</p></div>
+        <div><p className="text-[10px] font-extrabold">Dica do Patrocino</p><p className="mt-1 text-[9px] text-muted">Criadores nunca pedirão dados de pagamento pelo chat.</p></div>
       </div>
     </div>
   );

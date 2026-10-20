@@ -1,6 +1,6 @@
-# FanMimo V0.3
+# Patrocino
 
-Premium, mobile-first creator subscription prototype for Brazil. It is a working mock-first demo: the web runs without PostgreSQL, NestJS, payment credentials, or external services. All people and metrics are fictitious; creator images are AI-generated and SFW.
+Premium, mobile-first creator subscription prototype for Brazil. This branch is the Patrocino variant (`patrocino.com`). The FanMimo brand stays on `main`. It is a working mock-first demo: the web runs without PostgreSQL, NestJS, payment credentials, or external services. All people and metrics are fictitious; creator images are AI-generated and SFW.
 
 ## Stack
 
@@ -56,7 +56,7 @@ test-only password/JWT authentication. No live payment, upload, or payout occurs
 | Creator | `criadora@mimelux.com.br` (alias `creator@mimelux.com.br`) | `mimelux123` |
 | Affiliate | `afiliado@mimelux.com.br` | `mimelux123` |
 
-The same accounts also sign in with `@fanmimo.com` and `@fanmimo.com.br` (`fan@`, `criadora@` or `creator@`, and `afiliado@`). The public site is [fanmimo.com.br](https://fanmimo.com.br).
+The same accounts also sign in with `@patrocino.com` (`fan@`, `criadora@` or `creator@`, and `afiliado@`), and with the earlier `@fanmimo.com` and `@fanmimo.com.br` aliases. The public site for this variant is [patrocino.com](https://patrocino.com). The login field starts on `fan@patrocino.com`. The password stays `mimelux123`.
 
 The affiliate demo identity is Nara Costa, code `nara`. Promotion links look like `/r/nara/lunaferraz?lang=pt-BR&sub=tiktok`. See [`docs/AFFILIATES.md`](docs/AFFILIATES.md).
 

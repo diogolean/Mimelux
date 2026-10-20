@@ -1,4 +1,4 @@
-# Stack do FanMimo
+# Stack do Patrocino
 
 Versões fixadas para o MVP:
 

@@ -15,11 +15,10 @@ import {
   Menu,
   MessageCircle,
   Search,
-  Sparkles,
   TrendingUp,
   UserRound,
 } from "lucide-react";
-import { Button, Logo } from "@mimelux/ui";
+import { Button, Logo, Mark } from "@mimelux/ui";
 import type { AccountRole } from "@mimelux/core";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -79,7 +78,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex items-center justify-between">
           {collapsed ? (
             <span className="grid size-10 place-items-center rounded-[14px] bg-foreground text-background">
-              <Sparkles className="size-5" />
+              <Mark className="size-6" />
             </span>
           ) : (
             <Logo compact />
@@ -155,7 +154,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       }`}>
         <div className="lg:hidden"><Logo compact /></div>
         <div className="hidden lg:block">
-          <p className="text-[10px] font-bold uppercase tracking-[.18em] text-muted">FanMimo</p>
+          <p className="text-[10px] font-bold uppercase tracking-[.18em] text-muted">Patrocino</p>
           <p className="text-xs font-extrabold">{t("space")}</p>
         </div>
         <div className="flex items-center gap-1.5">

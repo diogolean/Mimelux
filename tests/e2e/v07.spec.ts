@@ -36,13 +36,14 @@ test("FanMimo aliases reach the same homes as the original demo accounts", async
   await expect(page).toHaveURL(/\/afiliados$/);
 });
 
-test("login and profile show FanMimo and not the previous brand", async ({ page }) => {
+test("login and profile show Patrocino and not the previous brands", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await acceptCookies(page);
   await page.goto("/auth?route=sign-in");
-  await expect(page.getByText("FanMimo").first()).toBeVisible();
+  await expect(page.getByText("Patrocino").first()).toBeVisible();
+  await expect(page.locator("body")).not.toContainText("FanMimo");
   await expect(page.locator("body")).not.toContainText("Mimelux", { ignoreCase: false });
-  await expect(page).toHaveTitle(/FanMimo/);
+  await expect(page).toHaveTitle(/Patrocino/);
   await shot(page, "v7-login-desktop");
   await page.getByTestId("creator-hero").scrollIntoViewIfNeeded();
   await page.waitForTimeout(400);
@@ -52,7 +53,7 @@ test("login and profile show FanMimo and not the previous brand", async ({ page 
   await page.waitForTimeout(400);
   await acceptCookies(page);
   await page.goto("/auth?route=sign-in");
-  await expect(page.getByText("FanMimo").first()).toBeVisible();
+  await expect(page.getByText("Patrocino").first()).toBeVisible();
   await expect(page.getByRole("button", { name: "Entendi" })).toHaveCount(0);
   await shot(page, "v7-login-mobile");
   await page.getByTestId("creator-hero").scrollIntoViewIfNeeded();
@@ -62,6 +63,7 @@ test("login and profile show FanMimo and not the previous brand", async ({ page 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.waitForTimeout(400);
   await page.goto("/creator/lunaferraz");
+  await expect(page.locator("body")).not.toContainText("FanMimo");
   await expect(page.locator("body")).not.toContainText("Mimelux", { ignoreCase: false });
   await page.evaluate(() => window.scrollTo(0, 0));
   await shot(page, "v7-profile-desktop");

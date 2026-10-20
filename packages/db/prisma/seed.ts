@@ -28,7 +28,7 @@ async function main() {
     const email =
       username === "lunaferraz"
         ? "criadora@mimelux.com.br"
-        : `${username}@creators.fanmimo.com`;
+        : `${username}@creators.patrocino.com`;
     const user = await prisma.user.upsert({
       where: { email },
       update: { passwordHash: demoPasswordHash, isDemo: true },
