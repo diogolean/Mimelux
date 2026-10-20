@@ -1,4 +1,5 @@
 import type { AccountRole } from "@mimelux/core";
+import { upstreamAuthHeaders } from "./client-ip";
 
 export type SessionUser = {
   id: string;
@@ -40,10 +41,10 @@ export function toSessionUser(user: ApiUser): SessionUser {
   };
 }
 
-export async function apiAuth(path: string, body: unknown) {
+export async function apiAuth(path: string, body: unknown, request?: Request) {
   const response = await fetch(`${apiBase()}${path}`, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", ...upstreamAuthHeaders(request) },
     body: JSON.stringify(body),
     cache: "no-store",
   });

@@ -6,6 +6,8 @@ import {
   Get,
   Headers,
   HttpCode,
+  HttpException,
+  HttpStatus,
   Module,
   Post,
   UnauthorizedException,
@@ -18,7 +20,9 @@ import { compare, hash } from "bcryptjs";
 import { createHash, randomBytes } from "node:crypto";
 import { sign, verify } from "jsonwebtoken";
 import { z } from "zod";
+import { resolveClientIp } from "./client-ip";
 import { createEmailSender } from "./email-sender";
+import { clearEmailLoginFailures, emailLoginBlocked, recordEmailLoginFailure } from "./login-failures";
 
 const demoEmailAliases: Record<string, string> = {
   "creator@mimelux.com.br": "criadora@mimelux.com.br",
@@ -200,12 +204,16 @@ class AuthController {
   @ApiOperation({ summary: "Authenticate with credentials and return native-ready tokens" })
   async login(@Body() body: unknown) {
     const input = parseBody(credentialsSchema, body);
-    const user = await database.user.findUnique({
-      where: { email: canonicalDemoEmail(input.email) },
-    });
+    const email = canonicalDemoEmail(input.email);
+    if (emailLoginBlocked(email)) {
+      throw new HttpException("Too many attempts", HttpStatus.TOO_MANY_REQUESTS);
+    }
+    const user = await database.user.findUnique({ where: { email } });
     if (!user || !(await compare(input.password, user.passwordHash))) {
+      recordEmailLoginFailure(email);
       throw new UnauthorizedException("Invalid credentials");
     }
+    clearEmailLoginFailures(email);
     return persistSession(user);
   }
 
@@ -304,6 +312,7 @@ class AuthController {
 @Module({
   imports: [
     ThrottlerModule.forRoot({
+      getTracker: (req) => resolveClientIp(req),
       throttlers: [
         {
           ttl: Number(process.env.AUTH_RATE_TTL_MS ?? 60_000),

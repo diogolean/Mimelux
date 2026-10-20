@@ -2,9 +2,11 @@ import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
+import { applyTrustProxy } from "./http";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { rawBody: true });
+  applyTrustProxy(app);
   app.setGlobalPrefix("v1");
   app.enableCors({
     origin: process.env.WEB_ORIGIN ?? "http://localhost:3333",

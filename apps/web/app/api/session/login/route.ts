@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   const { response, data } = await apiAuth("/auth/login", {
     email: body?.email ?? "",
     password: body?.password ?? "",
-  });
+  }, request);
   if (!response.ok || !data.user || !data.accessToken || !data.refreshToken) {
     return NextResponse.json(
       { message: authErrorMessage(response.status, "Não foi possível entrar.") },

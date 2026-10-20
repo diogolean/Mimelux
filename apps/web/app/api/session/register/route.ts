@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     email: body?.email ?? "",
     password: body?.password ?? "",
     role: toApiRole(body?.role ?? "fan"),
-  });
+  }, request);
   if (!response.ok || !data.user || !data.accessToken || !data.refreshToken) {
     return NextResponse.json(
       { message: authErrorMessage(response.status, "Não foi possível criar a conta.") },

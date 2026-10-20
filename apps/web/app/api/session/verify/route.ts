@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     destination.searchParams.set("verified", "0");
     return NextResponse.redirect(destination);
   }
-  const { response } = await apiAuth("/auth/verify-email", { token });
+  const { response } = await apiAuth("/auth/verify-email", { token }, request);
   destination.searchParams.set("verified", response.ok ? "1" : "0");
   return NextResponse.redirect(destination);
 }
