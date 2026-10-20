@@ -13,7 +13,15 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button, Logo, Mark } from "@mimelux/ui";
-import { DEMO_ACCOUNTS, loginSchema, registerSchema, type AccountRole } from "@mimelux/core";
+import {
+  DEMO_ACCOUNTS,
+  isDemoAffiliateEmail,
+  isDemoCreatorEmail,
+  isDemoFanEmail,
+  loginSchema,
+  registerSchema,
+  type AccountRole,
+} from "@mimelux/core";
 import { bindAttribution } from "@/lib/affiliates";
 import { readDemo, writeDemo } from "@/lib/demo-store";
 import { loginAccount, registerAccount, socialAccount } from "@/lib/session";
@@ -24,6 +32,21 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { toast } from "sonner";
 import { roleHome } from "@/lib/use-role-guard";
 
+const demoPassword = DEMO_ACCOUNTS.fan.password;
+
+function demoLoginFor(role: AccountRole) {
+  if (role === "creator") return { email: "criadora@patrocino.com", password: DEMO_ACCOUNTS.creator.password };
+  if (role === "affiliate") return { email: "afiliado@patrocino.com", password: DEMO_ACCOUNTS.affiliate.password };
+  return { email: "fan@patrocino.com", password: DEMO_ACCOUNTS.fan.password };
+}
+
+function stillDemoLogin(email: string, password: string) {
+  const value = email.trim().toLowerCase();
+  if (!value) return password === "" || password === demoPassword;
+  if (password !== demoPassword) return false;
+  return isDemoFanEmail(value) || isDemoCreatorEmail(value) || isDemoAffiliateEmail(value);
+}
+
 function AuthContent() {
   const router = useRouter();
   const params = useSearchParams();
@@ -33,6 +56,24 @@ function AuthContent() {
   const preset = requestedRole === "creator" || requestedRole === "affiliate" ? requestedRole : "fan";
   const [role, setRole] = useState<AccountRole>(preset);
   const [professional, setProfessional] = useState(preset !== "fan");
+  const initialLogin = signUp ? { email: "", password: "" } : demoLoginFor(preset);
+  const [email, setEmail] = useState(initialLogin.email);
+  const [password, setPassword] = useState(initialLogin.password);
+  const mode = signUp ? "up" : "in";
+  const [seenMode, setSeenMode] = useState(mode);
+  if (seenMode !== mode) {
+    setSeenMode(mode);
+    if (signUp) {
+      if (stillDemoLogin(email, password)) {
+        setEmail("");
+        setPassword("");
+      }
+    } else if (!email.trim() || stillDemoLogin(email, password)) {
+      const demo = demoLoginFor(role);
+      setEmail(demo.email);
+      setPassword(demo.password);
+    }
+  }
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [social, setSocial] = useState("");
@@ -41,12 +82,18 @@ function AuthContent() {
   const featuredCreator = creators[0]!;
   const featuredPost = posts[0]!;
 
+  function chooseRole(next: AccountRole) {
+    setRole(next);
+    if (signUp || !stillDemoLogin(email, password)) return;
+    const demo = demoLoginFor(next);
+    setEmail(demo.email);
+    setPassword(demo.password);
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     const form = new FormData(event.currentTarget);
-    const password = String(form.get("password") || "");
-    const email = String(form.get("email") || "");
     const result = signUp
       ? registerSchema.safeParse({
           name: form.get("name"),
@@ -131,7 +178,8 @@ function AuthContent() {
             <input
               name="email"
               aria-label="Email ou CPF"
-              defaultValue={signUp ? "" : "fan@patrocino.com"}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               placeholder={signUp ? "E-mail" : "E-mail ou CPF"}
               autoComplete="email"
               className="h-13 w-full rounded-full border border-black/8 bg-white/70 px-5 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15 dark:bg-white/5"
@@ -140,7 +188,8 @@ function AuthContent() {
               <input
                 name="password"
                 aria-label="Senha"
-                defaultValue={signUp ? "" : DEMO_ACCOUNTS.fan.password}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
                 type={visible ? "text" : "password"}
                 placeholder="Senha"
                 autoComplete={signUp ? "new-password" : "current-password"}
@@ -176,9 +225,9 @@ function AuthContent() {
               affiliateLabel={t("affiliate")}
               onProfessional={(next) => {
                 setProfessional(next);
-                setRole(next ? (role === "affiliate" ? "affiliate" : "creator") : "fan");
+                chooseRole(next ? (role === "affiliate" ? "affiliate" : "creator") : "fan");
               }}
-              onRole={setRole}
+              onRole={chooseRole}
             />
             <Button type="submit" size="lg" className="mt-2 w-full" disabled={loading}>
               {loading ? <LoaderCircle className="size-4 animate-spin" /> : null}
