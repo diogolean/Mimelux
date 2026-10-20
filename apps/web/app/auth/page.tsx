@@ -10,10 +10,9 @@ import {
   LoaderCircle,
   Music2,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button, Logo } from "@mimelux/ui";
+import { Button, Logo, Mark } from "@mimelux/ui";
 import { DEMO_ACCOUNTS, isDemoAffiliateEmail, isDemoCreatorEmail, loginSchema, registerSchema, type AccountRole } from "@mimelux/core";
 import { bindAttribution } from "@/lib/affiliates";
 import { mockDelay, readDemo, writeDemo } from "@/lib/demo-store";
@@ -253,16 +252,19 @@ function AuthContent() {
                 <div className="mt-2 h-2 w-3/5 rounded-full bg-surface" />
               </div>
             </div>
-            <span className="absolute -right-8 top-20 grid size-16 place-items-center rounded-3xl bg-primary shadow-xl">
-              <Sparkles className="size-7 text-ink" />
+            <span
+              data-testid="auth-mark"
+              className="absolute -right-8 top-20 grid size-16 place-items-center rounded-3xl bg-foreground text-background shadow-xl"
+            >
+              <Mark className="size-10" />
             </span>
           </div>
         </div>
         <div className="absolute inset-x-12 bottom-12">
-          <h2 className="max-w-lg text-4xl font-extrabold leading-[1.1] tracking-[-.045em] text-ink">
+          <h2 className="max-w-lg text-4xl font-extrabold leading-[1.1] tracking-[-.045em] text-foreground">
             {t("panelTitle")}
           </h2>
-          <p className="mt-4 max-w-md text-sm leading-6 text-black/55">
+          <p className="mt-4 max-w-md text-sm leading-6 text-muted">
             {t("panelBody")}
           </p>
         </div>

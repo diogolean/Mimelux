@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { Logo, Mark } from "@mimelux/ui";
+import { Logo, Mark, StarMark, starConcepts } from "@mimelux/ui";
 
 const lightVars = {
   "--background": "#F7F7FB",
@@ -75,6 +75,42 @@ function Board({
   );
 }
 
+function Options({
+  id,
+  vars,
+  label,
+}: {
+  id: string;
+  vars: CSSProperties;
+  label: string;
+}) {
+  return (
+    <section
+      data-testid={id}
+      style={vars}
+      className="rounded-[28px] bg-background px-5 py-8 text-foreground sm:px-8"
+    >
+      <p className="text-[10px] font-bold uppercase tracking-[.22em] text-muted">{label}</p>
+      <p className="mt-2 text-xs text-muted">Apoio continua como padrão. Estas são alternativas com estrela.</p>
+      <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {starConcepts.map((concept) => (
+          <div key={concept.id} data-testid={`${id}-${concept.id}`}>
+            <p className="text-xs font-semibold uppercase tracking-[.16em] text-primary-strong">
+              {concept.id.toUpperCase()} · {concept.name}
+            </p>
+            <p className="mt-1 text-[11px] leading-5 text-muted">{concept.line}</p>
+            <div className="mt-4 flex items-end gap-5">
+              <StarMark id={concept.id} title={concept.name} className="size-20" />
+              <StarMark id={concept.id} className="size-8" />
+              <StarMark id={concept.id} className="size-4" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function BrandPage() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-5xl flex-col gap-6 px-4 py-10 sm:px-8">
@@ -82,11 +118,13 @@ export default function BrandPage() {
         <p className="text-[11px] font-medium uppercase tracking-[.28em] text-primary-strong">Identidade</p>
         <h1 className="mt-3 text-4xl font-medium tracking-[-.04em]">Patrocino</h1>
         <p className="mt-3 max-w-xl text-sm leading-6 text-muted">
-          Duas marcas originais. Apoio, o P com um coração, é o padrão. Centelha troca o coração por uma faísca.
+          Apoio, o P com um coração, segue como padrão. A a F são estudos de P com estrela.
         </p>
       </header>
-      <Board id="logo-board-light" vars={lightVars} label="Fundo claro" />
-      <Board id="logo-board-dark" vars={darkVars} label="Fundo escuro" />
+      <Options id="logo-options-light" vars={lightVars} label="Fundo claro" />
+      <Options id="logo-options-dark" vars={darkVars} label="Fundo escuro" />
+      <Board id="logo-board-light" vars={lightVars} label="Padrão atual · fundo claro" />
+      <Board id="logo-board-dark" vars={darkVars} label="Padrão atual · fundo escuro" />
     </main>
   );
 }
