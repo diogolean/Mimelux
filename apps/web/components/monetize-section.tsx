@@ -37,7 +37,7 @@ export function MonetizeSection() {
     <div data-testid="monetize-section" className="relative z-10 bg-background">
       <section
         data-testid="creator-hero"
-        className="grid min-h-[calc(100dvh-1rem)] lg:grid-cols-[minmax(320px,0.78fr)_1.22fr]"
+        className="grid lg:grid-cols-[minmax(480px,0.9fr)_1.1fr]"
       >
         <div className="flex flex-col justify-center px-8 py-20 sm:px-14 lg:px-16 xl:px-24">
           <p className="text-[11px] font-medium uppercase tracking-[.28em] text-primary-strong">
@@ -179,7 +179,7 @@ function FeaturedCarousel({ demoLabel }: { demoLabel: string }) {
   return (
     <div
       data-testid="creator-slideshow"
-      className="relative min-h-[72vh] min-w-0 lg:min-h-[calc(100dvh-1rem)]"
+      className="relative mx-3 mb-3 mt-3 min-h-[72vh] min-w-0 overflow-hidden rounded-[36px] lg:mt-0 lg:min-h-[calc(100dvh-1.5rem)]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={(event) => {
@@ -196,7 +196,7 @@ function FeaturedCarousel({ demoLabel }: { demoLabel: string }) {
         setPaused(false);
       }}
     >
-      <div className="absolute inset-y-0 right-0 left-0 overflow-hidden bg-ink lg:left-8 xl:left-14">
+      <div className="absolute inset-0 overflow-hidden bg-ink">
         <div
           className="flex h-full transition-transform duration-700 ease-out"
           style={{ transform: `translateX(-${active * 100}%)` }}
@@ -211,7 +211,7 @@ function FeaturedCarousel({ demoLabel }: { demoLabel: string }) {
               <img
                 src={creator.cover}
                 alt=""
-                className="h-full min-h-[72vh] w-full object-cover lg:min-h-[calc(100dvh-1rem)]"
+                className="h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-ink/10" />
               <div className="absolute inset-x-0 bottom-0 flex items-end gap-4 p-6 text-white sm:p-8">
@@ -226,7 +226,7 @@ function FeaturedCarousel({ demoLabel }: { demoLabel: string }) {
           ))}
         </div>
       </div>
-      <div className="absolute inset-y-auto top-6 right-0 left-0 z-10 flex items-center justify-between px-6 sm:px-8 lg:left-8 xl:left-14">
+      <div className="absolute inset-x-0 top-6 z-10 flex items-center justify-between px-6 sm:px-8">
         <div className="flex gap-2">
           {featured.map((creator, index) => (
             <button
