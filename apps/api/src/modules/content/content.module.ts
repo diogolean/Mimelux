@@ -1,7 +1,9 @@
-import { Body, Controller, Get, HttpCode, Module, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Headers, HttpCode, Module, Param, Post, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { database } from "@mimelux/db/runtime";
 import { z } from "zod";
+import { optionalUser } from "../auth/require-user";
+import { viewerHasAccess } from "../payments/billing";
 
 const createPostSchema = z.object({
   caption: z.string().min(1).max(500),
@@ -29,8 +31,26 @@ class ContentController {
   }
 
   @Get("posts/:id")
-  get(@Param("id") id: string) {
-    return { item: null, id, source: "api-shell" };
+  async get(@Param("id") id: string, @Headers("authorization") authorization: string | undefined) {
+    const post = await database.post.findUnique({
+      where: { id },
+      include: { media: true },
+    });
+    if (!post) return { item: null, id, source: "api-shell" };
+    const subscriberOnly = post.visibility === "SUBSCRIBERS";
+    const viewer = subscriberOnly ? await optionalUser(authorization) : null;
+    const access = !subscriberOnly || (viewer ? await viewerHasAccess(viewer.id, post.creatorId) : false);
+    return {
+      item: {
+        id: post.id,
+        creatorId: post.creatorId,
+        caption: access ? post.caption : "",
+        visibility: post.visibility,
+        locked: !access,
+        media: access ? post.media : [],
+      },
+      source: "postgres",
+    };
   }
 
   @Get("posts/:id/comments")

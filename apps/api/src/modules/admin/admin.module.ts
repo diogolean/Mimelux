@@ -21,6 +21,7 @@ import { randomBytes } from "node:crypto";
 import { verify } from "jsonwebtoken";
 import { z } from "zod";
 import { ensureAdmins } from "./ensure-admin";
+import { AdminRevenueController } from "./admin-revenue.controller";
 
 const roles = ["FAN", "CREATOR", "AFFILIATE", "ADMIN"] as const;
 const patchSchema = z.object({
@@ -243,7 +244,7 @@ class AdminBoot implements OnModuleInit {
 }
 
 @Module({
-  controllers: [AdminController],
+  controllers: [AdminController, AdminRevenueController],
   providers: [AdminBoot],
 })
 export class AdminModule {}

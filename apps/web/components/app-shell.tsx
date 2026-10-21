@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Compass,
   Database,
+  CreditCard,
   House,
   LogOut,
   Menu,
@@ -31,6 +32,7 @@ const items = [
   { href: "/topcreators?tab=top-creators", match: "/topcreators", label: "trending", icon: TrendingUp },
   { href: "/chat", label: "chat", icon: MessageCircle },
   { href: "/busca", label: "search", icon: Search },
+  { href: "/assinaturas", label: "billing", icon: CreditCard },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {

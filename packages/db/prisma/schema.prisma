@@ -45,8 +45,14 @@ enum CreatorStatus {
 enum SubscriptionStatus {
   PENDING
   ACTIVE
+  PAST_DUE
   CANCELED
   EXPIRED
+}
+
+enum OwnershipType {
+  HOUSE
+  INDEPENDENT
 }
 
 enum ContentVisibility {
@@ -106,6 +112,7 @@ model User {
   emailVerificationTokenHash String?
   emailVerificationExpiresAt DateTime?
   refreshTokenHash           String?
+  stripeCustomerId String?          @unique
   suspendedAt      DateTime?
   deletedAt        DateTime?
   mustResetPassword Boolean         @default(false)
@@ -141,6 +148,9 @@ model Creator {
   commissionOnPpv      Boolean          @default(true)
   commissionOnPacks    Boolean          @default(true)
   commissionOnRequests Boolean          @default(true)
+  ownership            OwnershipType    @default(HOUSE)
+  creatorShareBps      Int?
+  affiliateCommissionBps Int?
   isDemo               Boolean          @default(false)
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
@@ -185,6 +195,8 @@ model Plan {
   durationMonths  Int            @default(1)
   discountPercent Int            @default(0)
   active          Boolean        @default(true)
+  stripeProductId String?
+  stripePriceId   String?
   isDemo          Boolean        @default(false)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
@@ -204,11 +216,15 @@ model Subscription {
   planId    String
   plan      Plan               @relation(fields: [planId], references: [id])
   status    SubscriptionStatus @default(PENDING)
-  startsAt  DateTime?
-  endsAt    DateTime?
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
-  isDemo    Boolean            @default(false)
+  startsAt            DateTime?
+  endsAt              DateTime?
+  currentPeriodEnd    DateTime?
+  cancelAtPeriodEnd   Boolean            @default(false)
+  stripeSubscriptionId String?           @unique
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  isDemo              Boolean            @default(false)
+  purchases           Purchase[]
 
   @@unique([fanId, creatorId])
   @@index([creatorId, status])
@@ -274,6 +290,9 @@ model Purchase {
   amountCents    Int
   currency       String          @default("BRL")
   idempotencyKey String          @unique
+  subscriptionId String?
+  subscription   Subscription?   @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  providerRef    String?
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   isDemo         Boolean         @default(false)
@@ -284,7 +303,18 @@ model Purchase {
 
   @@index([buyerId, status])
   @@index([creatorId, status])
+  @@index([subscriptionId])
+  @@index([providerRef])
   @@map("purchases")
+}
+
+model PlatformSettings {
+  id                     String   @id @default("default")
+  creatorShareBps        Int      @default(8000)
+  affiliateCommissionBps Int      @default(1000)
+  updatedAt              DateTime @updatedAt
+
+  @@map("platform_settings")
 }
 
 model Conversation {

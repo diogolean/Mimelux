@@ -89,9 +89,84 @@ export function calculateCommission(
 
 export type LedgerDraft = {
   direction: "DEBIT" | "CREDIT";
-  account: "platform_cash" | "creator_payable" | "affiliate_payable";
+  account: "platform_cash" | "creator_payable" | "affiliate_payable" | "platform_revenue";
   amountCents: number;
 };
+
+export type OwnershipType = "HOUSE" | "INDEPENDENT";
+
+export type RevenueSplitInput = {
+  grossCents: number;
+  ownership: OwnershipType;
+  creatorShareBps: number;
+  affiliateCommissionBps: number;
+  referred: boolean;
+};
+
+function assertBps(value: number, label: string) {
+  if (!Number.isInteger(value) || value < 0 || value > 10_000) {
+    throw new Error(`${label} must be valid basis points.`);
+  }
+}
+
+/**
+ * HOUSE: the platform keeps the sale. An affiliate commission is deducted from that revenue.
+ * INDEPENDENT: the creator keeps creatorShareBps and the platform keeps the rest.
+ * An affiliate commission on an independent sale is deducted from the creator share.
+ * Internal balances only; a later Stripe Connect transfer can pay creator_payable and affiliate_payable.
+ */
+export function splitRevenue(input: RevenueSplitInput): LedgerDraft[] {
+  const { grossCents, ownership, referred } = input;
+  if (!Number.isInteger(grossCents) || grossCents <= 0) {
+    throw new Error("Gross must be a positive integer.");
+  }
+  assertBps(input.creatorShareBps, "Creator share");
+  assertBps(input.affiliateCommissionBps, "Affiliate commission");
+
+  let creator = 0;
+  let affiliate = 0;
+  if (ownership === "HOUSE") {
+    affiliate = referred ? Math.round((grossCents * input.affiliateCommissionBps) / 10_000) : 0;
+    if (affiliate > grossCents) affiliate = grossCents;
+  } else {
+    creator = Math.round((grossCents * input.creatorShareBps) / 10_000);
+    affiliate = referred ? Math.round((grossCents * input.affiliateCommissionBps) / 10_000) : 0;
+    if (affiliate > creator) {
+      throw new Error("Affiliate commission cannot exceed the creator share.");
+    }
+    creator -= affiliate;
+  }
+  const platform = grossCents - creator - affiliate;
+  const entries: LedgerDraft[] = [
+    { direction: "DEBIT", account: "platform_cash", amountCents: grossCents },
+  ];
+  if (creator > 0) entries.push({ direction: "CREDIT", account: "creator_payable", amountCents: creator });
+  if (affiliate > 0) entries.push({ direction: "CREDIT", account: "affiliate_payable", amountCents: affiliate });
+  if (platform > 0) entries.push({ direction: "CREDIT", account: "platform_revenue", amountCents: platform });
+  return entries;
+}
+
+export function reverseLedger(entries: LedgerDraft[]): LedgerDraft[] {
+  return entries.map((entry) => ({
+    ...entry,
+    direction: entry.direction === "DEBIT" ? "CREDIT" : "DEBIT",
+  }));
+}
+
+export function planChargeCents(plan: { priceCents: number; discountPercent: number }) {
+  const discount = Math.min(95, Math.max(0, plan.discountPercent));
+  return Math.max(0, Math.round(plan.priceCents * (1 - discount / 100)));
+}
+
+export function subscriptionGrantsAccess(input: {
+  status: string;
+  currentPeriodEnd: Date | null;
+  now?: Date;
+}) {
+  const now = input.now ?? new Date();
+  if (!input.currentPeriodEnd || input.currentPeriodEnd.getTime() <= now.getTime()) return false;
+  return input.status === "ACTIVE" || input.status === "PAST_DUE" || input.status === "CANCELED";
+}
 
 export function createDoubleEntryLedger(
   amountCents: number,

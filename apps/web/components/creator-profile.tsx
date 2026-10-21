@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   BadgeCheck,
   ChevronDown,
   Heart,
   ImageIcon,
+  LoaderCircle,
   LockKeyhole,
   MessageCircle,
   Sparkles,
@@ -21,7 +23,9 @@ import { readDemo, writeDemo, type DemoReview, type DemoSpecialRequest } from "@
 import { toast } from "sonner";
 
 export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Post[] }) {
+  const router = useRouter();
   const t = useTranslations("profile");
+  const [subscribing, setSubscribing] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const [unlocks, setUnlocks] = useState<string[]>([]);
   const [tab, setTab] = useState<"posts" | "media">("posts");
@@ -137,6 +141,32 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
     return `/checkout?kind=subscription&id=${creator.id}&plan=${plan?.id ?? "monthly"}&return=/creator/${creator.username}`;
   }
 
+  function subscribeWithCard() {
+    setSubscribing(true);
+    void fetch("/api/subscriptions/checkout", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ creatorId: creator.username, planId: "monthly" }),
+    })
+      .then(async (response) => {
+        const data = (await response.json().catch(() => ({}))) as { url?: string; message?: string };
+        if (response.status === 401) {
+          router.push("/auth?route=sign-in");
+          return;
+        }
+        if (!response.ok) throw new Error(data.message || "Não foi possível assinar.");
+        if (data.url) {
+          window.location.href = data.url;
+          return;
+        }
+        router.push("/assinaturas");
+      })
+      .catch((caught: unknown) => {
+        toast.error(caught instanceof Error ? caught.message : "Não foi possível assinar.");
+      })
+      .finally(() => setSubscribing(false));
+  }
+
   const planGlow =
     "shadow-[0_0_0_1px_color-mix(in_srgb,var(--primary)_45%,transparent),0_10px_24px_-14px_color-mix(in_srgb,var(--primary)_80%,transparent)] transition-shadow duration-300 hover:shadow-[0_0_0_1px_var(--primary),0_0_28px_color-mix(in_srgb,var(--primary)_70%,transparent)] focus-visible:outline-none focus-visible:shadow-[0_0_0_1px_var(--primary),0_0_28px_color-mix(in_srgb,var(--primary)_70%,transparent)] motion-reduce:transition-none";
 
@@ -206,7 +236,19 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
       </div>
 
       <section data-testid="profile-plans" className="mt-3">
-        <h2 className="text-xs font-semibold leading-4">{t("subscriptions")}</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-xs font-semibold leading-4">{t("subscriptions")}</h2>
+          <button
+            type="button"
+            data-testid="subscribe-card"
+            disabled={subscribing || creator.free}
+            onClick={subscribeWithCard}
+            className="inline-flex h-6 shrink-0 items-center gap-1 rounded-full border border-border px-2.5 text-[11px] font-semibold leading-none disabled:opacity-50"
+          >
+            {subscribing ? <LoaderCircle className="size-3 animate-spin" /> : null}
+            Assinar com cartão
+          </button>
+        </div>
         <div className="mt-1.5 space-y-1.5">
           {subscribed ? (
             <Button variant="dark" className="h-11 w-full rounded-full"><BadgeCheck className="size-4" /> {t("active")}</Button>

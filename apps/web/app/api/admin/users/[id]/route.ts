@@ -1,4 +1,4 @@
-import { proxyAdmin } from "@/lib/admin-proxy";
+import { proxyApi as proxyAdmin } from "@/lib/admin-proxy";
 
 type Context = { params: Promise<{ id: string }> };
 

@@ -4,7 +4,7 @@ import { apiBase } from "@/lib/api-auth";
 import { upstreamAuthHeaders } from "@/lib/client-ip";
 import { ACCESS_COOKIE } from "@/lib/session-cookies";
 
-export async function proxyAdmin(request: Request, path: string, init?: { method?: string; body?: string }) {
+export async function proxyApi(request: Request, path: string, init?: { method?: string; body?: string }) {
   const jar = await cookies();
   const access = jar.get(ACCESS_COOKIE)?.value;
   if (!access) return NextResponse.json({ message: "Missing access token" }, { status: 401 });

@@ -139,33 +139,29 @@ async function main() {
 
   const missingStripe = await request("POST", `${base}/payments/checkout`, {
     provider: "stripe",
-    purchaseId: `purchase-${stamp}`,
-    amountCents: 1000,
-    description: "Teste",
+    creatorId: "lunaferraz",
+    planId: "monthly",
   });
-  assert.equal(missingStripe.status, 400, JSON.stringify(missingStripe.body));
-  assert.match(String(missingStripe.body.message), /Stripe is not configured/);
+  assert.equal(missingStripe.status, 401, JSON.stringify(missingStripe.body));
 
   process.env.STRIPE_SECRET_KEY = "sk_test_replace_me";
   assert.equal(readStripeSecret().ok, false);
   const placeholder = await request("POST", `${base}/payments/checkout`, {
     provider: "stripe",
-    purchaseId: `purchase-placeholder-${stamp}`,
-    amountCents: 1000,
-    description: "Teste",
+    creatorId: "lunaferraz",
+    planId: "monthly",
   });
-  assert.equal(placeholder.status, 400);
+  assert.equal(placeholder.status, 401);
 
   process.env.STRIPE_SECRET_KEY = "sk_live_example";
   process.env.STRIPE_PUBLISHABLE_KEY = "pk_live_example";
   assert.equal(readStripeSecret().reason, "live_disabled");
   const liveBlocked = await request("POST", `${base}/payments/checkout`, {
     provider: "stripe",
-    purchaseId: `purchase-live-${stamp}`,
-    amountCents: 1000,
-    description: "Teste",
+    creatorId: "lunaferraz",
+    planId: "monthly",
   });
-  assert.equal(liveBlocked.status, 400);
+  assert.equal(liveBlocked.status, 401);
   const liveConfig = await request("GET", `${base}/payments/config`);
   assert.equal(liveConfig.body.enabled, false);
 

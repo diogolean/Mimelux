@@ -6,6 +6,7 @@ import { LoaderCircle, Shield } from "lucide-react";
 import { Button, Logo } from "@mimelux/ui";
 import { getServerSessionSnapshot, getSessionSnapshot, refreshSession, subscribeSession } from "@/lib/session";
 import { roleHome } from "@/lib/use-role-guard";
+import { RevenueSettings } from "./revenue-settings";
 
 type AdminRole = "FAN" | "CREATOR" | "AFFILIATE" | "ADMIN";
 
@@ -221,6 +222,7 @@ export default function AdminPage() {
           Administração
         </p>
       </header>
+      <RevenueSettings />
       <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6 lg:grid-cols-[320px_1fr] sm:px-8">
         <section className="rounded-3xl border border-border bg-elevated/70 p-4">
           <h1 className="text-lg font-extrabold tracking-[-.03em]">Contas</h1>
