@@ -7,14 +7,13 @@ type CreatorRow = {
   id: string;
   name: string;
   username: string;
-  ownership: "HOUSE" | "INDEPENDENT";
   creatorSharePercent: number | null;
   affiliateCommissionPercent: number | null;
 };
 
 export function RevenueSettings() {
   const [creatorShare, setCreatorShare] = useState("80");
-  const [affiliateShare, setAffiliateShare] = useState("10");
+  const [affiliateShare, setAffiliateShare] = useState("20");
   const [query, setQuery] = useState("");
   const [creators, setCreators] = useState<CreatorRow[]>([]);
   const [selected, setSelected] = useState<CreatorRow | null>(null);
@@ -70,7 +69,6 @@ export function RevenueSettings() {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        ownership: selected.ownership,
         creatorSharePercent: selected.creatorSharePercent,
         affiliateCommissionPercent: selected.affiliateCommissionPercent,
       }),
@@ -90,11 +88,11 @@ export function RevenueSettings() {
       <form onSubmit={saveDefaults} className="rounded-3xl border border-border bg-elevated/70 p-4 sm:p-5">
         <h2 className="text-lg font-extrabold">Repasse</h2>
         <p className="mt-1 text-xs leading-5 text-muted">
-          Casa (WinApp) fica com 100%. Independente usa a participação do criador; a comissão do afiliado sai dessa parte. O restante é da plataforma.
+          Participação padrão do criador e comissão padrão do afiliado. Um criador pode ter valores próprios.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <label className="text-xs font-bold uppercase tracking-wide text-muted">
-            Participação do criador independente (%)
+            Participação do criador (%)
             <input data-testid="admin-creator-share" value={creatorShare} onChange={(event) => setCreatorShare(event.target.value)} inputMode="numeric" className="mt-2 h-11 w-full rounded-full border border-border bg-background px-4 text-sm font-semibold normal-case tracking-normal" />
           </label>
           <label className="text-xs font-bold uppercase tracking-wide text-muted">
@@ -115,14 +113,7 @@ export function RevenueSettings() {
           ))}
         </div>
         {selected && (
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <label className="text-xs font-bold uppercase tracking-wide text-muted">
-              Tipo
-              <select data-testid="admin-ownership" value={selected.ownership} onChange={(event) => setSelected({ ...selected, ownership: event.target.value as CreatorRow["ownership"] })} className="mt-2 h-11 w-full rounded-full border border-border bg-background px-4 text-sm font-semibold normal-case">
-                <option value="HOUSE">Casa</option>
-                <option value="INDEPENDENT">Independente</option>
-              </select>
-            </label>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <label className="text-xs font-bold uppercase tracking-wide text-muted">
               Participação própria (%)
               <input data-testid="admin-creator-override" value={selected.creatorSharePercent ?? ""} placeholder="Padrão" onChange={(event) => setSelected({ ...selected, creatorSharePercent: event.target.value === "" ? null : Number(event.target.value) })} className="mt-2 h-11 w-full rounded-full border border-border bg-background px-4 text-sm normal-case" />

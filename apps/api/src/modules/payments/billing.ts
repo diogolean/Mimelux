@@ -57,7 +57,7 @@ async function settingsOf(tx: Tx) {
   return tx.platformSettings.upsert({
     where: { id: "default" },
     update: {},
-    create: { id: "default", creatorShareBps: 8000, affiliateCommissionBps: 1000 },
+    create: { id: "default", creatorShareBps: 8000, affiliateCommissionBps: 2000 },
   });
 }
 

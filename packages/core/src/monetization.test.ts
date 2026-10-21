@@ -69,7 +69,7 @@ describe("monetization rules", () => {
       grossCents: 10_000,
       ownership: "HOUSE",
       creatorShareBps: 8_000,
-      affiliateCommissionBps: 1_000,
+      affiliateCommissionBps: 2_000,
       referred: false,
     });
     expect(ledgerBalances(entries)).toBe(0);
@@ -84,14 +84,14 @@ describe("monetization rules", () => {
       grossCents: 10_000,
       ownership: "HOUSE",
       creatorShareBps: 8_000,
-      affiliateCommissionBps: 1_000,
+      affiliateCommissionBps: 2_000,
       referred: true,
     });
     expect(ledgerBalances(entries)).toBe(0);
     expect(entries).toEqual([
       { direction: "DEBIT", account: "platform_cash", amountCents: 10_000 },
-      { direction: "CREDIT", account: "affiliate_payable", amountCents: 1_000 },
-      { direction: "CREDIT", account: "platform_revenue", amountCents: 9_000 },
+      { direction: "CREDIT", account: "affiliate_payable", amountCents: 2_000 },
+      { direction: "CREDIT", account: "platform_revenue", amountCents: 8_000 },
     ]);
   });
 
@@ -100,7 +100,7 @@ describe("monetization rules", () => {
       grossCents: 10_000,
       ownership: "INDEPENDENT",
       creatorShareBps: 8_000,
-      affiliateCommissionBps: 1_000,
+      affiliateCommissionBps: 2_000,
       referred: false,
     });
     expect(ledgerBalances(entries)).toBe(0);
@@ -116,14 +116,14 @@ describe("monetization rules", () => {
       grossCents: 10_000,
       ownership: "INDEPENDENT",
       creatorShareBps: 8_000,
-      affiliateCommissionBps: 1_000,
+      affiliateCommissionBps: 2_000,
       referred: true,
     });
     expect(ledgerBalances(entries)).toBe(0);
     expect(entries).toEqual([
       { direction: "DEBIT", account: "platform_cash", amountCents: 10_000 },
-      { direction: "CREDIT", account: "creator_payable", amountCents: 7_000 },
-      { direction: "CREDIT", account: "affiliate_payable", amountCents: 1_000 },
+      { direction: "CREDIT", account: "creator_payable", amountCents: 6_000 },
+      { direction: "CREDIT", account: "affiliate_payable", amountCents: 2_000 },
       { direction: "CREDIT", account: "platform_revenue", amountCents: 2_000 },
     ]);
     expect(ledgerBalances(reverseLedger(entries))).toBe(0);

@@ -25,7 +25,7 @@ test("a fan can subscribe in demo mode and cancel at period end", async ({ page 
   await expect(page.getByText("cancela ao fim do período")).toBeVisible();
 });
 
-test("an admin edits the revenue split and a creator ownership type", async ({ page }) => {
+test("an admin edits the revenue split without an ownership control", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/auth?route=sign-in");
   await page.getByLabel("Email ou CPF").fill("admin@patrocino.com");
@@ -33,15 +33,18 @@ test("an admin edits the revenue split and a creator ownership type", async ({ p
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await expect(page).toHaveURL(/\/admin/);
   await expect(page.getByTestId("admin-creator-share")).toHaveValue("80");
-  await expect(page.getByTestId("admin-affiliate-share")).toHaveValue("10");
+  await expect(page.getByTestId("admin-affiliate-share")).toHaveValue("20");
+  await expect(page.getByTestId("admin-ownership")).toHaveCount(0);
+  await expect(page.getByText(/WinApp|independente|da casa/i)).toHaveCount(0);
 
   await page.getByTestId("admin-creator-search").fill("luna");
   await page.getByTestId("admin-creator").filter({ hasText: "Luna Ferraz" }).click();
-  await page.getByTestId("admin-ownership").selectOption("INDEPENDENT");
+  await page.getByTestId("admin-creator-override").fill("75");
   await page.getByTestId("admin-creator-save").click();
   await expect(page.getByText("Criador atualizado.")).toBeVisible();
+  await expect(page.getByTestId("admin-creator-override")).toHaveValue("75");
 
-  await page.getByTestId("admin-ownership").selectOption("HOUSE");
+  await page.getByTestId("admin-creator-override").fill("");
   await page.getByTestId("admin-creator-save").click();
-  await expect(page.getByTestId("admin-ownership")).toHaveValue("HOUSE");
+  await expect(page.getByTestId("admin-creator-override")).toHaveValue("");
 });

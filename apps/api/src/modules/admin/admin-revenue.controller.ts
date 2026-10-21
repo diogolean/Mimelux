@@ -35,7 +35,7 @@ export class AdminRevenueController {
     const settings = await database.platformSettings.upsert({
       where: { id: "default" },
       update: {},
-      create: { id: "default", creatorShareBps: 8000, affiliateCommissionBps: 1000 },
+      create: { id: "default", creatorShareBps: 8000, affiliateCommissionBps: 2000 },
     });
     return {
       creatorSharePercent: percent(settings.creatorShareBps),
@@ -140,7 +140,7 @@ export class AdminRevenueController {
           ? null
           : parsed.data.affiliateCommissionPercent * 100;
     const effectiveCreator = creatorBps ?? settings?.creatorShareBps ?? 8000;
-    const effectiveAffiliate = affiliateBps ?? settings?.affiliateCommissionBps ?? 1000;
+    const effectiveAffiliate = affiliateBps ?? settings?.affiliateCommissionBps ?? 2000;
     if (effectiveAffiliate > effectiveCreator) {
       throw new BadRequestException("Affiliate commission cannot exceed the creator share");
     }

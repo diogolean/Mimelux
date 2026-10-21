@@ -46,6 +46,11 @@ async function main() {
   assert.equal(admin.status, 200, JSON.stringify(admin.body));
   const adminToken = admin.body.accessToken;
 
+  const defaults = await request("GET", `${base}/admin/settings`, undefined, adminToken);
+  assert.equal(defaults.status, 200, JSON.stringify(defaults.body));
+  assert.equal(defaults.body.creatorSharePercent, 80);
+  assert.equal(defaults.body.affiliateCommissionPercent, 20);
+
   const saved = await request("PATCH", `${base}/admin/settings`, {
     creatorSharePercent: 80,
     affiliateCommissionPercent: 10,
@@ -213,6 +218,10 @@ async function main() {
     ownership: "HOUSE",
     creatorSharePercent: null,
     affiliateCommissionPercent: null,
+  }, adminToken);
+  await request("PATCH", `${base}/admin/settings`, {
+    creatorSharePercent: 80,
+    affiliateCommissionPercent: 20,
   }, adminToken);
 
   await app.close();

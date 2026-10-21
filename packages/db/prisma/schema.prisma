@@ -311,7 +311,7 @@ model Purchase {
 model PlatformSettings {
   id                     String   @id @default("default")
   creatorShareBps        Int      @default(8000)
-  affiliateCommissionBps Int      @default(1000)
+  affiliateCommissionBps Int      @default(2000)
   updatedAt              DateTime @updatedAt
 
   @@map("platform_settings")
