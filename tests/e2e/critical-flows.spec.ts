@@ -8,15 +8,25 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => localStorage.clear());
 });
 
-test("root shows the creator showcase and demo fan login opens trending creators", async ({ page }) => {
+test("visitors land on the feed and demo fan login opens trending creators", async ({ page }) => {
   await page.goto("/");
-  await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole("heading", { name: "Os criadores mais recentes, primeiro." })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Cadastre-se" })).toBeVisible();
-  const cards = page.getByTestId("showcase-card");
-  await expect(cards.first()).toContainText("Albina Schneider");
-  await expect(cards.nth(8)).toContainText("Taty Moreira");
-  await expect(cards.nth(9)).toContainText("Luna Ferraz");
+  await expect(page).toHaveURL(/\/feed$/);
+  await expect(page.getByRole("heading", { name: "Seu feed", level: 1 })).toBeVisible();
+  await expect(page.getByTestId("showcase-card")).toHaveCount(0);
+  const trending = page.getByTestId("trending-strip");
+  await expect(trending.getByRole("heading", { name: "Em alta" })).toBeVisible();
+  await expect(trending.getByRole("link").first()).toContainText("Albina");
+  await expect(trending.getByRole("link").first()).toHaveAttribute("href", "/creator/albina-schneider");
+  await expect(trending.getByRole("link").nth(8)).toContainText("Taty");
+  await expect(trending.getByRole("link").nth(9)).toContainText("Luna");
+  const locked = page.locator("article").filter({ hasText: "Clara Duarte" }).filter({ has: page.getByRole("link", { name: "Assine para ver" }) }).first();
+  await expect(locked.locator("[data-testid=locked-cover]")).toHaveAttribute("src", /creator-clara-duarte-cover/);
+  await expect(locked.locator("video")).toHaveCount(0);
+  await expect(locked.getByRole("link", { name: "Assine para ver" })).toHaveAttribute("href", "/auth?route=sign-up");
+  const html = await page.content();
+  expect(html).not.toContain("clara-duarte/v001");
+  expect(html).not.toContain("demo-media-nina-valenca-v001");
+  await expect(page.locator('video[src="/media/models/demo/bella-monroe/v001.mp4?v=2"]')).toHaveCount(1);
   await page.getByRole("link", { name: "Entrar", exact: true }).click();
   await expect(page).toHaveURL(/\/auth\?route=sign-in/);
   await expect(page.getByRole("heading", { name: "Que bom ter você aqui." })).toBeVisible();

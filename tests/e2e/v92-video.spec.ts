@@ -45,13 +45,14 @@ test("demo video posts render a 3:4 player and keep locked clips behind the post
 
   await page.goto("/feed");
   const freeFeed = page.locator('video[src="/media/models/demo/bella-monroe/v001.mp4?v=2"]');
-  const unlockedFeed = page.locator('video[src="/api/media/file/demo-media-nina-valenca-v001"]');
-  const lockedPoster = page.locator('img[src="/media/models/demo/clara-duarte/v001.jpg?v=2"]');
   await expect(freeFeed).toHaveCount(1);
-  await expect(unlockedFeed).toHaveCount(1);
-  await expect(lockedPoster).toHaveCount(1);
-  await expect(lockedPoster).toHaveClass(/blur-/);
-  await expect(lockedPoster.locator("xpath=ancestor::article[1]").locator("video")).toHaveCount(0);
+  const feedHtml = await page.content();
+  expect(feedHtml).not.toContain("clara-duarte/v001");
+  expect(feedHtml).not.toContain("nina-valenca/v001");
+  expect(feedHtml).not.toContain("demo-media-nina-valenca-v001");
+  const lockedCover = page.locator("article").filter({ hasText: "Clara Duarte" }).locator("[data-testid=locked-cover]").first();
+  await expect(lockedCover).toHaveAttribute("src", /creator-clara-duarte-cover/);
+  await expect(lockedCover).toHaveClass(/blur-/);
   const feed = await freeFeed.evaluate((video) => {
     if (!(video instanceof HTMLVideoElement)) return null;
     video.scrollIntoView({ block: "center" });
@@ -66,7 +67,6 @@ test("demo video posts render a 3:4 player and keep locked clips behind the post
       height: rect.height,
     };
   });
-  const unlockedParent = await unlockedFeed.evaluate((video) => video.parentElement?.className ?? "");
   expect(feed).toMatchObject({
     poster: "/media/models/demo/bella-monroe/v001.jpg?v=2",
     controls: true,
@@ -74,7 +74,6 @@ test("demo video posts render a 3:4 player and keep locked clips behind the post
     muted: true,
   });
   expect(feed?.parentClass).toContain("aspect-[3/4]");
-  expect(unlockedParent).toContain("aspect-[3/4]");
   expect(feed!.width).toBeLessThan(420);
   expect(feed!.height / feed!.width).toBeGreaterThan(1.2);
   expect(feed!.height / feed!.width).toBeLessThan(1.45);

@@ -1,40 +1,58 @@
 import Link from "next/link";
-import { Plus, Sparkles } from "lucide-react";
-import { CreatorShowcase } from "@/components/creator-showcase";
+import { cookies } from "next/headers";
+import { Sparkles } from "lucide-react";
 import { PostCard } from "@/components/post-card";
-import { creators, posts } from "@/lib/gateway";
+import { creators, posts, type Post } from "@/lib/gateway";
+import { ACCESS_COOKIE } from "@/lib/session-cookies";
 
-export default function FeedPage() {
+function forVisitor(post: Post, cover: string): Post {
+  if (post.visibility === "free") return post;
+  return { ...post, image: cover, poster: undefined, playback: undefined };
+}
+
+export default async function FeedPage() {
+  const jar = await cookies();
+  const signedIn = Boolean(jar.get(ACCESS_COOKIE)?.value);
+
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 lg:py-9">
-      <div className="mb-2">
-        <p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary-strong">Para você</p>
-        <h1 className="mt-1 text-2xl font-extrabold tracking-[-.04em]">Seu feed</h1>
-        <p className="mt-2 text-xs text-muted">Estreias no topo e o catálogo de demonstração em seguida.</p>
-      </div>
-      <CreatorShowcase creators={creators} plain />
-      <div className="mt-10 grid gap-7 lg:grid-cols-[minmax(0,640px)_300px]">
+    <div className="mx-auto grid w-full max-w-6xl gap-7 px-4 py-6 sm:px-8 lg:grid-cols-[minmax(0,640px)_300px] lg:py-9">
       <section className="min-w-0">
-        <div className="mb-5 flex gap-3 overflow-x-auto pb-2">
-          {creators.slice(0, 7).map((creator, index) => (
-            <Link key={creator.id} href={`/creator/${creator.username}`} className="shrink-0 text-center">
-              <div className={`rounded-full p-[2px] ${index < 4 ? "bg-gradient-to-br from-primary to-accent" : "bg-black/10"}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={creator.avatar} alt={creator.name} loading="lazy" decoding="async" className="size-14 rounded-full border-2 border-background object-cover sm:size-16" />
-              </div>
-              <p className="mt-1.5 w-16 truncate text-[8px] font-semibold">{creator.name.split(" ")[0]}</p>
-            </Link>
-          ))}
-          <button className="shrink-0 text-center">
-            <span className="grid size-[60px] place-items-center rounded-full border border-dashed border-black/20 bg-white/40 sm:size-[68px]"><Plus className="size-5 text-muted" /></span>
-            <span className="mt-1.5 block text-[8px] font-semibold">Descobrir</span>
-          </button>
+        <div className="mb-5">
+          <p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary-strong">Para você</p>
+          <h1 className="mt-1 text-2xl font-extrabold tracking-[-.04em]">Seu feed</h1>
+          <p className="mt-2 text-xs text-muted">Estreias no topo e o catálogo de demonstração em seguida.</p>
+        </div>
+
+        <div data-testid="trending-strip" className="mb-6">
+          <h2 className="text-sm font-extrabold">Em alta</h2>
+          <div className="-mx-4 mt-3 flex gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
+            {creators.map((creator) => (
+              <Link
+                key={creator.id}
+                href={`/creator/${creator.username}`}
+                className="w-[4.5rem] shrink-0 text-center"
+              >
+                <span className="mx-auto grid size-14 place-items-center rounded-full bg-gradient-to-br from-primary to-accent p-[2px] sm:size-16">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={creator.avatar}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="size-full rounded-full border-2 border-background object-cover"
+                  />
+                </span>
+                <span className="mt-1.5 block truncate text-[10px] font-semibold">{creator.name.split(" ")[0]}</span>
+              </Link>
+            ))}
+          </div>
         </div>
 
         <div className="space-y-5">
           {posts.map((post) => {
             const creator = creators.find((item) => item.id === post.creatorId);
-            return creator ? <PostCard key={post.id} post={post} creator={creator} /> : null;
+            if (!creator) return null;
+            return <PostCard key={post.id} post={signedIn ? post : forVisitor(post, creator.cover)} creator={creator} />;
           })}
         </div>
       </section>
@@ -67,7 +85,6 @@ export default function FeedPage() {
           </div>
         </div>
       </aside>
-      </div>
     </div>
   );
 }

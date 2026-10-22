@@ -175,25 +175,38 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Bell className="size-[18px]" />
             <i className="absolute right-2.5 top-2.5 size-2 rounded-full border-2 border-background bg-primary" />
           </Button>
-          <Link href="/conta" data-testid="account-settings" className="px-2 text-[11px] font-bold text-muted hover:text-foreground">
-            {t("account")}
-          </Link>
-          <Link href={areaHref}>
-            <Button variant="ghost" size="icon" aria-label={t("profile")}>
-              <UserRound className="size-[18px]" />
-            </Button>
-          </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={t("logout")}
-            className="lg:hidden"
-            onClick={() => {
-              void logoutAccount().then(() => router.push("/auth?route=sign-in"));
-            }}
-          >
-            <LogOut className="size-[18px]" />
-          </Button>
+          {session.status === "ready" && !session.user ? (
+            <>
+              <Link href="/auth?route=sign-in">
+                <Button size="sm" variant="outline" className="h-9 px-3">Entrar</Button>
+              </Link>
+              <Link href="/auth?route=sign-up" className="hidden sm:inline-flex">
+                <Button size="sm" className="h-9 px-3">Cadastre-se</Button>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/conta" data-testid="account-settings" className="px-2 text-[11px] font-bold text-muted hover:text-foreground">
+                {t("account")}
+              </Link>
+              <Link href={areaHref}>
+                <Button variant="ghost" size="icon" aria-label={t("profile")}>
+                  <UserRound className="size-[18px]" />
+                </Button>
+              </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t("logout")}
+                className="lg:hidden"
+                onClick={() => {
+                  void logoutAccount().then(() => router.push("/auth?route=sign-in"));
+                }}
+              >
+                <LogOut className="size-[18px]" />
+              </Button>
+            </>
+          )}
           <Button variant="ghost" size="icon" aria-label="Menu" className="lg:hidden">
             <Menu className="size-[18px]" />
           </Button>

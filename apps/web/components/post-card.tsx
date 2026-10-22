@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, useSyncExternalStore } from "react";
 import {
   BadgeCheck,
   Bookmark,
@@ -16,8 +16,11 @@ import type { Creator, Post } from "@/lib/gateway";
 import { brl, seedComments } from "@/lib/gateway";
 import { PostVisual } from "@/components/post-visual";
 import { readDemo, writeDemo } from "@/lib/demo-store";
+import { getServerSessionSnapshot, getSessionSnapshot, subscribeSession } from "@/lib/session";
 
 export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
+  const session = useSyncExternalStore(subscribeSession, getSessionSnapshot, getServerSessionSnapshot);
+  const signedIn = Boolean(session.user);
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [commentOpen, setCommentOpen] = useState(false);
@@ -63,12 +66,14 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
     form.reset();
   }
 
-  const locked =
-    post.visibility === "subscriber"
+  const locked = signedIn
+    ? post.visibility === "subscriber"
       ? !state.subscriptions.includes(creator.id)
       : post.visibility === "ppv"
         ? !state.unlocks.includes(post.id)
-        : false;
+        : false
+    : post.visibility !== "free";
+  const visitorLocked = !signedIn && post.visibility !== "free";
   const checkout =
     post.visibility === "subscriber"
       ? `/checkout?kind=subscription&id=${creator.id}&return=/feed`
@@ -94,16 +99,41 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
       </header>
 
       <div
-        className={`relative z-0 mx-2 overflow-hidden rounded-[20px] ${post.playback ? "aspect-[3/4] bg-black" : "bg-surface"}`}
-        style={post.playback ? undefined : { aspectRatio: "4 / 4.35" }}
+        className={`relative z-0 mx-2 overflow-hidden rounded-[20px] ${post.playback || visitorLocked ? "aspect-[3/4] bg-black" : "bg-surface"}`}
+        style={post.playback || visitorLocked ? undefined : { aspectRatio: "4 / 4.35" }}
       >
-        <PostVisual
-          post={post}
-          locked={locked}
-          testId={post.playback ? "feed-video" : undefined}
-          lockedClassName="scale-105 blur-[15px]"
-        />
-        {locked && (
+        {visitorLocked ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            data-testid="locked-cover"
+            src={creator.cover}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full scale-105 object-cover blur-[18px]"
+          />
+        ) : (
+          <PostVisual
+            post={post}
+            locked={locked}
+            testId={post.playback ? "feed-video" : undefined}
+            lockedClassName="scale-105 blur-[15px]"
+          />
+        )}
+        {visitorLocked && (
+          <div className="absolute inset-0 grid place-items-center bg-ink/35 px-4 text-center">
+            <div className="w-full max-w-[16rem] rounded-[24px] border border-white/20 bg-ink/80 p-4 text-white shadow-2xl sm:p-5">
+              <span className="mx-auto grid size-11 place-items-center rounded-2xl bg-white/10">
+                <LockKeyhole className="size-5" />
+              </span>
+              <h3 className="mt-3 text-base font-extrabold">Assine para ver</h3>
+              <Link href="/auth?route=sign-up" className="mt-4 block">
+                <Button size="sm" className="w-full">Assine para ver</Button>
+              </Link>
+            </div>
+          </div>
+        )}
+        {locked && !visitorLocked && (
           <div className="absolute inset-0 grid place-items-center bg-ink/30 px-6 text-center">
             <div className="max-w-xs rounded-[26px] border border-white/20 bg-ink/78 p-6 text-white shadow-2xl backdrop-blur-md">
               <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-white/10">
