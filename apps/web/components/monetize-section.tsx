@@ -11,8 +11,8 @@ import { creators } from "@/lib/gateway";
 const links = {
   institutional: [
     ["about", "/legal/sobre"],
-    ["privacy", "/legal/privacidade"],
-    ["terms", "/legal/termos"],
+    ["privacy", "/privacidade"],
+    ["terms", "/termos"],
   ],
   creators: [
     ["about", "/auth?route=sign-up&role=creator"],
@@ -23,9 +23,12 @@ const links = {
     ["privacy", "/legal/afiliados"],
   ],
   legal: [
+    ["terms", "/termos"],
+    ["privacy", "/privacidade"],
+    ["guidelines", "/diretrizes"],
+    ["refunds", "/reembolso"],
     ["cookies", "/legal/cookies"],
     ["complaints", "/legal/reclamacoes"],
-    ["terms", "/legal/termos"],
   ],
 } as const;
 
@@ -212,6 +215,8 @@ function FeaturedCarousel({ demoLabel }: { demoLabel: string }) {
                 src={creator.cover}
                 alt=""
                 className="h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-ink/10" />
               <div className="absolute inset-x-0 bottom-0 flex items-end gap-4 p-6 text-white sm:p-8">

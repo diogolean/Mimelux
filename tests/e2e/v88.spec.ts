@@ -9,6 +9,7 @@ test("signing up as afiliado creates an affiliate account", async ({ page }) => 
   await page.getByLabel("Seu nome").fill("Afiliada Nova");
   await page.getByLabel("Email ou CPF").fill(email);
   await page.locator('input[name="password"]').fill("mimelux123");
+  await page.getByTestId("accept-terms").check();
   await page.getByRole("button", { name: "Continuar" }).click();
   await expect(page).toHaveURL(/\/verificacao/);
   await page.getByRole("checkbox").check();
@@ -23,7 +24,7 @@ test("signing up as afiliado creates an affiliate account", async ({ page }) => 
 test("an admin can change another account role", async ({ page }) => {
   const email = `papel.${Date.now()}@mimelux.test`;
   const registered = await page.request.post("/api/session/register", {
-    data: { name: "Conta Papel", email, password: "mimelux123", role: "fan" },
+    data: { name: "Conta Papel", email, password: "mimelux123", role: "fan", acceptTerms: true },
   });
   expect(registered.ok()).toBeTruthy();
 

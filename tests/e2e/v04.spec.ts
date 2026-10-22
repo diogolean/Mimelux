@@ -44,6 +44,7 @@ test("affiliate onboarding selects creators and generates links", async ({ page 
   await page.getByLabel("Seu nome").fill("Afiliado V4");
   await page.getByLabel("Email ou CPF").fill("afiliado.v4@mimelux.test");
   await page.locator('input[name="password"]').fill("mimelux123");
+  await page.getByTestId("accept-terms").check();
   await page.getByRole("button", { name: "Continuar" }).click();
   await expect(page).toHaveURL(/\/verificacao/);
   await page.getByRole("checkbox").check();

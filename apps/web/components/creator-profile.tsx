@@ -175,7 +175,7 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
       <div className="relative">
         <div className="relative h-[4.5rem] overflow-hidden rounded-[22px] sm:h-20">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={creator.cover} alt="" className="h-full w-full object-cover" />
+          <img src={creator.cover} alt="" className="h-full w-full object-cover" loading="eager" decoding="async" />
           <div className="absolute inset-0 bg-gradient-to-l from-ink/70 via-ink/20 to-transparent" />
           <div data-testid="profile-cover-stats" className="absolute right-3 top-3 grid max-w-[78%] grid-cols-4 gap-2 text-right text-white sm:right-4 sm:top-4">
             {(
@@ -200,6 +200,8 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
           src={creator.avatar}
           alt={creator.name}
           className="absolute -bottom-5 left-3 z-20 size-14 rounded-full border-2 border-background bg-background object-cover shadow-[0_10px_24px_rgba(12,13,20,.22)] sm:size-16"
+          loading="lazy"
+          decoding="async"
         />
       </div>
 
@@ -319,7 +321,7 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
           return (
             <div key={post.id} data-testid="profile-post" data-locked={locked} className="group relative aspect-[3/4] overflow-hidden rounded-[16px] bg-surface">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={post.image} alt={post.caption} className={`h-full w-full object-cover ${locked ? "scale-105 blur-[10px]" : ""}`} />
+              <img src={post.image} alt={post.caption} loading="lazy" decoding="async" className={`h-full w-full object-cover ${locked ? "scale-105 blur-[10px]" : ""}`} />
               {locked && (
                 <div className="absolute inset-0 grid place-items-center bg-ink/25 p-2 text-center text-white">
                   <div>

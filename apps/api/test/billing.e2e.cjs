@@ -270,6 +270,7 @@ async function register(base, email) {
     password: "mimelux123",
     name: "Conta Teste",
     role: "FAN",
+    acceptTerms: true,
   });
   assert.equal(response.status, 201, JSON.stringify(response.body));
   return { id: response.body.user.id, token: response.body.accessToken, email };

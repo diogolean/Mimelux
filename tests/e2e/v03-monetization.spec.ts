@@ -54,6 +54,7 @@ test("special request follows request, quote, pay and delivery states", async ({
   await page
     .getByRole("button", { name: "Aceitar e simular pagamento" })
     .click();
+  await expect(page).toHaveURL(/\/checkout/);
   await page.getByRole("button", { name: "Simular pagamento" }).click();
   await expect(page.getByText("Pedido confirmado")).toBeVisible();
 

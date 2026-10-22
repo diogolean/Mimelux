@@ -78,7 +78,7 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
       <header className="relative z-20 flex items-center gap-4 px-5 pb-1 pt-5">
         <Link href={`/creator/${creator.username}`} className="relative z-20 shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img data-testid="feed-avatar" src={creator.avatar} alt={creator.name} className="size-20 translate-y-8 rounded-full border-4 border-elevated bg-elevated object-cover shadow-[0_14px_30px_rgba(12,13,20,.22)] sm:size-24 sm:translate-y-10" />
+          <img data-testid="feed-avatar" src={creator.avatar} alt={creator.name} loading="lazy" decoding="async" className="size-20 translate-y-8 rounded-full border-4 border-elevated bg-elevated object-cover shadow-[0_14px_30px_rgba(12,13,20,.22)] sm:size-24 sm:translate-y-10" />
         </Link>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1">
@@ -94,7 +94,7 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
 
       <div className="relative z-0 mx-2 overflow-hidden rounded-[20px] bg-surface" style={{ aspectRatio: "4 / 4.35" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={post.image} alt={post.caption} className={`h-full w-full object-cover transition duration-500 ${locked ? "scale-105 blur-[15px]" : ""}`} />
+        <img src={post.image} alt={post.caption} loading="lazy" decoding="async" className={`h-full w-full object-cover transition duration-500 ${locked ? "scale-105 blur-[15px]" : ""}`} />
         {locked && (
           <div className="absolute inset-0 grid place-items-center bg-ink/30 px-6 text-center">
             <div className="max-w-xs rounded-[26px] border border-white/20 bg-ink/78 p-6 text-white shadow-2xl backdrop-blur-md">

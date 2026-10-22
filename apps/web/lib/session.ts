@@ -78,6 +78,8 @@ export async function registerAccount(input: {
   email: string;
   password: string;
   role: AccountRole;
+  acceptTerms: true;
+  acceptCreatorTerms?: boolean;
 }) {
   const response = await fetch("/api/session/register", {
     method: "POST",
@@ -89,11 +91,15 @@ export async function registerAccount(input: {
   return user;
 }
 
-export async function socialAccount(provider: string, role: AccountRole) {
+export async function socialAccount(
+  provider: string,
+  role: AccountRole,
+  acceptance: { acceptTerms: true; acceptCreatorTerms?: boolean },
+) {
   const response = await fetch("/api/session/social", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ provider, role }),
+    body: JSON.stringify({ provider, role, ...acceptance }),
   });
   const user = await readUser(response);
   if (!user) throw new Error("Não foi possível entrar.");

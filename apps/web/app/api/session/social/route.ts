@@ -5,7 +5,12 @@ import { apiAuth, authErrorMessage, toApiRole, toSessionUser } from "@/lib/api-a
 import { applyAuthCookies } from "@/lib/session-cookies";
 
 export async function POST(request: Request) {
-  const body = (await request.json().catch(() => null)) as { provider?: string; role?: AccountRole } | null;
+  const body = (await request.json().catch(() => null)) as {
+    provider?: string;
+    role?: AccountRole;
+    acceptTerms?: boolean;
+    acceptCreatorTerms?: boolean;
+  } | null;
   const provider = (body?.provider ?? "social").toLowerCase().replace(/[^a-z0-9]+/g, "") || "social";
   const email = `${provider}.${randomBytes(6).toString("hex")}@mimelux.test`;
   const { response, data } = await apiAuth("/auth/register", {
@@ -13,6 +18,8 @@ export async function POST(request: Request) {
     email,
     password: randomBytes(18).toString("base64url"),
     role: toApiRole(body?.role ?? "fan"),
+    acceptTerms: body?.acceptTerms === true,
+    acceptCreatorTerms: body?.acceptCreatorTerms === true,
   }, request);
   if (!response.ok || !data.user || !data.accessToken || !data.refreshToken) {
     return NextResponse.json(

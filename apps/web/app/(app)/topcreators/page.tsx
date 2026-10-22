@@ -65,7 +65,7 @@ function TopCreatorsContent() {
               <article data-testid="ranking-card" className="card-lift relative overflow-visible rounded-[32px] border border-border bg-elevated shadow-sm">
                 <div className="relative z-0 h-48 overflow-hidden rounded-t-[32px] sm:h-56 lg:h-[272px]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={creator.cover} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                  <img src={creator.cover} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
                   <span className="absolute right-4 top-3 text-3xl font-black tracking-[-.07em] text-white drop-shadow">#{index + 1}</span>
                   {index < 3 && (
@@ -76,7 +76,7 @@ function TopCreatorsContent() {
                 </div>
                 <div className="relative z-20 flex items-start gap-3 px-4 pb-5 sm:gap-4 sm:px-5 sm:pb-6">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img data-testid="ranking-avatar" src={creator.avatar} alt={creator.name} className="relative z-20 -mt-10 size-20 shrink-0 rounded-full border-4 border-elevated bg-elevated object-cover shadow-[0_14px_30px_rgba(12,13,20,.22)] sm:-mt-12 sm:size-24 lg:-mt-14 lg:size-28" />
+                  <img data-testid="ranking-avatar" src={creator.avatar} alt={creator.name} loading="lazy" decoding="async" className="relative z-20 -mt-10 size-20 shrink-0 rounded-full border-4 border-elevated bg-elevated object-cover shadow-[0_14px_30px_rgba(12,13,20,.22)] sm:-mt-12 sm:size-24 lg:-mt-14 lg:size-28" />
                   <div className="min-w-0 flex-1 pt-4">
                     <div className="flex items-center gap-1">
                       <h2 className="truncate text-base font-extrabold sm:text-lg">{creator.name}</h2>
@@ -139,7 +139,7 @@ function Highlights() {
           {[...free, ...creators.slice(0, 4)].map((creator, index) => (
             <Link key={`${creator.id}-${index}`} href={`/creator/${creator.username}`} className="relative h-44 w-32 shrink-0 overflow-hidden rounded-[22px] sm:h-48 sm:w-36">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={creator.avatar} alt={creator.name} className="h-full w-full object-cover" />
+              <img src={creator.avatar} alt={creator.name} loading="lazy" decoding="async" className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
               <div className="absolute inset-x-3 bottom-3 text-white"><p className="truncate text-xs font-extrabold">{creator.name}</p><p className="truncate text-[8px] text-white/70">@{creator.username}</p></div>
             </Link>
@@ -156,7 +156,7 @@ function Highlights() {
           {creators.slice(0, 3).map((creator, index) => (
             <Link key={creator.id} href={`/creator/${creator.username}`} className="card-lift flex items-center gap-3 rounded-[22px] border border-black/5 bg-white/60 p-3 dark:bg-white/5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={creator.avatar} alt="" className="size-14 rounded-2xl object-cover" />
+              <img src={creator.avatar} alt="" loading="lazy" decoding="async" className="size-14 rounded-2xl object-cover" />
               <div className="min-w-0 flex-1"><p className="truncate text-xs font-extrabold">{creator.name}</p><p className="text-[9px] text-muted"><s>{brl(creator.price + 1000)}</s> · <b className="text-primary-strong">{brl(creator.price)}</b></p></div>
               <span className="rounded-full bg-primary/20 px-2 py-1 text-[8px] font-black">-{20 + index * 5}%</span>
             </Link>
@@ -171,7 +171,7 @@ function Highlights() {
             <div key={creator.id} className="flex items-center gap-3 border-b border-black/5 py-3">
               <div className="relative">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={creator.avatar} alt="" className="size-11 rounded-full object-cover" />
+                <img src={creator.avatar} alt="" loading="lazy" decoding="async" className="size-11 rounded-full object-cover" />
                 <i className="absolute bottom-0 right-0 size-3 rounded-full border-2 border-background bg-emerald-500" />
               </div>
               <div className="min-w-0 flex-1"><p className="truncate text-xs font-extrabold">{creator.name}</p><p className="truncate text-[9px] text-muted">@{creator.username}</p></div>

@@ -9,12 +9,16 @@ export async function POST(request: Request) {
     email?: string;
     password?: string;
     role?: AccountRole;
+    acceptTerms?: boolean;
+    acceptCreatorTerms?: boolean;
   } | null;
   const { response, data } = await apiAuth("/auth/register", {
     name: body?.name ?? "",
     email: body?.email ?? "",
     password: body?.password ?? "",
     role: toApiRole(body?.role ?? "fan"),
+    acceptTerms: body?.acceptTerms === true,
+    acceptCreatorTerms: body?.acceptCreatorTerms === true,
   }, request);
   if (!response.ok || !data.user || !data.accessToken || !data.refreshToken) {
     return NextResponse.json(

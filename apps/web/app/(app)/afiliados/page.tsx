@@ -99,10 +99,10 @@ export default function AffiliateDashboardPage() {
             return (
               <article key={item.id} data-testid="affiliate-creator-card" className="overflow-hidden rounded-[28px] border border-border bg-elevated shadow-sm">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={item.cover} alt="" className="h-52 w-full object-cover sm:h-64" />
+                <img src={item.cover} alt="" loading="lazy" decoding="async" className="h-52 w-full object-cover sm:h-64" />
                 <div className="flex items-end gap-3 px-4 pb-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={item.avatar} alt="" className="-mt-8 size-16 rounded-full border-4 border-elevated object-cover shadow-lg" />
+                  <img src={item.avatar} alt="" loading="lazy" decoding="async" className="-mt-8 size-16 rounded-full border-4 border-elevated object-cover shadow-lg" />
                   <div className="min-w-0 flex-1 pt-3">
                     <h3 className="truncate text-base font-extrabold">{item.name}</h3>
                     <p className="truncate text-xs text-muted">{item.city}</p>

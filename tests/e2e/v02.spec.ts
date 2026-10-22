@@ -35,6 +35,7 @@ test("affiliate link signup and simulated subscription create a commission", asy
   await page.getByLabel("Seu nome").fill("Pessoa Indicada");
   await page.getByLabel("Email ou CPF").fill("indicada@mimelux.test");
   await page.locator('input[name="password"]').fill("mimelux123");
+  await page.getByTestId("accept-terms").check();
   await page.getByRole("button", { name: "Continuar" }).click();
   await expect(page).toHaveURL(/\/verificacao/);
   await page.getByRole("checkbox").check();

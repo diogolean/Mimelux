@@ -61,7 +61,11 @@
     "cookieAccept": "Got it",
     "back": "Back",
     "roleSwitch": "Creator or affiliate",
-    "roleSwitchHint": "Off means you enter as a visitor."
+    "roleSwitchHint": "Off means you enter as a visitor.",
+    "acceptAge": "I am 18 or older and I accept the <terms>Terms of Use</terms> and the <privacy>Privacy Policy</privacy>",
+    "acceptCreator": "I accept the <creator>creator terms</creator>",
+    "acceptRequired": "Confirm that you are 18 or older and accept the terms to continue.",
+    "socialNeedsSignup": "To continue with a social account, create an account and accept the terms."
   },
   "profile": {
     "photos": "photos",
@@ -157,10 +161,18 @@
     "about": "About",
     "privacy": "Privacy",
     "terms": "Terms",
+    "guidelines": "Guidelines",
+    "refunds": "Refunds",
     "cookies": "Cookies",
     "complaints": "Complaints",
     "program": "Affiliate program",
     "note": "Fictitious prototype. These links are not final legal documents."
+  },
+  "ageGate": {
+    "title": "This site contains adult content. Are you 18 or older?",
+    "body": "Access is only for people who are 18 or older.",
+    "no": "No",
+    "yes": "Yes"
   },
   "landing": {
     "presents": "A Patrocino creator",

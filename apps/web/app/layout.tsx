@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { Providers } from "@/components/providers";
+import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -44,7 +45,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale} suppressHydrationWarning>
       <body className={`${poppins.variable} min-h-full antialiased`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <Providers>{children}</Providers>
+          <Providers>
+            {children}
+            <SiteFooter />
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>

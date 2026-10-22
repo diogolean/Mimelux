@@ -10,12 +10,15 @@ import {
   HttpStatus,
   Module,
   Post,
+  Req,
   UnauthorizedException,
   UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { legalConfig } from "@mimelux/core/legal";
 import { Prisma, database } from "@mimelux/db/runtime";
+import type { Request } from "express";
 import { compare, hash } from "bcryptjs";
 import { createHash, randomBytes } from "node:crypto";
 import { sign, verify } from "jsonwebtoken";
@@ -52,6 +55,8 @@ const credentialsSchema = z.object({
 const registerSchema = credentialsSchema.extend({
   name: z.string().min(2).max(80),
   role: z.enum(["FAN", "CREATOR", "AFFILIATE"]).default("FAN"),
+  acceptTerms: z.literal(true),
+  acceptCreatorTerms: z.boolean().optional(),
 });
 const refreshSchema = z.object({ refreshToken: z.string().min(20) });
 const verifySchema = z.object({ token: z.string().min(20) });
@@ -220,10 +225,13 @@ class AuthController {
   @Post("register")
   @UseGuards(ThrottlerGuard)
   @ApiOperation({ summary: "Register a user and return a token pair" })
-  async register(@Body() body: unknown) {
+  async register(@Body() body: unknown, @Req() request: Request) {
     const input = parseBody(registerSchema, body);
     if (input.role !== "FAN" && input.role !== "CREATOR" && input.role !== "AFFILIATE") {
       throw new BadRequestException("Role is not allowed");
+    }
+    if (input.role === "CREATOR" && input.acceptCreatorTerms !== true) {
+      throw new BadRequestException("Creator terms are required");
     }
     const email = canonicalDemoEmail(input.email);
     try {
@@ -232,6 +240,9 @@ class AuthController {
           email,
           passwordHash: await hash(input.password, 12),
           role: input.role,
+          acceptedTermsAt: new Date(),
+          termsVersion: legalConfig.termsVersion,
+          acceptedTermsIp: resolveClientIp(request),
           profile: {
             create: {
               name: input.name,

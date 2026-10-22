@@ -11,6 +11,7 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
+      "@mimelux/core/legal": ["../../packages/core/dist/legal.d.ts"],
       "@mimelux/core/monetization": ["../../packages/core/dist/monetization.d.ts"],
       "@mimelux/db/runtime": ["../../packages/db/dist/index.d.ts"]
     },

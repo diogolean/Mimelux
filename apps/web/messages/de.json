@@ -61,7 +61,11 @@
     "cookieAccept": "Verstanden",
     "back": "Zurück",
     "roleSwitch": "Creator oder Partner",
-    "roleSwitchHint": "Aus bedeutet: Einstieg als Besucher."
+    "roleSwitchHint": "Aus bedeutet: Einstieg als Besucher.",
+    "acceptAge": "Ich bin 18 Jahre oder älter und akzeptiere die <terms>Nutzungsbedingungen</terms> und die <privacy>Datenschutzrichtlinie</privacy>",
+    "acceptCreator": "Ich akzeptiere die <creator>Creator-Bedingungen</creator>",
+    "acceptRequired": "Bestätige, dass du 18 Jahre oder älter bist, und akzeptiere die Bedingungen.",
+    "socialNeedsSignup": "Für ein soziales Konto erstelle ein Konto und akzeptiere die Bedingungen."
   },
   "profile": {
     "photos": "Fotos",
@@ -157,10 +161,18 @@
     "about": "Über uns",
     "privacy": "Datenschutz",
     "terms": "Bedingungen",
+    "guidelines": "Richtlinien",
+    "refunds": "Erstattung",
     "cookies": "Cookies",
     "complaints": "Beschwerden",
     "program": "Partnerprogramm",
     "note": "Fiktiver Prototyp. Diese Links sind keine endgültigen Rechtsdokumente."
+  },
+  "ageGate": {
+    "title": "Diese Website enthält Inhalte für Erwachsene. Bist du 18 Jahre oder älter?",
+    "body": "Der Zugang ist nur für Personen ab 18 Jahren.",
+    "no": "Nein",
+    "yes": "Ja"
   },
   "landing": {
     "presents": "Ein Patrocino-Creator",

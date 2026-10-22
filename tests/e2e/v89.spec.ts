@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("a fan can subscribe in demo mode and cancel at period end", async ({ page }) => {
   const email = `assinante.${Date.now()}@mimelux.test`;
   const registered = await page.request.post("/api/session/register", {
-    data: { name: "Assinante Novo", email, password: "mimelux123", role: "fan" },
+    data: { name: "Assinante Novo", email, password: "mimelux123", role: "fan", acceptTerms: true },
   });
   expect(registered.ok()).toBeTruthy();
 

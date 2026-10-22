@@ -44,6 +44,9 @@ yarn-error.log*
 /apps/web/public/uploads/*
 !/apps/web/public/uploads/.gitkeep
 
+# Creator photos live on the server at /opt/patrocino/media. Never commit them.
+/media/models/
+
 # vercel
 .vercel
 

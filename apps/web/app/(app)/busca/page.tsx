@@ -49,15 +49,15 @@ export default function SearchPage() {
       <div className="mt-8 flex items-center justify-between"><h2 className="text-sm font-extrabold">{query ? `Resultados para “${query}”` : "Talentos para conhecer"}</h2><span className="text-[10px] text-muted">{filtered.length} perfis</span></div>
       <div data-testid="search-results" className="mt-4 grid gap-3 sm:grid-cols-2">
         {filtered.map((creator) => (
-          <Link key={creator.id} href={`/creator/${creator.username}`} className="card-lift min-w-0">
+          <Link key={creator.id} href={`/creator/${creator.username}`} aria-label={creator.name} className="card-lift min-w-0">
             <article className="relative overflow-visible rounded-[28px] border border-border bg-elevated">
               <div className="relative z-0 h-32 overflow-hidden rounded-t-[28px] sm:h-36">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={creator.cover} alt="" className="h-full w-full object-cover" />
+                <img src={creator.cover} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
               </div>
               <div className="relative z-20 flex items-end gap-3 px-4 pb-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img data-testid="search-avatar" src={creator.avatar} alt={creator.name} className="relative z-20 -mt-10 size-20 shrink-0 rounded-full border-4 border-elevated bg-elevated object-cover shadow-[0_14px_30px_rgba(12,13,20,.22)] sm:size-24" />
+                <img data-testid="search-avatar" src={creator.avatar} alt={creator.name} loading="lazy" decoding="async" className="relative z-20 -mt-10 size-20 shrink-0 rounded-full border-4 border-elevated bg-elevated object-cover shadow-[0_14px_30px_rgba(12,13,20,.22)] sm:size-24" />
                 <div className="min-w-0 flex-1 pb-1">
                   <div className="flex items-center gap-1"><h3 className="truncate text-xs font-extrabold">{creator.name}</h3>{creator.verified && <BadgeCheck className="size-3.5 shrink-0 fill-primary text-white" />}</div>
                   <p className="mt-0.5 truncate text-[9px] text-muted">@{creator.username} · {creator.category}</p>

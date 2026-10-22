@@ -33,6 +33,7 @@ async function main() {
     password: "mimelux123",
     name: "Afiliada Nova",
     role: "AFFILIATE",
+    acceptTerms: true,
   });
   assert.equal(affiliate.status, 201, JSON.stringify(affiliate.body));
   assert.equal(affiliate.body.user.role, "AFFILIATE");
@@ -42,6 +43,8 @@ async function main() {
     password: "mimelux123",
     name: "Criadora Nova",
     role: "CREATOR",
+    acceptTerms: true,
+    acceptCreatorTerms: true,
   });
   assert.equal(creator.status, 201, JSON.stringify(creator.body));
   assert.equal(creator.body.user.role, "CREATOR");

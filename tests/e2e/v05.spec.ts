@@ -28,6 +28,7 @@ test("role switch stays off for visitors and routes creator or affiliate", async
   await page.getByLabel("Seu nome").fill("Visitante V5");
   await page.getByLabel("Email ou CPF").fill("visitante.v5@mimelux.test");
   await page.locator('input[name="password"]').fill("mimelux123");
+  await page.getByTestId("accept-terms").check();
   await page.getByRole("button", { name: "Continuar" }).click();
   await expect(page).toHaveURL(/\/verificacao/);
   await page.getByRole("checkbox").check();
@@ -43,7 +44,10 @@ test("role switch stays off for visitors and routes creator or affiliate", async
   await page.getByLabel("Seu nome").fill("Criador V5");
   await page.getByLabel("Email ou CPF").fill("criador.v5@mimelux.test");
   await page.locator('input[name="password"]').fill("mimelux123");
+  await page.getByTestId("accept-terms").check();
+  await page.getByTestId("accept-creator-terms").check();
   await page.getByRole("button", { name: "Continuar" }).click();
+  await expect(page).toHaveURL(/\/verificacao/);
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "Verificar e continuar" }).click();
   await page.getByRole("button", { name: /Pular tutorial/ }).click();

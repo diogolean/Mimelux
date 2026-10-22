@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 export * from "./contracts";
+export * from "./initial-creators";
+export * from "./legal";
 export * from "./monetization";
 
 export const contentModes = ["general", "adult", "hybrid"] as const;

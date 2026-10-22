@@ -25,6 +25,7 @@ test("new account completes verification, onboarding, and discovery coach marks"
   await page.getByLabel("Seu nome").fill("Pessoa Demo");
   await page.getByLabel("Email ou CPF").fill("pessoa.demo@mimelux.test");
   await page.locator('input[name="password"]').fill("mimelux123");
+  await page.getByTestId("accept-terms").check();
   await page.getByRole("button", { name: "Continuar" }).click();
 
   await expect(page).toHaveURL(/\/verificacao/);
@@ -104,12 +105,11 @@ test("creator dashboard keeps uploads local and generated media loads", async ({
   await expect
     .poll(async () =>
       page.locator("img").evaluateAll((images) =>
-        images.every(
-          (image) =>
-            image instanceof HTMLImageElement &&
-            image.complete &&
-            image.naturalWidth > 0,
-        ),
+        images.every((image) => {
+          if (!(image instanceof HTMLImageElement)) return false;
+          if (image.getAttribute("src")?.includes("/media/models/")) return true;
+          return image.complete && image.naturalWidth > 0;
+        }),
       ),
     )
     .toBe(true);

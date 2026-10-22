@@ -4,6 +4,10 @@
   "private": true,
   "exports": {
     ".": "./src/index.ts",
+    "./legal": {
+      "types": "./dist/legal.d.ts",
+      "default": "./dist/legal.js"
+    },
     "./monetization": {
       "types": "./dist/monetization.d.ts",
       "default": "./dist/monetization.js"

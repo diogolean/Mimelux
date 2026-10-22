@@ -43,6 +43,7 @@ test("social signup keeps the selected affiliate role", async ({ page }) => {
   await page.goto("/auth?route=sign-up");
   await page.getByRole("switch", { name: "Criador ou afiliado" }).click();
   await page.getByRole("button", { name: "Afiliado", exact: true }).click();
+  await page.getByTestId("accept-terms").check();
   await page.getByRole("button", { name: "Entrar com Google" }).click();
   await expect(page).toHaveURL(/\/onboarding$/);
   await page.getByRole("button", { name: /Pular tutorial/ }).click();

@@ -17,7 +17,7 @@ export default function FeedPage() {
             <Link key={creator.id} href={`/creator/${creator.username}`} className="shrink-0 text-center">
               <div className={`rounded-full p-[2px] ${index < 4 ? "bg-gradient-to-br from-primary to-accent" : "bg-black/10"}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={creator.avatar} alt={creator.name} className="size-14 rounded-full border-2 border-background object-cover sm:size-16" />
+                <img src={creator.avatar} alt={creator.name} loading="lazy" decoding="async" className="size-14 rounded-full border-2 border-background object-cover sm:size-16" />
               </div>
               <p className="mt-1.5 w-16 truncate text-[8px] font-semibold">{creator.name.split(" ")[0]}</p>
             </Link>
@@ -51,11 +51,11 @@ export default function FeedPage() {
                 <Link key={creator.id} href={`/creator/${creator.username}`} className="block overflow-visible">
                   <span className="relative z-0 block h-24 overflow-hidden rounded-2xl">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={creator.cover} alt="" className="h-full w-full object-cover" />
+                    <img src={creator.cover} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
                   </span>
                   <span className="relative z-20 -mt-5 flex items-end gap-3 px-1">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={creator.avatar} alt="" className="relative z-20 size-16 shrink-0 rounded-full border-4 border-elevated bg-elevated object-cover shadow-[0_14px_30px_rgba(12,13,20,.22)]" />
+                    <img src={creator.avatar} alt="" loading="lazy" decoding="async" className="relative z-20 size-16 shrink-0 rounded-full border-4 border-elevated bg-elevated object-cover shadow-[0_14px_30px_rgba(12,13,20,.22)]" />
                     <span className="min-w-0 flex-1 pb-1"><b className="block truncate text-[10px]">{creator.name}</b><small className="block truncate text-[8px] text-muted">{creator.category}</small></span>
                   </span>
                 </Link>

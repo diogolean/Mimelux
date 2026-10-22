@@ -75,6 +75,8 @@ function AuthContent() {
     }
   }
   const [visible, setVisible] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [acceptedCreatorTerms, setAcceptedCreatorTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [social, setSocial] = useState("");
   const [error, setError] = useState("");
@@ -107,8 +109,12 @@ function AuthContent() {
       setError(signUp ? "Confira nome, e-mail e uma senha com 6 caracteres." : "Preencha e-mail/CPF e senha.");
       return;
     }
-    setLoading(true);
     const chosen: AccountRole = professional ? (role === "affiliate" ? "affiliate" : "creator") : "fan";
+    if (signUp && (!acceptedTerms || (chosen === "creator" && !acceptedCreatorTerms))) {
+      setError(t("acceptRequired"));
+      return;
+    }
+    setLoading(true);
     try {
       if (signUp && result.success && "name" in result.data) {
         writeDemo(bindAttribution(readDemo(), email));
@@ -117,6 +123,8 @@ function AuthContent() {
           email: result.data.email,
           password,
           role: chosen,
+          acceptTerms: true,
+          acceptCreatorTerms: chosen === "creator",
         });
         router.push("/verificacao");
         return;
@@ -132,10 +140,21 @@ function AuthContent() {
   }
 
   async function socialLogin(name: string) {
-    setSocial(name);
     const nextRole: AccountRole = professional ? (role === "affiliate" ? "affiliate" : "creator") : "fan";
+    if (!signUp) {
+      setError(t("socialNeedsSignup"));
+      return;
+    }
+    if (!acceptedTerms || (nextRole === "creator" && !acceptedCreatorTerms)) {
+      setError(t("acceptRequired"));
+      return;
+    }
+    setSocial(name);
     try {
-      const user = await socialAccount(name, nextRole);
+      const user = await socialAccount(name, nextRole, {
+        acceptTerms: true,
+        acceptCreatorTerms: nextRole === "creator",
+      });
       router.push(signUp ? "/onboarding" : roleHome(user.role));
     } catch (caught) {
       setSocial("");
@@ -229,6 +248,55 @@ function AuthContent() {
               }}
               onRole={chooseRole}
             />
+            {signUp && (
+              <div className="space-y-3 pt-1">
+                <label className="flex items-start gap-3 text-xs leading-5 text-muted">
+                  <input
+                    type="checkbox"
+                    data-testid="accept-terms"
+                    checked={acceptedTerms}
+                    onChange={(event) => setAcceptedTerms(event.target.checked)}
+                    required
+                    className="mt-0.5 size-4 shrink-0 accent-primary"
+                  />
+                  <span>
+                    {t.rich("acceptAge", {
+                      terms: (chunks) => (
+                        <Link href="/termos" className="font-bold text-foreground underline">
+                          {chunks}
+                        </Link>
+                      ),
+                      privacy: (chunks) => (
+                        <Link href="/privacidade" className="font-bold text-foreground underline">
+                          {chunks}
+                        </Link>
+                      ),
+                    })}
+                  </span>
+                </label>
+                {professional && role === "creator" && (
+                  <label className="flex items-start gap-3 text-xs leading-5 text-muted">
+                    <input
+                      type="checkbox"
+                      data-testid="accept-creator-terms"
+                      checked={acceptedCreatorTerms}
+                      onChange={(event) => setAcceptedCreatorTerms(event.target.checked)}
+                      required
+                      className="mt-0.5 size-4 shrink-0 accent-primary"
+                    />
+                    <span>
+                      {t.rich("acceptCreator", {
+                        creator: (chunks) => (
+                          <Link href="/termos#criador" className="font-bold text-foreground underline">
+                            {chunks}
+                          </Link>
+                        ),
+                      })}
+                    </span>
+                  </label>
+                )}
+              </div>
+            )}
             <Button type="submit" size="lg" className="mt-2 w-full" disabled={loading}>
               {loading ? <LoaderCircle className="size-4 animate-spin" /> : null}
               {signUp ? t("continue") : t("enter")}

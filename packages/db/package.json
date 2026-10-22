@@ -18,6 +18,7 @@
     "typecheck": "prisma validate"
   },
   "dependencies": {
+    "@mimelux/core": "workspace:*",
     "@prisma/client": "6.19.3",
     "bcryptjs": "^3.0.3"
   },

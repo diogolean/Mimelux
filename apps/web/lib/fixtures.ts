@@ -1,3 +1,5 @@
+import { imageFile, initialCreators, initialPosts, modelMediaPath } from "@mimelux/core";
+
 export type Creator = {
   id: string;
   name: string;
@@ -50,7 +52,7 @@ const creatorDefinitions = [
   ["alana-reis", "Alana Reis", "alanareis", "Viagem", "Ilhas, barcos e pôr do sol.", "Florianópolis, SC"],
 ] as const;
 
-export const creators: Creator[] = creatorDefinitions.map(
+const demoCreators: Creator[] = creatorDefinitions.map(
   ([id, name, username, category, bio, city], index) => ({
     id,
     name,
@@ -70,6 +72,48 @@ export const creators: Creator[] = creatorDefinitions.map(
   }),
 );
 
+function relativeTime(market: "US" | "DE" | "FR" | "BR", day: number) {
+  if (market === "US") return `${day}d ago`;
+  if (market === "DE") return `vor ${day} T.`;
+  if (market === "FR") return `il y a ${day} j`;
+  return `há ${day} d`;
+}
+
+const initialCatalogPosts: Post[] = initialCreators.flatMap((creator) =>
+  initialPosts(creator).map((post, index) => ({
+    id: post.id,
+    creatorId: creator.slug,
+    image: post.path,
+    caption: post.caption,
+    visibility: post.free ? "free" as const : "subscriber" as const,
+    mediaType: "image" as const,
+    likes: post.likes,
+    time: relativeTime(creator.market, (index % 21) + 1),
+    demo: true as const,
+  })),
+);
+
+export const creators: Creator[] = [
+  ...demoCreators,
+  ...initialCreators.map((creator) => ({
+    id: creator.slug,
+    name: creator.displayName,
+    username: creator.slug,
+    avatar: modelMediaPath(creator.slug, imageFile(1)),
+    cover: modelMediaPath(creator.slug, imageFile(2)),
+    category: creator.category,
+    bio: creator.bio,
+    city: creator.city,
+    verified: true,
+    free: false,
+    price: creator.monthlyPriceCents,
+    subscribers: creator.subscribers,
+    posts: Math.max(0, creator.count - 2),
+    fictitious: true as const,
+    aiGenerated: true as const,
+  })),
+];
+
 const captions = [
   "Um pouco do meu dia, do jeito que ele aconteceu ✦",
   "Bastidores novos: ideias, erros bonitos e o resultado final.",
@@ -85,7 +129,7 @@ const captions = [
   "Uma experiência criada especialmente para a comunidade.",
 ];
 
-const publicPosts: Post[] = creators.slice(0, 12).map((creator, index) => ({
+const publicPosts: Post[] = demoCreators.slice(0, 12).map((creator, index) => ({
   id: `public-${creator.id}`,
   creatorId: creator.id,
   image: `${generatedPath}/post-${String(index + 1).padStart(2, "0")}.jpg`,
@@ -97,7 +141,7 @@ const publicPosts: Post[] = creators.slice(0, 12).map((creator, index) => ({
   demo: true,
 }));
 
-const subscriberPosts: Post[] = creators.flatMap((creator, creatorIndex) =>
+const subscriberPosts: Post[] = demoCreators.flatMap((creator, creatorIndex) =>
   Array.from({ length: creatorIndex < 4 ? 2 : 1 }, (_, itemIndex) => {
     const assetIndex = ((creatorIndex + itemIndex + 3) % 12) + 1;
     return {
@@ -115,7 +159,20 @@ const subscriberPosts: Post[] = creators.flatMap((creator, creatorIndex) =>
   }),
 );
 
-export const posts: Post[] = [...publicPosts, ...subscriberPosts];
+const initialFeedPosts: Post[] = initialCreators.flatMap((creator) => {
+  const own = initialCatalogPosts.filter((post) => post.creatorId === creator.slug);
+  const free = own.find((post) => post.visibility === "free");
+  const locked = own.find((post) => post.visibility === "subscriber");
+  return [free, locked].filter((post): post is Post => Boolean(post));
+});
+
+export const posts: Post[] = [...publicPosts, ...subscriberPosts, ...initialFeedPosts];
+
+export function postsForCreator(creatorId: string) {
+  const catalog = initialCatalogPosts.filter((post) => post.creatorId === creatorId);
+  if (catalog.length > 0) return catalog;
+  return posts.filter((post) => post.creatorId === creatorId);
+}
 
 export type Review = {
   id: string;
@@ -133,7 +190,7 @@ const reviewCopy = [
   "Conteúdo consistente, sem pressa e fácil de acompanhar.",
 ] as const;
 
-export const reviews: Review[] = creators.flatMap((creator, index) => [
+export const reviews: Review[] = demoCreators.flatMap((creator, index) => [
   {
     id: `review-${creator.id}-1`,
     creatorId: creator.id,
@@ -172,9 +229,7 @@ export const seedComments: SeedComment[] = posts
   }));
 
 export function creatorLikeTotal(creatorId: string) {
-  return posts
-    .filter((post) => post.creatorId === creatorId)
-    .reduce((total, post) => total + post.likes, 0);
+  return postsForCreator(creatorId).reduce((total, post) => total + post.likes, 0);
 }
 
 export function reviewsFor(creatorId: string) {

@@ -32,10 +32,17 @@ async function main() {
     password,
     name: "API Test",
     role: "FAN",
+    acceptTerms: true,
   }, sessionIp);
   assert.equal(register.status, 201, JSON.stringify(register.body));
   assert.equal(register.body.user.emailVerified, false);
+  assert.equal(register.body.user.acceptedTermsAt, undefined);
   assert.ok(register.body.accessToken);
+  const { database } = require("@mimelux/db/runtime");
+  const stored = await database.user.findUnique({ where: { email } });
+  assert.ok(stored.acceptedTermsAt instanceof Date);
+  assert.equal(stored.termsVersion, "2026-10-22");
+  assert.equal(stored.acceptedTermsIp, "203.0.113.10");
   const firstRefresh = register.body.refreshToken;
 
   const login = await request(`${base}/auth/login`, { email, password }, sessionIp);
@@ -120,6 +127,25 @@ async function main() {
   );
   assert.equal(demoStillWorks.status, 200, JSON.stringify(demoStillWorks.body));
   assert.equal(demoStillWorks.body.user.email, "criadora@mimelux.com.br");
+
+  const creatorIp = { "x-patrocino-client-ip": "203.0.113.90", "x-patrocino-proxy-secret": secret };
+  const creatorDenied = await request(`${base}/auth/register`, {
+    email: `creator.deny.${Date.now()}@mimelux.test`,
+    password,
+    name: "API Creator",
+    role: "CREATOR",
+    acceptTerms: true,
+  }, creatorIp);
+  assert.equal(creatorDenied.status, 400);
+  const creatorOk = await request(`${base}/auth/register`, {
+    email: `creator.ok.${Date.now()}@mimelux.test`,
+    password,
+    name: "API Creator",
+    role: "CREATOR",
+    acceptTerms: true,
+    acceptCreatorTerms: true,
+  }, creatorIp);
+  assert.equal(creatorOk.status, 201, JSON.stringify(creatorOk.body));
 
   await app.close();
 

@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
+import { imageFile, initialCreators, initialPosts, modelMediaPath } from "@mimelux/core";
 
 const prisma = new PrismaClient();
 const demoPasswordHash =
@@ -152,7 +153,115 @@ async function main() {
     update: { isDemo: true },
     create: { userId: affiliateUser.id, code: "LUXDEMO", displayName: "Afiliado Demo", isDemo: true },
   });
+  await seedInitialCreators();
   await ensureSeedAdmins();
+}
+
+async function seedInitialCreators() {
+  for (const creator of initialCreators) {
+    const email = `${creator.slug}@creators.patrocino.com`;
+    const user = await prisma.user.upsert({
+      where: { email },
+      update: { passwordHash: demoPasswordHash, isDemo: true, role: "CREATOR" },
+      create: {
+        email,
+        passwordHash: demoPasswordHash,
+        role: "CREATOR",
+        emailVerifiedAt: new Date(),
+        isDemo: true,
+      },
+    });
+    await prisma.profile.upsert({
+      where: { userId: user.id },
+      update: {
+        name: creator.displayName,
+        username: creator.slug,
+        bio: creator.bio,
+        city: creator.city,
+        avatarUrl: modelMediaPath(creator.slug, imageFile(1)),
+        coverUrl: modelMediaPath(creator.slug, imageFile(2)),
+        isDemo: true,
+      },
+      create: {
+        userId: user.id,
+        name: creator.displayName,
+        username: creator.slug,
+        bio: creator.bio,
+        city: creator.city,
+        avatarUrl: modelMediaPath(creator.slug, imageFile(1)),
+        coverUrl: modelMediaPath(creator.slug, imageFile(2)),
+        isDemo: true,
+      },
+    });
+    const row = await prisma.creator.upsert({
+      where: { userId: user.id },
+      update: {
+        status: "ACTIVE",
+        category: creator.category,
+        ownership: "HOUSE",
+        isDemo: true,
+      },
+      create: {
+        userId: user.id,
+        status: "ACTIVE",
+        category: creator.category,
+        ownership: "HOUSE",
+        fictitious: true,
+        isDemo: true,
+      },
+    });
+    for (const [months, discount] of [[1, 0], [3, 10], [6, 20], [12, 30]] as const) {
+      const name = months === 1 ? "Mensal" : `${months} meses`;
+      const priceCents = creator.monthlyPriceCents * months;
+      const existing = await prisma.plan.findFirst({ where: { creatorId: row.id, durationMonths: months } });
+      if (!existing) {
+        await prisma.plan.create({
+          data: {
+            creatorId: row.id,
+            name,
+            description: "Assinatura mensal.",
+            priceCents,
+            durationMonths: months,
+            discountPercent: discount,
+            isDemo: true,
+          },
+        });
+      } else if (existing.priceCents !== priceCents || existing.discountPercent !== discount) {
+        await prisma.plan.update({
+          where: { id: existing.id },
+          data: { priceCents, discountPercent: discount, name },
+        });
+      }
+    }
+    for (const post of initialPosts(creator)) {
+      const existing = await prisma.media.findFirst({
+        where: { storageKey: post.path, post: { creatorId: row.id } },
+        select: { postId: true },
+      });
+      if (!existing?.postId) {
+        await prisma.post.create({
+          data: {
+            creatorId: row.id,
+            caption: post.caption,
+            visibility: post.free ? "FREE" : "SUBSCRIBERS",
+            likeCount: post.likes,
+            publishedAt: new Date(Date.UTC(2026, 0, 1 + (post.likes % 27))),
+            isDemo: true,
+            media: { create: { kind: "IMAGE", storageKey: post.path, mimeType: "image/jpeg", isDemo: true } },
+          },
+        });
+      } else {
+        await prisma.post.update({
+          where: { id: existing.postId },
+          data: {
+            caption: post.caption,
+            visibility: post.free ? "FREE" : "SUBSCRIBERS",
+            likeCount: post.likes,
+          },
+        });
+      }
+    }
+  }
 }
 
 async function ensureSeedAdmins() {

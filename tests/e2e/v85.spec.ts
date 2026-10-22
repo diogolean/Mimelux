@@ -9,6 +9,7 @@ test("a new account stays signed in and demo login still opens the feed", async 
   await page.getByLabel("Seu nome").fill("Pessoa Real");
   await page.getByLabel("Email ou CPF").fill(email);
   await page.locator('input[name="password"]').fill(password);
+  await page.getByTestId("accept-terms").check();
   await page.getByRole("button", { name: "Continuar" }).click();
   await expect(page).toHaveURL(/\/verificacao/);
   await page.getByRole("checkbox").check();
