@@ -1,4 +1,13 @@
-import { imageFile, initialCreators, initialPosts, modelMediaPath } from "@mimelux/core";
+import {
+  demoCreatorCreatedAt,
+  demoPostPublishedAt,
+  imageFile,
+  initialCreators,
+  initialPosts,
+  launchCreatorCreatedAt,
+  launchPostPublishedAt,
+  modelMediaPath,
+} from "@mimelux/core";
 
 export type Creator = {
   id: string;
@@ -16,6 +25,7 @@ export type Creator = {
   posts: number;
   fictitious: true;
   aiGenerated: true;
+  createdAt: string;
 };
 
 export type Post = {
@@ -29,6 +39,7 @@ export type Post = {
   likes: number;
   time: string;
   demo: true;
+  publishedAt: string;
 };
 
 const generatedPath = "/media/generated";
@@ -69,6 +80,7 @@ const demoCreators: Creator[] = creatorDefinitions.map(
     posts: 186 - index * 5,
     fictitious: true,
     aiGenerated: true,
+    createdAt: demoCreatorCreatedAt(index).toISOString(),
   }),
 );
 
@@ -79,7 +91,7 @@ function relativeTime(market: "US" | "DE" | "FR" | "BR", day: number) {
   return `há ${day} d`;
 }
 
-const initialCatalogPosts: Post[] = initialCreators.flatMap((creator) =>
+const initialCatalogPosts: Post[] = initialCreators.flatMap((creator, creatorIndex) =>
   initialPosts(creator).map((post, index) => ({
     id: post.id,
     creatorId: creator.slug,
@@ -90,12 +102,11 @@ const initialCatalogPosts: Post[] = initialCreators.flatMap((creator) =>
     likes: post.likes,
     time: relativeTime(creator.market, (index % 21) + 1),
     demo: true as const,
+    publishedAt: launchPostPublishedAt(creatorIndex, index).toISOString(),
   })),
 );
 
-export const creators: Creator[] = [
-  ...demoCreators,
-  ...initialCreators.map((creator) => ({
+const launchCreators: Creator[] = initialCreators.map((creator, index) => ({
     id: creator.slug,
     name: creator.displayName,
     username: creator.slug,
@@ -111,8 +122,13 @@ export const creators: Creator[] = [
     posts: Math.max(0, creator.count - 2),
     fictitious: true as const,
     aiGenerated: true as const,
-  })),
-];
+    createdAt: launchCreatorCreatedAt(index).toISOString(),
+  }),
+);
+
+export const creators: Creator[] = [...launchCreators, ...demoCreators].sort((left, right) =>
+  right.createdAt.localeCompare(left.createdAt),
+);
 
 const captions = [
   "Um pouco do meu dia, do jeito que ele aconteceu ✦",
@@ -139,6 +155,7 @@ const publicPosts: Post[] = demoCreators.slice(0, 12).map((creator, index) => ({
   likes: 1240 + index * 317,
   time: index < 2 ? `há ${24 + index * 19} min` : `há ${index + 1} h`,
   demo: true,
+  publishedAt: demoPostPublishedAt(index).toISOString(),
 }));
 
 const subscriberPosts: Post[] = demoCreators.flatMap((creator, creatorIndex) =>
@@ -155,6 +172,7 @@ const subscriberPosts: Post[] = demoCreators.flatMap((creator, creatorIndex) =>
       likes: 612 + ((creatorIndex * 487 + itemIndex * 173) % 4200),
       time: `há ${Math.ceil((creatorIndex + itemIndex + 3) / 3)} d`,
       demo: true as const,
+      publishedAt: demoPostPublishedAt(100 + creatorIndex * 4 + itemIndex).toISOString(),
     };
   }),
 );
@@ -166,12 +184,14 @@ const initialFeedPosts: Post[] = initialCreators.flatMap((creator) => {
   return [free, locked].filter((post): post is Post => Boolean(post));
 });
 
-export const posts: Post[] = [...publicPosts, ...subscriberPosts, ...initialFeedPosts];
+export const posts: Post[] = [...initialFeedPosts, ...publicPosts, ...subscriberPosts].sort((left, right) =>
+  right.publishedAt.localeCompare(left.publishedAt),
+);
 
 export function postsForCreator(creatorId: string) {
   const catalog = initialCatalogPosts.filter((post) => post.creatorId === creatorId);
-  if (catalog.length > 0) return catalog;
-  return posts.filter((post) => post.creatorId === creatorId);
+  const source = catalog.length > 0 ? catalog : posts.filter((post) => post.creatorId === creatorId);
+  return [...source].sort((left, right) => right.publishedAt.localeCompare(left.publishedAt));
 }
 
 export type Review = {

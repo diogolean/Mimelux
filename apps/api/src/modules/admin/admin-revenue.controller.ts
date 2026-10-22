@@ -100,7 +100,7 @@ export class AdminRevenueController {
           }
         : {},
       include: { user: { include: { profile: true } } },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
       take: 40,
     });
     return {

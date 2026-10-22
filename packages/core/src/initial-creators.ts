@@ -179,6 +179,27 @@ export const initialCreators: readonly InitialCreator[] = [
   },
 ];
 
+const launchCreatorAnchor = Date.UTC(2026, 9, 22, 12, 0, 0);
+const launchPostAnchor = Date.UTC(2026, 9, 22, 18, 0, 0);
+const demoCreatorAnchor = Date.UTC(2026, 0, 10, 12, 0, 0);
+const demoPostAnchor = Date.UTC(2026, 0, 15, 12, 0, 0);
+
+export function launchCreatorCreatedAt(index: number) {
+  return new Date(launchCreatorAnchor - index * 60_000);
+}
+
+export function launchPostPublishedAt(creatorIndex: number, postIndex: number) {
+  return new Date(launchPostAnchor - (creatorIndex * 10_000 + postIndex) * 1000);
+}
+
+export function demoCreatorCreatedAt(index: number) {
+  return new Date(demoCreatorAnchor - index * 3_600_000);
+}
+
+export function demoPostPublishedAt(index: number) {
+  return new Date(demoPostAnchor - index * 60_000);
+}
+
 export function imageFile(index: number) {
   return `${String(index).padStart(3, "0")}.jpg`;
 }

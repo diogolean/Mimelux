@@ -1,6 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
-import { imageFile, initialCreators, initialPosts, modelMediaPath } from "@mimelux/core";
+import {
+  demoCreatorCreatedAt,
+  demoPostPublishedAt,
+  imageFile,
+  initialCreators,
+  initialPosts,
+  launchCreatorCreatedAt,
+  launchPostPublishedAt,
+  modelMediaPath,
+} from "@mimelux/core";
 
 const prisma = new PrismaClient();
 const demoPasswordHash =
@@ -26,20 +35,22 @@ const creators = [
 ] as const;
 
 async function main() {
-  for (const [name, username, category, bio, fileSlug, postFile] of creators) {
+  for (const [index, [name, username, category, bio, fileSlug, postFile]] of creators.entries()) {
+    const createdAt = demoCreatorCreatedAt(index);
     const email =
       username === "lunaferraz"
         ? "criadora@mimelux.com.br"
         : `${username}@creators.patrocino.com`;
     const user = await prisma.user.upsert({
       where: { email },
-      update: { passwordHash: demoPasswordHash, isDemo: true },
+      update: { passwordHash: demoPasswordHash, isDemo: true, createdAt },
       create: {
         email,
         passwordHash: demoPasswordHash,
         role: "CREATOR",
         emailVerifiedAt: new Date(),
         isDemo: true,
+        createdAt,
       },
     });
     await prisma.profile.upsert({
@@ -58,7 +69,7 @@ async function main() {
     });
     const creator = await prisma.creator.upsert({
       where: { userId: user.id },
-      update: { status: "ACTIVE", category, isDemo: true },
+      update: { status: "ACTIVE", category, isDemo: true, createdAt },
       create: {
         userId: user.id,
         status: "ACTIVE",
@@ -66,6 +77,7 @@ async function main() {
         aiGenerated: true,
         fictitious: true,
         isDemo: true,
+        createdAt,
       },
     });
     for (const [months, discount] of [[1, 0], [3, 10], [6, 20], [12, 30]] as const) {
@@ -86,7 +98,7 @@ async function main() {
             caption: `Conteúdo aberto de ${name} · perfil fictício gerado por IA.`,
             visibility: "FREE",
             likeCount: 1240,
-            publishedAt: new Date(),
+            publishedAt: demoPostPublishedAt(index),
             isDemo: true,
             media: { create: { kind: "IMAGE", storageKey: `/media/generated/${postFile}`, mimeType: "image/jpeg", isDemo: true } },
           },
@@ -98,7 +110,7 @@ async function main() {
     for (const [postIndex, post] of creatorPosts.entries()) {
       await prisma.post.update({
         where: { id: post.id },
-        data: { likeCount: 1240 + postIndex * 317 },
+        data: { likeCount: 1240 + postIndex * 317, publishedAt: demoPostPublishedAt(index * 20 + postIndex) },
       });
       const comment = await prisma.postComment.findFirst({ where: { postId: post.id, isDemo: true } });
       if (!comment) {
@@ -158,17 +170,19 @@ async function main() {
 }
 
 async function seedInitialCreators() {
-  for (const creator of initialCreators) {
+  for (const [index, creator] of initialCreators.entries()) {
+    const createdAt = launchCreatorCreatedAt(index);
     const email = `${creator.slug}@creators.patrocino.com`;
     const user = await prisma.user.upsert({
       where: { email },
-      update: { passwordHash: demoPasswordHash, isDemo: true, role: "CREATOR" },
+      update: { passwordHash: demoPasswordHash, isDemo: true, role: "CREATOR", createdAt },
       create: {
         email,
         passwordHash: demoPasswordHash,
         role: "CREATOR",
         emailVerifiedAt: new Date(),
         isDemo: true,
+        createdAt,
       },
     });
     await prisma.profile.upsert({
@@ -200,6 +214,7 @@ async function seedInitialCreators() {
         category: creator.category,
         ownership: "HOUSE",
         isDemo: true,
+        createdAt,
       },
       create: {
         userId: user.id,
@@ -208,6 +223,7 @@ async function seedInitialCreators() {
         ownership: "HOUSE",
         fictitious: true,
         isDemo: true,
+        createdAt,
       },
     });
     for (const [months, discount] of [[1, 0], [3, 10], [6, 20], [12, 30]] as const) {
@@ -233,7 +249,8 @@ async function seedInitialCreators() {
         });
       }
     }
-    for (const post of initialPosts(creator)) {
+    for (const [postIndex, post] of initialPosts(creator).entries()) {
+      const publishedAt = launchPostPublishedAt(index, postIndex);
       const existing = await prisma.media.findFirst({
         where: { storageKey: post.path, post: { creatorId: row.id } },
         select: { postId: true },
@@ -245,7 +262,7 @@ async function seedInitialCreators() {
             caption: post.caption,
             visibility: post.free ? "FREE" : "SUBSCRIBERS",
             likeCount: post.likes,
-            publishedAt: new Date(Date.UTC(2026, 0, 1 + (post.likes % 27))),
+            publishedAt,
             isDemo: true,
             media: { create: { kind: "IMAGE", storageKey: post.path, mimeType: "image/jpeg", isDemo: true } },
           },
@@ -257,6 +274,7 @@ async function seedInitialCreators() {
             caption: post.caption,
             visibility: post.free ? "FREE" : "SUBSCRIBERS",
             likeCount: post.likes,
+            publishedAt,
           },
         });
       }

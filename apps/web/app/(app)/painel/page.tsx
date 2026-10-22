@@ -24,7 +24,7 @@ import { toast } from "sonner";
 
 export default function DashboardPage() {
   const allowed = useRoleGuard("creator");
-  const creator = creators[0]!;
+  const creator = creators.find((item) => item.username === "lunaferraz") ?? creators[0]!;
   const inputRef = useRef<HTMLInputElement>(null);
   const programCopy = useTranslations("creatorProgram");
   const [uploadName, setUploadName] = useState("");

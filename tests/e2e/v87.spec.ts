@@ -39,6 +39,6 @@ test("the sign-in role picker uses the matching demo account", async ({ page }) 
 
 test("a referral code without a creator opens that affiliate default page", async ({ page }) => {
   await page.goto("/r/nara?sub=qa-home");
-  await expect(page).toHaveURL(/\/r\/nara\/lunaferraz\?sub=qa-home/);
-  await expect(page.getByRole("heading", { name: "Luna Ferraz" })).toBeVisible();
+  await expect(page).toHaveURL(/\/r\/nara\/albina-schneider\?sub=qa-home/);
+  await expect(page.getByRole("heading", { name: "Albina Schneider" })).toBeVisible();
 });

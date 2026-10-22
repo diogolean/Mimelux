@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { imageFile, initialCreatorPosts, initialCreators, initialPosts, modelMediaPath } from "./initial-creators";
+import {
+  demoCreatorCreatedAt,
+  demoPostPublishedAt,
+  imageFile,
+  initialCreatorPosts,
+  initialCreators,
+  initialPosts,
+  launchCreatorCreatedAt,
+  launchPostPublishedAt,
+  modelMediaPath,
+} from "./initial-creators";
 
 describe("initial creators", () => {
   it("keeps nine house catalogs with modest stats and local prices", () => {
@@ -33,6 +43,16 @@ describe("initial creators", () => {
         expect(post.path.startsWith(`/media/models/${creator.slug}/`)).toBe(true);
       }
     }
+  });
+
+  it("lists the launch catalog ahead of the demo catalog by time", () => {
+    const newestLaunch = launchCreatorCreatedAt(0).getTime();
+    const oldestLaunch = launchCreatorCreatedAt(initialCreators.length - 1).getTime();
+    const newestDemo = demoCreatorCreatedAt(0).getTime();
+    expect(newestLaunch).toBeGreaterThan(oldestLaunch);
+    expect(oldestLaunch).toBeGreaterThan(newestDemo);
+    expect(launchPostPublishedAt(0, 0).getTime()).toBeGreaterThan(launchPostPublishedAt(0, 1).getTime());
+    expect(launchPostPublishedAt(initialCreators.length - 1, 200).getTime()).toBeGreaterThan(demoPostPublishedAt(0).getTime());
   });
 
   it("uses the first photo as the avatar and the second as the cover", () => {

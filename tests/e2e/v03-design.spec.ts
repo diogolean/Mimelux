@@ -68,8 +68,8 @@ test("featured section renders and carousel advances", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Transforme atenção em renda." }),
   ).toBeVisible();
-  const first = page.getByRole("button", { name: "Mostrar Luna Ferraz" });
-  const second = page.getByRole("button", { name: "Mostrar Bella Monroe" });
+  const first = page.getByRole("button", { name: "Mostrar Albina Schneider" });
+  const second = page.getByRole("button", { name: "Mostrar Amanda Ribeiro" });
   await expect(first).toHaveClass(/w-8/);
   await page.getByRole("button", { name: "Próxima", exact: true }).click();
   await expect(second).toHaveClass(/w-8/);

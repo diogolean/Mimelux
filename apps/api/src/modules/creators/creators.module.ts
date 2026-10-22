@@ -44,7 +44,7 @@ class CreatorsController {
         posts: { select: { likeCount: true } },
       },
       take: 50,
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
     });
     return { items: creators.map(this.present), nextCursor: null, source: "postgres" };
   }

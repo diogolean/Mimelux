@@ -103,6 +103,14 @@ test("creator dashboard keeps uploads local and generated media loads", async ({
   await expect(page.getByText("Publicação simulada adicionada à fila.")).toBeVisible();
 
   await page.goto("/topcreators?tab=top-creators");
+  await page.evaluate(async () => {
+    const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+    const height = document.body.scrollHeight;
+    for (let top = 0; top < height; top += 700) {
+      window.scrollTo(0, top);
+      await wait(40);
+    }
+  });
   await expect
     .poll(async () =>
       page.locator("img").evaluateAll((images) =>

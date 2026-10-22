@@ -19,4 +19,12 @@ test("a seeded creator appears in search and locks subscriber photos", async ({ 
   await expect(locked.locator("img")).toHaveClass(/blur-/);
   await expect(locked.locator("img")).toHaveAttribute("src", /\/media\/models\/albina-schneider\/\d+\.jpg/);
   await expect(page.getByText(/WinApp|independente|da casa/i)).toHaveCount(0);
+
+  await page.goto("/topcreators?tab=top-creators");
+  await expect(page.getByTestId("ranking-card").first()).toContainText("Albina Schneider");
+  await expect(page.getByTestId("ranking-card").nth(8)).toContainText("Taty Moreira");
+  await expect(page.getByTestId("ranking-card").nth(9)).toContainText("Luna Ferraz");
+
+  await page.goto("/feed");
+  await expect(page.locator("article").first()).toContainText("Albina Schneider");
 });
