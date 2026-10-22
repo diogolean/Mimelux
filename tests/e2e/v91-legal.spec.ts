@@ -59,7 +59,7 @@ test("signup requires the age and terms checkbox", async ({ page }) => {
   await expect(page).toHaveURL(/sign-up/);
   await expect(page.getByText("Tenho 18 anos ou mais e aceito os Termos de Uso e a Política de Privacidade")).toBeVisible();
   await expect(page.getByRole("link", { name: "Termos de Uso" })).toHaveAttribute("href", "/termos");
-  await expect(page.getByRole("link", { name: "Política de Privacidade" })).toHaveAttribute("href", "/privacidade");
+  await expect(page.locator("main").getByRole("link", { name: "Política de Privacidade" })).toHaveAttribute("href", "/privacidade");
   await page.getByRole("switch", { name: "Criador ou afiliado" }).click();
   await page.getByRole("button", { name: "Criador", exact: true }).click();
   await expect(page.getByTestId("accept-creator-terms")).toBeVisible();

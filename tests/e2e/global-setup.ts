@@ -32,6 +32,9 @@ export default function globalSetup() {
        DELETE FROM purchases WHERE "buyerId" IN (SELECT id FROM users WHERE email LIKE '%@mimelux.test');
        DELETE FROM subscriptions WHERE "fanId" IN (SELECT id FROM users WHERE email LIKE '%@mimelux.test');
        DELETE FROM attributions WHERE "fanId" IN (SELECT id FROM users WHERE email LIKE '%@mimelux.test');
+       DELETE FROM privacy_requests WHERE "userId" IN (SELECT id FROM users WHERE email LIKE '%@mimelux.test');
+       DELETE FROM audit_logs WHERE "actorId" IN (SELECT id FROM users WHERE email LIKE '%@mimelux.test');
+       DELETE FROM messages WHERE "senderId" IN (SELECT id FROM users WHERE email LIKE '%@mimelux.test');
        DELETE FROM users WHERE email LIKE '%@mimelux.test';`,
     ],
     { env: { ...process.env, PGPASSWORD: "mimelux_dev" }, stdio: "inherit" },

@@ -58,6 +58,7 @@ export function AgeGate() {
             type="button"
             onClick={() => {
               document.cookie = `${COOKIE}; path=/; max-age=31536000; samesite=lax`;
+              window.dispatchEvent(new Event("patrocino:age"));
               setOpen(false);
             }}
           >

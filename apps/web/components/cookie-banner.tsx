@@ -7,6 +7,20 @@ import { Button } from "@mimelux/ui";
 import { readConsent, subscribeConsent, writeConsent, type ConsentChoice } from "@/lib/consent";
 import { getServerSessionSnapshot, getSessionSnapshot, subscribeSession } from "@/lib/session";
 
+function subscribeAge(callback: () => void) {
+  window.addEventListener("patrocino:age", callback);
+  const unsubscribe = subscribeSession(callback);
+  return () => {
+    window.removeEventListener("patrocino:age", callback);
+    unsubscribe();
+  };
+}
+
+function ageAllowsBanner() {
+  const session = getSessionSnapshot();
+  return hasAgeCookie() || Boolean(session.user);
+}
+
 function hasAgeCookie() {
   return document.cookie.split(";").some((part) => part.trim().startsWith("patrocino_age=yes"));
 }
@@ -42,6 +56,7 @@ export function CookieBanner() {
   const consent = useSyncExternalStore(subscribeConsent, readConsent, () => null);
   const session = useSyncExternalStore(subscribeSession, getSessionSnapshot, getServerSessionSnapshot);
   const mounted = useSyncExternalStore(subscribeMounted, () => true, () => false);
+  const ageClear = useSyncExternalStore(subscribeAge, ageAllowsBanner, () => false);
   const [forced, setForced] = useState(false);
   const [custom, setCustom] = useState(false);
   const [analytics, setAnalytics] = useState(false);
@@ -76,8 +91,7 @@ export function CookieBanner() {
   }, [consent, session.status, session.user]);
 
   if (!mounted) return null;
-  const ageBlocking = !hasAgeCookie() && (session.status !== "ready" || !session.user);
-  if ((consent && !forced) || (ageBlocking && !forced)) return null;
+  if ((consent && !forced) || (!ageClear && !forced)) return null;
 
   async function save(next: Pick<ConsentChoice, "analytics" | "marketing">) {
     await writeConsent(next);
@@ -90,12 +104,12 @@ export function CookieBanner() {
       data-testid="cookie-banner"
       role="region"
       aria-labelledby="cookie-banner-title"
-      className="fixed inset-x-3 bottom-[4.75rem] z-[60] mx-auto w-auto max-w-md rounded-[28px] border border-white/10 bg-ink p-4 text-white shadow-2xl sm:inset-x-auto sm:right-6 lg:bottom-6"
+      className="fixed bottom-[4.75rem] right-3 z-[60] w-[min(20rem,calc(100%-5.5rem))] rounded-[24px] border border-white/10 bg-ink p-3 text-white shadow-2xl lg:bottom-4 lg:left-[17.5rem] lg:right-auto"
     >
       <p id="cookie-banner-title" className="text-[10px] font-bold uppercase tracking-[.16em] text-primary">
         {t("title")}
       </p>
-      <p className="mt-2 text-xs leading-5 text-white/75">{t("body")}</p>
+      <p className="mt-1.5 line-clamp-3 text-[11px] leading-4 text-white/75">{t("body")}</p>
       <Link href="/privacidade" className="mt-2 inline-block text-xs font-semibold text-white underline-offset-2 hover:underline">
         {t("privacy")}
       </Link>
@@ -133,15 +147,15 @@ export function CookieBanner() {
           </label>
         </fieldset>
       )}
-      <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
-        <Button type="button" size="sm" onClick={() => void save({ analytics: true, marketing: true })}>
+      <div className="mt-3 grid grid-cols-3 gap-1.5">
+        <Button type="button" size="sm" className="!h-auto !min-h-9 !w-full !shrink !whitespace-normal !px-1.5 !py-1.5 !text-[10px] !leading-tight" onClick={() => void save({ analytics: true, marketing: true })}>
           {t("acceptAll")}
         </Button>
-        <Button type="button" size="sm" variant="outline" className="border-white/20 bg-transparent text-white hover:bg-white/10" onClick={() => void save({ analytics: false, marketing: false })}>
+        <Button type="button" size="sm" variant="outline" className="!h-auto !min-h-9 !w-full !shrink !whitespace-normal !border-white/20 !bg-transparent !px-1.5 !py-1.5 !text-[10px] !leading-tight !text-white hover:!bg-white/10" onClick={() => void save({ analytics: false, marketing: false })}>
           {t("necessaryOnly")}
         </Button>
         {custom ? (
-          <Button type="button" size="sm" variant="outline" className="border-white/20 bg-transparent text-white hover:bg-white/10" onClick={() => void save({ analytics, marketing })}>
+          <Button type="button" size="sm" variant="outline" className="!h-auto !min-h-9 !w-full !shrink !whitespace-normal !border-white/20 !bg-transparent !px-1.5 !py-1.5 !text-[10px] !leading-tight !text-white hover:!bg-white/10" onClick={() => void save({ analytics, marketing })}>
             {t("save")}
           </Button>
         ) : (
@@ -149,7 +163,7 @@ export function CookieBanner() {
             type="button"
             size="sm"
             variant="outline"
-            className="border-white/20 bg-transparent text-white hover:bg-white/10"
+            className="!h-auto !min-h-9 !w-full !shrink !whitespace-normal !border-white/20 !bg-transparent !px-1.5 !py-1.5 !text-[10px] !leading-tight !text-white hover:!bg-white/10"
             onClick={() => {
               setAnalytics(Boolean(consent?.analytics));
               setMarketing(Boolean(consent?.marketing));

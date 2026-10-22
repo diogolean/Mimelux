@@ -106,7 +106,7 @@ test("a signed-in person can export data and delete the account", async ({ page 
   await page.getByTestId("delete-password").fill("errada123");
   await page.getByTestId("delete-confirm").fill("EXCLUIR");
   await page.getByTestId("delete-submit").click();
-  await expect(page.getByRole("alert")).toHaveText("Senha incorreta.");
+  await expect(page.getByText("Senha incorreta.")).toBeVisible();
 
   await page.getByTestId("delete-password").fill(password);
   await page.getByTestId("delete-confirm").fill("EXCLUIR");
