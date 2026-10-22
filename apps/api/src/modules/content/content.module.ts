@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Headers, HttpCode, Module, Param, Post, Query } from "@nestjs/common";
+import { BadRequestException, Body, Controller, ForbiddenException, Get, Headers, HttpCode, Module, Param, Post, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { database } from "@mimelux/db/runtime";
 import { z } from "zod";
-import { optionalUser } from "../auth/require-user";
+import { assertOwnsCreator, ownsCreator } from "../access/creator-scope";
+import { optionalUser, requireUser } from "../auth/require-user";
 import { viewerHasAccess } from "../payments/billing";
 
 const createPostSchema = z.object({
@@ -26,8 +27,21 @@ class ContentController {
   @Post("posts")
   @HttpCode(501)
   @ApiOperation({ summary: "Create a post (contract only in V0.1)" })
-  create(@Body() body: unknown) {
-    return { input: createPostSchema.parse(body), code: "NOT_IMPLEMENTED" };
+  async create(@Headers("authorization") authorization: string | undefined, @Body() body: unknown) {
+    const user = await requireUser(authorization);
+    const parsed = createPostSchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException(parsed.error.issues[0]?.message ?? "Invalid request");
+    const rows = await database.media.findMany({
+      where: { id: { in: parsed.data.mediaIds } },
+      select: { post: { select: { creatorId: true, deletedAt: true } } },
+    });
+    if (rows.length !== parsed.data.mediaIds.length || rows.some((row) => !row.post || row.post.deletedAt)) {
+      throw new BadRequestException("Unknown media");
+    }
+    const creatorIds = new Set(rows.map((row) => row.post?.creatorId).filter((id): id is string => Boolean(id)));
+    if (creatorIds.size !== 1) throw new ForbiddenException("Creator only");
+    await assertOwnsCreator(user, [...creatorIds][0] ?? "");
+    return { input: parsed.data, code: "NOT_IMPLEMENTED" };
   }
 
   @Get("posts/:id")
@@ -39,10 +53,11 @@ class ContentController {
     if (!post || post.deletedAt) return { item: null, id, source: "api-shell" };
     const subscriberOnly = post.visibility === "SUBSCRIBERS";
     const payPerView = post.visibility === "PPV";
-    const viewer = subscriberOnly || payPerView ? await optionalUser(authorization) : null;
+    const viewer = await optionalUser(authorization);
     let access = !subscriberOnly && !payPerView;
-    if (subscriberOnly) access = viewer ? await viewerHasAccess(viewer.id, post.creatorId) : false;
-    if (payPerView) {
+    if (viewer && (await ownsCreator(viewer, post.creatorId))) access = true;
+    else if (subscriberOnly) access = viewer ? await viewerHasAccess(viewer.id, post.creatorId) : false;
+    else if (payPerView) {
       access = viewer
         ? Boolean(
             await database.purchase.findFirst({

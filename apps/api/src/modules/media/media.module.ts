@@ -333,9 +333,10 @@ class MediaController {
     if (!parsed.success) throw new BadRequestException(parsed.error.issues[0]?.message ?? "Invalid request");
     const actor = await this.manager(authorization, parsed.data.creatorId);
     const posts = await database.post.findMany({
-      where: { id: { in: parsed.data.ids }, creatorId: actor.creator.id, deletedAt: null },
-      select: { id: true },
+      where: { id: { in: parsed.data.ids }, deletedAt: null },
+      select: { id: true, creatorId: true },
     });
+    if (posts.some((post) => post.creatorId !== actor.creator.id)) throw new ForbiddenException("Creator only");
     if (posts.length !== parsed.data.ids.length) throw new BadRequestException("Unknown media item");
     await database.$transaction(
       parsed.data.ids.map((id, index) => database.post.update({ where: { id }, data: { sortOrder: index } })),
