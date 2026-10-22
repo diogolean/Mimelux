@@ -1,6 +1,11 @@
 patrocino.com, www.patrocino.com {
 	encode gzip zstd
 
+	@private path /media/uploads/*/private /media/uploads/*/private/* /media/uploads/*/tmp /media/uploads/*/tmp/*
+	handle @private {
+		respond 404
+	}
+
 	handle_path /media/* {
 		root * /srv/media
 		header Cache-Control "public, max-age=31536000, immutable"

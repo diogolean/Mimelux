@@ -242,8 +242,10 @@ model Post {
   visibility  ContentVisibility @default(FREE)
   priceCents  Int?
   likeCount   Int               @default(0)
+  sortOrder   Int               @default(0)
   isDemo      Boolean           @default(false)
   publishedAt DateTime?
+  deletedAt   DateTime?
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
   media       Media[]
@@ -268,12 +270,34 @@ model Media {
   width      Int?
   height     Int?
   durationMs Int?
+  posterKey  String?
+  previewKey String?
+  byteSize   Int?
+  private    Boolean   @default(false)
   isDemo     Boolean   @default(false)
   createdAt  DateTime  @default(now())
 
   @@index([postId])
   @@index([messageId])
   @@map("media")
+}
+
+model MediaUpload {
+  id          String   @id @default(cuid())
+  creatorId   String
+  actorId     String
+  filename    String
+  mimeType    String
+  byteSize    Int
+  chunkSize   Int
+  totalChunks Int
+  tempDir     String
+  status      String   @default("open")
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  @@index([creatorId, status])
+  @@map("media_uploads")
 }
 
 model Purchase {

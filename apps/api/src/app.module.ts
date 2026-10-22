@@ -4,6 +4,7 @@ import { AuthModule } from "./modules/auth/auth.module";
 import { ChatModule } from "./modules/chat/chat.module";
 import { ContentModule } from "./modules/content/content.module";
 import { CreatorsModule } from "./modules/creators/creators.module";
+import { MediaModule } from "./modules/media/media.module";
 import { PaymentsModule } from "./modules/payments/payments.module";
 import { SubscriptionsModule } from "./modules/subscriptions/subscriptions.module";
 import { HealthController } from "./health.controller";
@@ -14,6 +15,7 @@ import { HealthController } from "./health.controller";
     AdminModule,
     CreatorsModule,
     ContentModule,
+    MediaModule,
     SubscriptionsModule,
     PaymentsModule,
     ChatModule,

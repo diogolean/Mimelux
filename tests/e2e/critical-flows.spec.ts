@@ -93,7 +93,8 @@ test("creator dashboard keeps uploads local and generated media loads", async ({
   await page.getByLabel("Email ou CPF").fill("criadora@mimelux.com.br");
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await expect(page).toHaveURL(/\/painel/);
-  await page.locator('input[type="file"]').setInputFiles(
+  await expect(page.getByTestId("media-library")).toBeVisible();
+  await page.getByTestId("demo-upload").setInputFiles(
     "apps/web/public/media/generated/creator-luna-ferraz-avatar.jpg",
   );
   await expect(page.getByText("creator-luna-ferraz-avatar.jpg")).toBeVisible();

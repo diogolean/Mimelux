@@ -19,6 +19,7 @@ import { Button, Pill } from "@mimelux/ui";
 import { brl, creators, dashboardMetrics, posts } from "@/lib/gateway";
 import { readDemo, writeDemo } from "@/lib/demo-store";
 import { useRoleGuard } from "@/lib/use-role-guard";
+import { MediaManager } from "@/components/media-manager";
 import { toast } from "sonner";
 
 export default function DashboardPage() {
@@ -85,7 +86,7 @@ export default function DashboardPage() {
           <p className="mt-2 text-xs text-muted">Acompanhe sua comunidade e prepare a próxima publicação.</p>
         </div>
         <div className="flex gap-2">
-          <input ref={inputRef} type="file" accept="image/*,video/*" className="hidden" onChange={selectUpload} />
+          <input ref={inputRef} data-testid="demo-upload" type="file" accept="image/*,video/*" className="hidden" onChange={selectUpload} />
           <Button variant="outline" onClick={() => inputRef.current?.click()}><ImagePlus className="size-4" /> Enviar mídia</Button>
           <Button onClick={publishDemo}><Plus className="size-4" /> {uploadName ? "Publicar demo" : "Novo post"}</Button>
         </div>
@@ -98,6 +99,10 @@ export default function DashboardPage() {
           <button onClick={() => setUploadName("")} className="text-[10px] font-bold text-muted">Remover</button>
         </div>
       )}
+
+      <div className="mt-6">
+        <MediaManager />
+      </div>
 
       <section className="mt-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {[

@@ -1,4 +1,20 @@
 services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: 3334
+      MEDIA_ROOT: /opt/patrocino/media
+      DATABASE_URL: ${DATABASE_URL}
+      WEB_ORIGIN: ${WEB_ORIGIN:-https://patrocino.com}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      STRIPE_ALLOW_LIVE: "false"
+    volumes:
+      - /opt/patrocino/media:/opt/patrocino/media
+
   caddy:
     image: caddy:2
     restart: unless-stopped

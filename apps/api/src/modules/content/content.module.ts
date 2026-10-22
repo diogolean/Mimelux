@@ -36,10 +36,21 @@ class ContentController {
       where: { id },
       include: { media: true },
     });
-    if (!post) return { item: null, id, source: "api-shell" };
+    if (!post || post.deletedAt) return { item: null, id, source: "api-shell" };
     const subscriberOnly = post.visibility === "SUBSCRIBERS";
-    const viewer = subscriberOnly ? await optionalUser(authorization) : null;
-    const access = !subscriberOnly || (viewer ? await viewerHasAccess(viewer.id, post.creatorId) : false);
+    const payPerView = post.visibility === "PPV";
+    const viewer = subscriberOnly || payPerView ? await optionalUser(authorization) : null;
+    let access = !subscriberOnly && !payPerView;
+    if (subscriberOnly) access = viewer ? await viewerHasAccess(viewer.id, post.creatorId) : false;
+    if (payPerView) {
+      access = viewer
+        ? Boolean(
+            await database.purchase.findFirst({
+              where: { buyerId: viewer.id, postId: post.id, status: "PAID" },
+            }),
+          )
+        : false;
+    }
     return {
       item: {
         id: post.id,
@@ -47,7 +58,14 @@ class ContentController {
         caption: access ? post.caption : "",
         visibility: post.visibility,
         locked: !access,
-        media: access ? post.media : [],
+        media: access
+          ? post.media.map((item) => ({
+              id: item.id,
+              kind: item.kind,
+              mimeType: item.mimeType,
+              fileUrl: `/v1/media/${item.id}/file`,
+            }))
+          : [],
       },
       source: "postgres",
     };

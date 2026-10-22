@@ -47,4 +47,11 @@ test("an admin edits the revenue split without an ownership control", async ({ p
   await page.getByTestId("admin-creator-override").fill("");
   await page.getByTestId("admin-creator-save").click();
   await expect(page.getByTestId("admin-creator-override")).toHaveValue("");
+
+  const mediaCreator = page.getByTestId("admin-media-creator");
+  await expect(mediaCreator.locator("option", { hasText: "Luna Ferraz" })).toHaveCount(1);
+  const creatorValue = await mediaCreator.locator("option", { hasText: "Luna Ferraz" }).getAttribute("value");
+  await mediaCreator.selectOption(creatorValue ?? "");
+  await expect(page.getByTestId("media-library")).toBeVisible();
+  await expect(page.getByText(/WinApp|independente|da casa/i)).toHaveCount(0);
 });

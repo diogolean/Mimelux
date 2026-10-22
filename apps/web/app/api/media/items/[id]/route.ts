@@ -1,0 +1,16 @@
+import { proxyMediaJson } from "@/lib/media-proxy";
+
+type Context = { params: Promise<{ id: string }> };
+
+export async function PATCH(request: Request, context: Context) {
+  const { id } = await context.params;
+  return proxyMediaJson(request, `/media/items/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: await request.text(),
+  });
+}
+
+export async function DELETE(request: Request, context: Context) {
+  const { id } = await context.params;
+  return proxyMediaJson(request, `/media/items/${encodeURIComponent(id)}`, { method: "DELETE" });
+}

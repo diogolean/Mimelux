@@ -46,7 +46,8 @@ On macOS/Linux, replace `copy` with `cp`.
 - Swagger: [http://localhost:3334/v1/docs](http://localhost:3334/v1/docs)
 
 PostgreSQL is optional for the web demo. The API uses it for seeded creators and
-test-only password/JWT authentication. No live payment, upload, or payout occurs.
+test-only password/JWT authentication. No live payment or payout occurs. Creator
+uploads, when the API is running, are stored on local disk.
 
 ## Demo accounts
 
@@ -70,7 +71,35 @@ Registration uses mock verification code `224488`, then four onboarding steps. C
 4. Public posts stay visible; subscription posts, PPV posts, and packs use separate simulated unlock paths.
 5. Fans can send a special request; creators can quote, decline, and mark paid requests as delivered.
 6. Creators configure bundle discounts, time-limited promotions, affiliate commission scope, and demo offers.
-7. Feed interactions, chat, dashboard upload, and payout actions remain local simulations.
+7. Feed interactions, chat, the demo publish button, and payout actions remain local simulations.
+8. The creator dashboard and `/admin` also have a real media library (photos and locked videos) when the API is up.
+
+## Creator media
+
+Creators upload from the dashboard. An admin picks any creator on `/admin` and manages that library the same way: caption, free or subscribers-only, optional pay-per-view price, schedule, reorder, edit, and soft delete. Photos and videos (mp4, mov, webm, up to 2 GB) upload in 5 MB chunks with a progress bar, drag and drop, and multiple files. A failed chunk retries; the browser remembers the upload id and skips parts already received.
+
+Files go through `DiskStorage` (`apps/api/src/modules/media/storage.ts`). The default root is `/opt/patrocino/media` (`MEDIA_ROOT`). Layout:
+
+```text
+uploads/<creatorId>/public/<mediaId>.<ext>    free original
+uploads/<creatorId>/private/<mediaId>.<ext>   locked original
+uploads/<creatorId>/posters/<mediaId>.jpg     video or photo poster
+uploads/<creatorId>/previews/<mediaId>.jpg    blurred preview
+```
+
+Caddy serves `/media/*` from that disk, except `uploads/*/private` and `uploads/*/tmp`, which return 404. Locked bytes are only returned by `GET /v1/media/:id/file` after the API checks the owner, an admin, an active subscription, or a paid pay-per-view purchase. Posters and blurred previews stay public. The API image installs ffmpeg for those derivatives.
+
+Deploy on the VPS:
+
+```bash
+mkdir -p /opt/patrocino/media
+pnpm --filter @mimelux/db exec prisma migrate deploy
+docker compose -f docker-compose.prod.yml build api
+docker compose -f docker-compose.prod.yml up -d api
+# reload Caddy so the private-path 404 matcher is active
+```
+
+The API container mounts `/opt/patrocino/media` read-write. Caddy mounts the same path read-only. Swap the storage class later (Bunny Storage or Stream) without changing the upload routes.
 
 ## Commands
 
@@ -144,6 +173,6 @@ tests remain planned; this demo is not production-ready.
 ## Safety
 
 - No secrets are committed; copy `.env.example` to `.env`.
-- No real charge, Pix code, receipt, private upload, or payout is generated.
+- No real charge, Pix code, receipt, or payout is generated. Uploaded media stays on the server disk and is not committed.
 - AI creator identities are marked `fictitious` and `aiGenerated`.
 - Media is original generated demo material, not third-party creator content.
