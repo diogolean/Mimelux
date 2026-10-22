@@ -194,6 +194,12 @@ async function main() {
   await ensureSeedAdmins();
 }
 
+function posterDiskKey(poster: string | undefined) {
+  if (!poster) return null;
+  const bare = poster.split("?")[0] ?? poster;
+  return bare.startsWith("/media/") ? bare.slice("/media/".length) : bare.replace(/^\/+/, "");
+}
+
 async function seedDemoExtraPosts(creatorId: string, slug: string) {
   for (const post of demoExtraPostsFor(slug)) {
     const bareKey = post.path.split("?")[0] ?? post.path;
@@ -211,19 +217,28 @@ async function seedDemoExtraPosts(creatorId: string, slug: string) {
       publishedAt: post.publishedAt,
       isDemo: true,
     };
+    const mediaData = {
+      kind: post.kind === "video" ? "VIDEO" as const : "IMAGE" as const,
+      storageKey: post.path,
+      mimeType: post.kind === "video" ? "video/mp4" : "image/jpeg",
+      posterKey: posterDiskKey(post.poster),
+      durationMs: post.durationMs ?? null,
+      width: post.width ?? null,
+      height: post.height ?? null,
+      private: post.kind === "video" && !post.free,
+      isDemo: true,
+    };
     if (!existing?.postId) {
       await prisma.post.create({
         data: {
           creatorId,
           ...data,
-          media: { create: { kind: "IMAGE", storageKey: post.path, mimeType: "image/jpeg", isDemo: true } },
+          media: { create: { ...mediaData, ...(post.mediaId ? { id: post.mediaId } : {}) } },
         },
       });
     } else {
       await prisma.post.update({ where: { id: existing.postId }, data });
-      if (existing.storageKey !== post.path) {
-        await prisma.media.update({ where: { id: existing.id }, data: { storageKey: post.path } });
-      }
+      await prisma.media.update({ where: { id: existing.id }, data: mediaData });
     }
   }
 }

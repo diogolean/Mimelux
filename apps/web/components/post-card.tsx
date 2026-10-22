@@ -14,6 +14,7 @@ import {
 import { Button, Pill } from "@mimelux/ui";
 import type { Creator, Post } from "@/lib/gateway";
 import { brl, seedComments } from "@/lib/gateway";
+import { PostVisual } from "@/components/post-visual";
 import { readDemo, writeDemo } from "@/lib/demo-store";
 
 export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
@@ -92,9 +93,16 @@ export function PostCard({ post, creator }: { post: Post; creator: Creator }) {
         <button aria-label="Mais opções" className="grid size-9 place-items-center rounded-full hover:bg-black/5"><MoreHorizontal className="size-4" /></button>
       </header>
 
-      <div className="relative z-0 mx-2 overflow-hidden rounded-[20px] bg-surface" style={{ aspectRatio: "4 / 4.35" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={post.image} alt={post.caption} loading="lazy" decoding="async" className={`h-full w-full object-cover transition duration-500 ${locked ? "scale-105 blur-[15px]" : ""}`} />
+      <div
+        className={`relative z-0 mx-2 overflow-hidden rounded-[20px] ${post.playback ? "aspect-[3/4] bg-black" : "bg-surface"}`}
+        style={post.playback ? undefined : { aspectRatio: "4 / 4.35" }}
+      >
+        <PostVisual
+          post={post}
+          locked={locked}
+          testId={post.playback ? "feed-video" : undefined}
+          lockedClassName="scale-105 blur-[15px]"
+        />
         {locked && (
           <div className="absolute inset-0 grid place-items-center bg-ink/30 px-6 text-center">
             <div className="max-w-xs rounded-[26px] border border-white/20 bg-ink/78 p-6 text-white shadow-2xl backdrop-blur-md">

@@ -16,6 +16,12 @@ export type ObjectStorage = {
 
 const preferredRoot = "/opt/patrocino/media";
 
+export function mediaDiskKey(key: string) {
+  const bare = (key.split("?")[0] ?? key).replace(/\\/g, "/");
+  if (bare.startsWith("/media/")) return bare.slice("/media/".length);
+  return bare.replace(/^\/+/, "");
+}
+
 export function mediaRoot() {
   return process.env.MEDIA_ROOT || preferredRoot;
 }
@@ -24,7 +30,7 @@ export class DiskStorage implements ObjectStorage {
   constructor(readonly root: string) {}
 
   resolve(key: string) {
-    const stripped = key.replace(/^[/\\]+/, "");
+    const stripped = mediaDiskKey(key).replace(/^[/\\]+/, "");
     const normal = path.normalize(stripped);
     if (normal === ".." || normal.startsWith(`..${path.sep}`) || path.isAbsolute(normal)) {
       throw new Error("Storage key escapes the media root");

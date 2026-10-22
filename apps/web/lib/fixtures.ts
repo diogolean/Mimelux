@@ -34,6 +34,8 @@ export type Post = {
   id: string;
   creatorId: string;
   image: string;
+  poster?: string;
+  playback?: string;
   caption: string;
   visibility: "free" | "subscriber" | "ppv";
   mediaType: "image" | "video";
@@ -186,10 +188,12 @@ const subscriberPosts: Post[] = demoCreators.flatMap((creator, creatorIndex) =>
 const extraDemoPosts: Post[] = allDemoExtraPosts().map((post) => ({
   id: post.id,
   creatorId: post.slug,
-  image: post.path,
+  image: post.kind === "video" ? (post.poster ?? post.path) : post.path,
+  poster: post.poster,
+  playback: post.kind === "video" ? post.playback : undefined,
   caption: post.caption,
   visibility: post.free ? "free" as const : "subscriber" as const,
-  mediaType: "image" as const,
+  mediaType: post.kind,
   likes: post.likes,
   time: "há 3 meses",
   demo: true as const,

@@ -19,6 +19,7 @@ import { useTranslations } from "next-intl";
 import { Button, Pill, PremiumModal } from "@mimelux/ui";
 import type { Creator, Post } from "@/lib/gateway";
 import { brl, compact, plans, reviewsFor } from "@/lib/gateway";
+import { PostVisual } from "@/components/post-visual";
 import { readDemo, writeDemo, type DemoReview, type DemoSpecialRequest } from "@/lib/demo-store";
 import { toast } from "sonner";
 
@@ -319,9 +320,8 @@ export function CreatorProfile({ creator, posts }: { creator: Creator; posts: Po
         {visiblePosts.map((post) => {
           const locked = post.visibility === "subscriber" ? !subscribed : post.visibility === "ppv" ? !unlocks.includes(post.id) : false;
           return (
-            <div key={post.id} data-testid="profile-post" data-locked={locked} className="group relative aspect-[3/4] overflow-hidden rounded-[16px] bg-surface">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={post.image} alt={post.caption} loading="lazy" decoding="async" className={`h-full w-full object-cover ${locked ? "scale-105 blur-[10px]" : ""}`} />
+            <div key={post.id} data-testid="profile-post" data-locked={locked} className={`group relative aspect-[3/4] overflow-hidden rounded-[16px] ${post.playback ? "bg-black" : "bg-surface"}`}>
+              <PostVisual post={post} locked={locked} testId={post.playback ? "profile-video" : undefined} autoPlay />
               {locked && (
                 <div className="absolute inset-0 grid place-items-center bg-ink/25 p-2 text-center text-white">
                   <div>

@@ -1,5 +1,5 @@
 const assert = require("node:assert/strict");
-const { mkdtempSync } = require("node:fs");
+const { mkdirSync, mkdtempSync, writeFileSync } = require("node:fs");
 const { tmpdir } = require("node:os");
 const path = require("node:path");
 
@@ -109,6 +109,37 @@ async function main() {
   assert.equal(videoDenied.status, 403);
   assert.equal(videoDenied.body.includes(mp4), false);
 
+  const demoDir = path.join(process.env.MEDIA_ROOT, "models", "demo", "probe");
+  mkdirSync(demoDir, { recursive: true });
+  writeFileSync(path.join(demoDir, "v001.mp4"), mp4);
+  const demoMediaId = `demo-media-probe-${stamp}`;
+  await prisma.post.create({
+    data: {
+      creatorId,
+      caption: "Clipe demo",
+      visibility: "SUBSCRIBERS",
+      publishedAt: new Date(),
+      media: {
+        create: {
+          id: demoMediaId,
+          kind: "VIDEO",
+          storageKey: "/media/models/demo/probe/v001.mp4?v=2",
+          mimeType: "video/mp4",
+          posterKey: "models/demo/probe/v001.jpg",
+          durationMs: 6040,
+          width: 480,
+          height: 640,
+          private: true,
+        },
+      },
+    },
+  });
+  const demoAnonymous = await binary(`${base}/media/${demoMediaId}/file`);
+  assert.equal(demoAnonymous.status, 401);
+  const demoDenied = await binary(`${base}/media/${demoMediaId}/file`, fanToken);
+  assert.equal(demoDenied.status, 403);
+  assert.equal(demoDenied.body.includes(mp4), false);
+
   const plan = await prisma.plan.create({
     data: {
       creatorId,
@@ -131,6 +162,11 @@ async function main() {
   assert.equal(allowed.status, 200);
   assert.equal(allowed.headers.get("content-type"), "image/jpeg");
   assert.deepEqual(allowed.body, jpeg);
+
+  const demoAllowed = await binary(`${base}/media/${demoMediaId}/file`, fanToken);
+  assert.equal(demoAllowed.status, 200);
+  assert.equal(demoAllowed.headers.get("content-type"), "video/mp4");
+  assert.deepEqual(demoAllowed.body, mp4);
 
   const ppv = await upload(base, creatorToken, jpeg, "ppv.jpg", "image/jpeg", {
     visibility: "ppv",

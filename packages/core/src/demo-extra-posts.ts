@@ -2,6 +2,7 @@ import { withAssetVersion } from "./assets";
 import { imageFile } from "./initial-creators";
 
 const demoExtraAnchor = Date.UTC(2026, 6, 1, 12, 0, 0);
+const demoWave2Anchor = Date.UTC(2026, 8, 1, 12, 0, 0);
 
 const captions = {
   lifestyle: [
@@ -90,6 +91,68 @@ const captions = {
   ],
 } as const;
 
+const wave2Captions = {
+  lifestyle: [
+    "A xícara lavada e a mesa ainda com migalhas.",
+    "Cadeira na janela, sem ninguém sentado.",
+    "O casaco no encosto, pronto para sair.",
+    "Luz da cozinha depois do jantar.",
+    "Um canto do sofá e o cobertor dobrado.",
+  ],
+  moda: [
+    "A barra da calça, só o detalhe.",
+    "Espelho de corpo, sem pose marcada.",
+    "O colar sobre o tecido cru.",
+    "Manga dobrada duas vezes.",
+    "Sapato ao lado da porta, ainda amarrado.",
+  ],
+  beleza: [
+    "Toalha no ombro e o cabelo úmido.",
+    "Pincel limpo antes da sombra.",
+    "Hidratante na palma, ainda sem espalhar.",
+    "Luz do banheiro, sem filtro.",
+    "O batom fechado ao lado da pia.",
+  ],
+  fitness: [
+    "O tapete no chão, antes de começar.",
+    "Garrafa ao lado do peso.",
+    "Alongamento de panturrilha na parede.",
+    "O timer zerado no descanso.",
+    "Tênis desamarrado depois do treino.",
+  ],
+  viagem: [
+    "A rua ainda molhada de manhã.",
+    "Bilhete no bolso, horário anotado à mão.",
+    "Vista da janela do ônibus.",
+    "Banco de praça e a mochila no chão.",
+    "O cais no fim da tarde.",
+  ],
+  musica: [
+    "O microfone baixo, ainda desligado.",
+    "Dedos no braço do violão, sem acorde.",
+    "Caderno de cifras aberto na primeira página.",
+    "A cadeira do ensaio, vazia.",
+    "Cabo enrolado ao lado do amplificador.",
+  ],
+  gastronomia: [
+    "A faca limpa e a tábua ainda seca.",
+    "Azeite no canto do prato.",
+    "Panela tampada, fogo baixo.",
+    "O pão partido, ainda quente.",
+    "Ervas picadas na tigela pequena.",
+  ],
+} as const;
+
+const videoCaptions = {
+  lifestyle: "Um minuto da manhã, sem narração.",
+  moda: "O look girando devagar, sem corte.",
+  beleza: "A rotina em poucos segundos, sem fala.",
+  fitness: "Uma série curta, no mesmo lugar de sempre.",
+  viagem: "Alguns segundos da caminhada, sem destino.",
+  musica: "Um trecho curto, só voz e violão.",
+  gastronomia: "O refogado em poucos segundos.",
+} as const;
+
 type DemoNiche = keyof typeof captions;
 
 export const demoExtraCreators = [
@@ -116,14 +179,29 @@ export type DemoExtraPost = {
   slug: string;
   file: string;
   path: string;
+  poster?: string;
+  playback: string;
+  mediaId?: string;
   caption: string;
   free: boolean;
   likes: number;
   publishedAt: Date;
+  kind: "image" | "video";
+  durationMs?: number;
+  width?: number;
+  height?: number;
 };
 
 export function demoExtraPostPublishedAt(creatorIndex: number, postIndex: number) {
   return new Date(demoExtraAnchor - (creatorIndex * 10 + postIndex) * 60_000);
+}
+
+export function demoWave2PublishedAt(creatorIndex: number, postIndex: number) {
+  return new Date(demoWave2Anchor - (creatorIndex * 6 + postIndex) * 60_000);
+}
+
+export function demoVideoMediaId(slug: string) {
+  return `demo-media-${slug}-v001`;
 }
 
 export function demoExtraMediaPath(slug: string, file: string) {
@@ -141,19 +219,60 @@ export function demoExtraPostsFor(slug: string): DemoExtraPost[] {
   const creator = demoExtraCreators[creatorIndex];
   if (!creator) return [];
   const lines = captions[creator.niche];
-  return lines.map((caption, index) => {
+  const july = lines.map((caption, index) => {
     const file = imageFile(index + 1);
+    const path = demoExtraMediaPath(slug, file);
     return {
       id: `demo-extra-${slug}-${file.replace(".jpg", "")}`,
       slug,
       file,
-      path: demoExtraMediaPath(slug, file),
+      path,
+      playback: path,
       caption,
       free: index < 3,
       likes: demoExtraLikeCount(slug, index),
       publishedAt: demoExtraPostPublishedAt(creatorIndex, index),
+      kind: "image" as const,
     };
   });
+  const images = wave2Captions[creator.niche].map((caption, index) => {
+    const file = imageFile(index + 11);
+    const path = demoExtraMediaPath(slug, file);
+    return {
+      id: `demo-extra-${slug}-${file.replace(".jpg", "")}`,
+      slug,
+      file,
+      path,
+      playback: path,
+      caption,
+      free: index < 2,
+      likes: demoExtraLikeCount(slug, 10 + index),
+      publishedAt: demoWave2PublishedAt(creatorIndex, index + 1),
+      kind: "image" as const,
+    };
+  });
+  const videoFile = "v001.mp4";
+  const videoPath = demoExtraMediaPath(slug, videoFile);
+  const videoFree = creatorIndex % 2 === 1;
+  const mediaId = demoVideoMediaId(slug);
+  const video = {
+    id: `demo-extra-${slug}-v001`,
+    slug,
+    file: videoFile,
+    path: videoPath,
+    poster: demoExtraMediaPath(slug, "v001.jpg"),
+    playback: videoFree ? videoPath : `/api/media/file/${mediaId}`,
+    mediaId,
+    caption: videoCaptions[creator.niche],
+    free: videoFree,
+    likes: demoExtraLikeCount(slug, 15),
+    publishedAt: demoWave2PublishedAt(creatorIndex, 0),
+    kind: "video" as const,
+    durationMs: 6_040,
+    width: 480,
+    height: 640,
+  };
+  return [...july, ...images, video];
 }
 
 export function allDemoExtraPosts() {
