@@ -1,4 +1,5 @@
 import {
+  allDemoExtraPosts,
   demoCreatorCreatedAt,
   demoPostPublishedAt,
   imageFile,
@@ -182,6 +183,19 @@ const subscriberPosts: Post[] = demoCreators.flatMap((creator, creatorIndex) =>
   }),
 );
 
+const extraDemoPosts: Post[] = allDemoExtraPosts().map((post) => ({
+  id: post.id,
+  creatorId: post.slug,
+  image: post.path,
+  caption: post.caption,
+  visibility: post.free ? "free" as const : "subscriber" as const,
+  mediaType: "image" as const,
+  likes: post.likes,
+  time: "há 3 meses",
+  demo: true as const,
+  publishedAt: post.publishedAt.toISOString(),
+}));
+
 const initialFeedPosts: Post[] = initialCreators.flatMap((creator) => {
   const own = initialCatalogPosts.filter((post) => post.creatorId === creator.slug);
   const free = own.find((post) => post.visibility === "free");
@@ -189,7 +203,7 @@ const initialFeedPosts: Post[] = initialCreators.flatMap((creator) => {
   return [free, locked].filter((post): post is Post => Boolean(post));
 });
 
-export const posts: Post[] = [...initialFeedPosts, ...publicPosts, ...subscriberPosts].sort((left, right) =>
+export const posts: Post[] = [...initialFeedPosts, ...extraDemoPosts, ...publicPosts, ...subscriberPosts].sort((left, right) =>
   right.publishedAt.localeCompare(left.publishedAt),
 );
 

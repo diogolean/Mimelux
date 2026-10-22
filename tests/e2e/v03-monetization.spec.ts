@@ -21,9 +21,9 @@ test("promotion price is visible and PPV unlock persists", async ({ page }) => {
   await page.getByRole("button", { name: "Simular pagamento" }).click();
   await expect(page.getByText("Conteúdo liberado")).toBeVisible();
   await page.getByRole("button", { name: /Ver agora/ }).click();
-  await expect(page.locator('[data-testid="profile-post"][data-locked="false"]')).toHaveCount(2);
+  await expect(page.locator('[data-testid="profile-post"][data-locked="false"]')).toHaveCount(5);
   await page.reload();
-  await expect(page.locator('[data-testid="profile-post"][data-locked="false"]')).toHaveCount(2);
+  await expect(page.locator('[data-testid="profile-post"][data-locked="false"]')).toHaveCount(5);
 });
 
 test("special request follows request, quote, pay and delivery states", async ({

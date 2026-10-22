@@ -59,9 +59,9 @@ test("new account completes verification, onboarding, and discovery coach marks"
 test("creator subscription unlocks subscriber posts while PPV stays separate", async ({ page }) => {
   await page.goto("/creator/lunaferraz");
   const posts = page.getByTestId("profile-post");
-  await expect(posts).toHaveCount(5);
-  await expect(page.locator('[data-testid="profile-post"][data-locked="false"]')).toHaveCount(1);
-  await expect(page.locator('[data-testid="profile-post"][data-locked="true"]')).toHaveCount(4);
+  await expect(posts).toHaveCount(13);
+  await expect(page.locator('[data-testid="profile-post"][data-locked="false"]')).toHaveCount(4);
+  await expect(page.locator('[data-testid="profile-post"][data-locked="true"]')).toHaveCount(9);
   await expect(page.getByText("Assine para desbloquear").first()).toBeVisible();
 
   await page.getByRole("link", { name: /1 mês/ }).click();

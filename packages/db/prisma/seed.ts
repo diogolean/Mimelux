@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
 import {
   demoCreatorCreatedAt,
+  demoExtraPostsFor,
   demoPostPublishedAt,
   imageFile,
   initialCreators,
@@ -121,8 +122,15 @@ async function main() {
       }
     }
 
-    const creatorPosts = await prisma.post.findMany({ where: { creatorId: creator.id }, orderBy: { createdAt: "asc" } });
-    for (const [postIndex, post] of creatorPosts.entries()) {
+    const creatorPosts = await prisma.post.findMany({
+      where: { creatorId: creator.id },
+      orderBy: { createdAt: "asc" },
+      include: { media: { select: { storageKey: true } } },
+    });
+    const legacyPosts = creatorPosts.filter((post) =>
+      post.media.every((item) => !(item.storageKey.split("?")[0] ?? "").startsWith("/media/models/demo/")),
+    );
+    for (const [postIndex, post] of legacyPosts.entries()) {
       await prisma.post.update({
         where: { id: post.id },
         data: { likeCount: 1240 + postIndex * 317, publishedAt: demoPostPublishedAt(index * 20 + postIndex) },
@@ -139,6 +147,7 @@ async function main() {
         });
       }
     }
+    await seedDemoExtraPosts(creator.id, fileSlug);
 
     const review = await prisma.review.findFirst({ where: { creatorId: creator.id, isDemo: true } });
     if (!review) {
@@ -183,6 +192,40 @@ async function main() {
   await seedInitialCreators();
   await versionStoredAssetUrls();
   await ensureSeedAdmins();
+}
+
+async function seedDemoExtraPosts(creatorId: string, slug: string) {
+  for (const post of demoExtraPostsFor(slug)) {
+    const bareKey = post.path.split("?")[0] ?? post.path;
+    const existing = await prisma.media.findFirst({
+      where: {
+        post: { creatorId },
+        OR: [{ storageKey: bareKey }, { storageKey: { startsWith: `${bareKey}?` } }],
+      },
+      select: { id: true, postId: true, storageKey: true },
+    });
+    const data = {
+      caption: post.caption,
+      visibility: post.free ? "FREE" as const : "SUBSCRIBERS" as const,
+      likeCount: post.likes,
+      publishedAt: post.publishedAt,
+      isDemo: true,
+    };
+    if (!existing?.postId) {
+      await prisma.post.create({
+        data: {
+          creatorId,
+          ...data,
+          media: { create: { kind: "IMAGE", storageKey: post.path, mimeType: "image/jpeg", isDemo: true } },
+        },
+      });
+    } else {
+      await prisma.post.update({ where: { id: existing.postId }, data });
+      if (existing.storageKey !== post.path) {
+        await prisma.media.update({ where: { id: existing.id }, data: { storageKey: post.path } });
+      }
+    }
+  }
 }
 
 async function versionStoredAssetUrls() {
