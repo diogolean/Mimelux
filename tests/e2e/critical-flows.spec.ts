@@ -8,8 +8,16 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => localStorage.clear());
 });
 
-test("root redirects to login and demo fan login opens trending creators", async ({ page }) => {
+test("root shows the creator showcase and demo fan login opens trending creators", async ({ page }) => {
   await page.goto("/");
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("heading", { name: "Os criadores mais recentes, primeiro." })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Cadastre-se" })).toBeVisible();
+  const cards = page.getByTestId("showcase-card");
+  await expect(cards.first()).toContainText("Albina Schneider");
+  await expect(cards.nth(8)).toContainText("Taty Moreira");
+  await expect(cards.nth(9)).toContainText("Luna Ferraz");
+  await page.getByRole("link", { name: "Entrar", exact: true }).click();
   await expect(page).toHaveURL(/\/auth\?route=sign-in/);
   await expect(page.getByRole("heading", { name: "Que bom ter você aqui." })).toBeVisible();
 

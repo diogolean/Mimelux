@@ -1,17 +1,20 @@
 import Link from "next/link";
 import { Plus, Sparkles } from "lucide-react";
+import { CreatorShowcase } from "@/components/creator-showcase";
 import { PostCard } from "@/components/post-card";
 import { creators, posts } from "@/lib/gateway";
 
 export default function FeedPage() {
   return (
-    <div className="mx-auto grid w-full max-w-6xl gap-7 px-4 py-6 sm:px-8 lg:grid-cols-[minmax(0,640px)_300px] lg:py-9">
-      <section>
-        <div className="mb-6">
-          <p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary-strong">Para você</p>
-          <h1 className="mt-1 text-2xl font-extrabold tracking-[-.04em]">Seu feed</h1>
-        </div>
-
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 lg:py-9">
+      <div className="mb-2">
+        <p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary-strong">Para você</p>
+        <h1 className="mt-1 text-2xl font-extrabold tracking-[-.04em]">Seu feed</h1>
+        <p className="mt-2 text-xs text-muted">Estreias no topo e o catálogo de demonstração em seguida.</p>
+      </div>
+      <CreatorShowcase creators={creators} plain />
+      <div className="mt-10 grid gap-7 lg:grid-cols-[minmax(0,640px)_300px]">
+      <section className="min-w-0">
         <div className="mb-5 flex gap-3 overflow-x-auto pb-2">
           {creators.slice(0, 7).map((creator, index) => (
             <Link key={creator.id} href={`/creator/${creator.username}`} className="shrink-0 text-center">
@@ -64,6 +67,7 @@ export default function FeedPage() {
           </div>
         </div>
       </aside>
+      </div>
     </div>
   );
 }

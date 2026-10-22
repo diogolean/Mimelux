@@ -45,5 +45,5 @@ export async function GET(_request: Request, context: { params: Promise<{ path: 
       continue;
     }
   }
-  return new NextResponse(null, { status: 404 });
+  return new NextResponse(null, { status: 404, headers: { "cache-control": "no-store" } });
 }

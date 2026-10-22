@@ -7,6 +7,7 @@ import {
   launchCreatorCreatedAt,
   launchPostPublishedAt,
   modelMediaPath,
+  withAssetVersion,
 } from "@mimelux/core";
 
 export type Creator = {
@@ -44,6 +45,10 @@ export type Post = {
 
 const generatedPath = "/media/generated";
 
+function demoAsset(file: string) {
+  return withAssetVersion(`${generatedPath}/${file}`);
+}
+
 const creatorDefinitions = [
   ["luna-ferraz", "Luna Ferraz", "lunaferraz", "Lifestyle", "Lifestyle, café e pôr do sol em SP.", "São Paulo, SP"],
   ["bella-monroe", "Bella Monroe", "bellamonroe", "Moda", "Moda autoral e looks do dia.", "Londres · São Paulo"],
@@ -68,8 +73,8 @@ const demoCreators: Creator[] = creatorDefinitions.map(
     id,
     name,
     username,
-    avatar: `${generatedPath}/creator-${id}-avatar.jpg`,
-    cover: `${generatedPath}/creator-${id}-cover.jpg`,
+    avatar: demoAsset(`creator-${id}-avatar.jpg`),
+    cover: demoAsset(`creator-${id}-cover.jpg`),
     category,
     bio,
     city,
@@ -148,7 +153,7 @@ const captions = [
 const publicPosts: Post[] = demoCreators.slice(0, 12).map((creator, index) => ({
   id: `public-${creator.id}`,
   creatorId: creator.id,
-  image: `${generatedPath}/post-${String(index + 1).padStart(2, "0")}.jpg`,
+  image: demoAsset(`post-${String(index + 1).padStart(2, "0")}.jpg`),
   caption: captions[index]!,
   visibility: "free",
   mediaType: "image",
@@ -164,7 +169,7 @@ const subscriberPosts: Post[] = demoCreators.flatMap((creator, creatorIndex) =>
     return {
       id: `subscriber-${creator.id}-${itemIndex + 1}`,
       creatorId: creator.id,
-      image: `${generatedPath}/post-${String(assetIndex).padStart(2, "0")}.jpg`,
+      image: demoAsset(`post-${String(assetIndex).padStart(2, "0")}.jpg`),
       caption: captions[(creatorIndex + itemIndex + 4) % captions.length]!,
       visibility: itemIndex % 2 === 1 ? "ppv" as const : "subscriber" as const,
       price: itemIndex % 2 === 1 ? 1_990 + creatorIndex * 100 : undefined,

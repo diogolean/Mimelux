@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+export * from "./assets";
 export * from "./contracts";
 export * from "./initial-creators";
 export * from "./legal";

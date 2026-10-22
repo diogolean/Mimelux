@@ -82,6 +82,7 @@ test("ranking avatars stay in front of covers across themes and widths", async (
 
   await page.goto("/feed");
   const feedAvatar = page.getByTestId("feed-avatar").first();
+  await feedAvatar.scrollIntoViewIfNeeded();
   expect(await feedAvatar.evaluate((element) => {
     const bounds = element.getBoundingClientRect();
     return document.elementFromPoint(bounds.left + bounds.width / 2, bounds.top + bounds.height * 0.75) === element;

@@ -41,6 +41,7 @@ describe("initial creators", () => {
         expect(post.likes).toBeGreaterThanOrEqual(20);
         expect(post.likes).toBeLessThanOrEqual(900);
         expect(post.path.startsWith(`/media/models/${creator.slug}/`)).toBe(true);
+        expect(post.path).toContain("?v=2");
       }
     }
   });

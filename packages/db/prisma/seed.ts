@@ -9,6 +9,7 @@ import {
   launchCreatorCreatedAt,
   launchPostPublishedAt,
   modelMediaPath,
+  withAssetVersion,
 } from "@mimelux/core";
 
 const prisma = new PrismaClient();
@@ -37,6 +38,8 @@ const creators = [
 async function main() {
   for (const [index, [name, username, category, bio, fileSlug, postFile]] of creators.entries()) {
     const createdAt = demoCreatorCreatedAt(index);
+    const avatarUrl = withAssetVersion(`/media/generated/creator-${fileSlug}-avatar.jpg`);
+    const coverUrl = withAssetVersion(`/media/generated/creator-${fileSlug}-cover.jpg`);
     const email =
       username === "lunaferraz"
         ? "criadora@mimelux.com.br"
@@ -55,15 +58,15 @@ async function main() {
     });
     await prisma.profile.upsert({
       where: { userId: user.id },
-      update: { name, username, bio, isDemo: true },
+      update: { name, username, bio, avatarUrl, coverUrl, isDemo: true },
       create: {
         userId: user.id,
         name,
         username,
         bio,
         city: "Brasil",
-        avatarUrl: `/media/generated/creator-${fileSlug}-avatar.jpg`,
-        coverUrl: `/media/generated/creator-${fileSlug}-cover.jpg`,
+        avatarUrl,
+        coverUrl,
         isDemo: true,
       },
     });
@@ -90,7 +93,12 @@ async function main() {
       }
     }
     if (postFile) {
-      const existing = await prisma.post.findFirst({ where: { creatorId: creator.id, caption: { contains: "Conteúdo aberto" } } });
+      const bareKey = `/media/generated/${postFile}`;
+      const storageKey = withAssetVersion(bareKey);
+      const existing = await prisma.post.findFirst({
+        where: { creatorId: creator.id, caption: { contains: "Conteúdo aberto" } },
+        include: { media: true },
+      });
       if (!existing) {
         await prisma.post.create({
           data: {
@@ -100,9 +108,16 @@ async function main() {
             likeCount: 1240,
             publishedAt: demoPostPublishedAt(index),
             isDemo: true,
-            media: { create: { kind: "IMAGE", storageKey: `/media/generated/${postFile}`, mimeType: "image/jpeg", isDemo: true } },
+            media: { create: { kind: "IMAGE", storageKey, mimeType: "image/jpeg", isDemo: true } },
           },
         });
+      } else {
+        for (const item of existing.media) {
+          const bare = item.storageKey.split("?")[0];
+          if (bare === bareKey && item.storageKey !== storageKey) {
+            await prisma.media.update({ where: { id: item.id }, data: { storageKey } });
+          }
+        }
       }
     }
 
@@ -166,7 +181,28 @@ async function main() {
     create: { userId: affiliateUser.id, code: "LUXDEMO", displayName: "Afiliado Demo", isDemo: true },
   });
   await seedInitialCreators();
+  await versionStoredAssetUrls();
   await ensureSeedAdmins();
+}
+
+async function versionStoredAssetUrls() {
+  const profiles = await prisma.profile.findMany({
+    select: { id: true, avatarUrl: true, coverUrl: true },
+  });
+  for (const profile of profiles) {
+    const avatarUrl = profile.avatarUrl ? withAssetVersion(profile.avatarUrl) : profile.avatarUrl;
+    const coverUrl = profile.coverUrl ? withAssetVersion(profile.coverUrl) : profile.coverUrl;
+    if (avatarUrl !== profile.avatarUrl || coverUrl !== profile.coverUrl) {
+      await prisma.profile.update({ where: { id: profile.id }, data: { avatarUrl, coverUrl } });
+    }
+  }
+  const media = await prisma.media.findMany({ select: { id: true, storageKey: true } });
+  for (const item of media) {
+    const storageKey = withAssetVersion(item.storageKey);
+    if (storageKey !== item.storageKey) {
+      await prisma.media.update({ where: { id: item.id }, data: { storageKey } });
+    }
+  }
 }
 
 async function seedInitialCreators() {
@@ -251,9 +287,13 @@ async function seedInitialCreators() {
     }
     for (const [postIndex, post] of initialPosts(creator).entries()) {
       const publishedAt = launchPostPublishedAt(index, postIndex);
+      const bareKey = post.path.split("?")[0] ?? post.path;
       const existing = await prisma.media.findFirst({
-        where: { storageKey: post.path, post: { creatorId: row.id } },
-        select: { postId: true },
+        where: {
+          post: { creatorId: row.id },
+          OR: [{ storageKey: bareKey }, { storageKey: { startsWith: `${bareKey}?` } }],
+        },
+        select: { id: true, postId: true, storageKey: true },
       });
       if (!existing?.postId) {
         await prisma.post.create({
@@ -277,6 +317,9 @@ async function seedInitialCreators() {
             publishedAt,
           },
         });
+        if (existing.storageKey !== post.path) {
+          await prisma.media.update({ where: { id: existing.id }, data: { storageKey: post.path } });
+        }
       }
     }
   }

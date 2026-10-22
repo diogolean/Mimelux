@@ -1,3 +1,5 @@
+import { withAssetVersion } from "./assets";
+
 export type InitialMarket = "US" | "DE" | "FR" | "BR";
 
 export type InitialCreator = {
@@ -205,7 +207,7 @@ export function imageFile(index: number) {
 }
 
 export function modelMediaPath(slug: string, file: string) {
-  return `/media/models/${slug}/${file}`;
+  return withAssetVersion(`/media/models/${slug}/${file}`);
 }
 
 export function postLikeCount(slug: string, index: number) {
