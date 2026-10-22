@@ -14,6 +14,9 @@ export const legalConfig = {
   termsVersion: "2026-10-22",
 } as const;
 
+export const consentVersion = "2026-10-22";
+export const consentCookieName = "patrocino_consent";
+
 export function filledCompanyFields() {
   return {
     legalName: legalConfig.legalName.trim(),

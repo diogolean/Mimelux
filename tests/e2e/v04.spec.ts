@@ -87,7 +87,7 @@ test("creator profile shows likes and subscriber reviews", async ({ page }) => {
 test("logged-out marketing hero and editorial render in both viewports", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/auth?route=sign-in");
-  await page.getByRole("button", { name: "Entendi" }).click();
+  await page.getByRole("button", { name: "Só necessários" }).click();
   await page.getByTestId("creator-hero").scrollIntoViewIfNeeded();
   await expect(page.getByRole("heading", { name: "Transforme atenção em renda." })).toBeVisible();
   await expect(page.getByTestId("creator-slideshow")).toBeVisible();

@@ -89,20 +89,27 @@ const pt: Record<LegalId, LegalDocument> = {
       {
         heading: "Retenção",
         paragraphs: [
-          "Guardamos os dados da conta enquanto ela existir e, depois do encerramento, pelo prazo necessário para obrigações legais, disputas e prevenção de fraude. Registros de aceite e de pagamento são mantidos pelo prazo fiscal aplicável.",
+          "Enquanto a conta existe, guardamos o perfil, as mensagens e as preferências para prestar o serviço.",
+          "Na exclusão, nome, e-mail, senha, foto, bio e o texto das mensagens são apagados ou substituídos na hora. O perfil público e as mídias de quem publica deixam de aparecer.",
+          "Registros de pagamento, de assinatura e do livro-razão ficam por 5 anos, ligados apenas a um identificador anônimo, para obrigação fiscal e defesa em disputas. O prazo conta do fato gerador.",
+          "O registro do consentimento de cookies fica por 5 anos. O cookie de idade dura 12 meses. A sessão de acesso dura 15 minutos e a renovação dura 30 dias.",
         ],
       },
       {
         heading: "Direitos do titular",
         paragraphs: [
-          "Você pode pedir confirmação do tratamento, acesso, correção, anonimização, portabilidade, informação sobre compartilhamento e a eliminação dos dados desnecessários.",
-          `Os pedidos são feitos para ${company.dpoEmail}. Também é possível apresentar reclamação à Autoridade Nacional de Proteção de Dados.`,
+          "Em Conta, Baixar meus dados gera um JSON com perfil, assinaturas, compras, consentimentos e metadados de mensagens (data, conversa e se havia mídia), sem o texto. O download é limitado a 3 por hora.",
+          "Excluir minha conta pede a senha outra vez e a palavra EXCLUIR. A exclusão cancela assinaturas ativas, anonimiza os dados pessoais e oculta o perfil e as mídias públicas de quem publica. Os registros financeiros exigidos em lei permanecem sem o nome e o e-mail.",
+          `Também é possível escrever para ${company.dpoEmail} e apresentar reclamação à Autoridade Nacional de Proteção de Dados.`,
         ],
       },
       {
         heading: "Cookies",
         paragraphs: [
-          "Usamos cookies necessários para sessão, idioma e a confirmação de que você declarou ter 18 anos ou mais. Eles não são usados para vender dados.",
+          "O banner oferece Aceitar todos, Só necessários e Personalizar. A escolha padrão é só os cookies estritamente necessários: sessão, idioma, confirmação de 18 anos e a própria preferência.",
+          "Analíticos e de marketing não são carregados antes dessa escolha. Aceitar todos, ou marcar a opção em Personalizar, libera só o script correspondente.",
+          `A escolha fica num cookie, neste navegador e, se você entrou na conta, também no nosso banco com data e hora. A versão atual é ${company.termsVersion}. Uma versão nova pede a escolha de novo.`,
+          "O rodapé tem o link Preferências de cookies para reabrir o banner.",
         ],
       },
       {
@@ -228,20 +235,27 @@ const en: Record<LegalId, LegalDocument> = {
       {
         heading: "Retention",
         paragraphs: [
-          "We keep account data while the account exists and, after it closes, for as long as legal duties, disputes, and fraud prevention require. Acceptance and payment records are kept for the applicable tax period.",
+          "While the account exists, we keep the profile, messages, and preferences in order to provide the service.",
+          "On deletion, name, email, password, photo, bio, and message text are erased or replaced immediately. A publisher's public profile and media stop appearing.",
+          "Payment, subscription, and ledger records are kept for 5 years, tied only to an anonymous id, for tax duties and payment disputes. The period runs from the event.",
+          "The cookie-consent record is kept for 5 years. The age cookie lasts 12 months. The access session lasts 15 minutes and the renewal lasts 30 days.",
         ],
       },
       {
         heading: "Rights of the data subject",
         paragraphs: [
-          "You may ask for confirmation of processing, access, correction, anonymization, portability, information about sharing, and deletion of data we no longer need.",
-          `Requests go to ${company.dpoEmail}. You may also lodge a complaint with the Brazilian data protection authority (ANPD).`,
+          "In Account, Download my data builds a JSON file with the profile, subscriptions, purchases, consents, and message metadata (time, conversation, and whether it had media), without the text. Downloads are limited to 3 per hour.",
+          "Delete my account asks for the password again and the word EXCLUIR. Deletion cancels active subscriptions, anonymizes personal data, and hides a publisher's public profile and media. Financial records required by law stay, without the name and email.",
+          `You can also email ${company.dpoEmail} and lodge a complaint with the Brazilian data protection authority (ANPD).`,
         ],
       },
       {
         heading: "Cookies",
         paragraphs: [
-          "We use cookies required for the session, the language, and the confirmation that you stated you are 18 or older. They are not used to sell data.",
+          "The banner offers Accept all, Necessary only, and Customize. The default is strictly necessary cookies only: session, language, the 18+ confirmation, and this preference.",
+          "Analytics and marketing scripts do not load before that choice. Accept all, or a checked option in Customize, enables only the matching script.",
+          `The choice is stored in a cookie, in this browser, and, when you are signed in, in our database with the date and time. The current version is ${company.termsVersion}. A new version asks again.`,
+          "The footer link Cookie preferences reopens the banner.",
         ],
       },
       {

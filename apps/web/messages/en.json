@@ -11,6 +11,7 @@
     "notifications": "Notifications",
     "profile": "Profile",
     "logout": "Log out",
+    "account": "Account",
     "billing": "Subscriptions",
     "create": "Create at your pace",
     "createBody": "Publish experiences and build your community.",
@@ -164,6 +165,7 @@
     "guidelines": "Guidelines",
     "refunds": "Refunds",
     "cookies": "Cookies",
+    "cookiePreferences": "Cookie preferences",
     "complaints": "Complaints",
     "program": "Affiliate program",
     "note": "Fictitious prototype. These links are not final legal documents."
@@ -258,5 +260,35 @@
   },
   "legal": {
     "demo": "Provisional Patrocino demonstration copy. This is not a legal document."
+  },
+  "cookies": {
+    "title": "Cookies",
+    "body": "Until you choose, only strictly necessary cookies stay on. Analytics and marketing stay off.",
+    "acceptAll": "Accept all",
+    "necessaryOnly": "Necessary only",
+    "customize": "Customize",
+    "analytics": "Analytics",
+    "analyticsHint": "Measures site audience",
+    "marketing": "Marketing",
+    "marketingHint": "Measures campaigns and ads",
+    "necessaryLock": "Necessary (always on)",
+    "save": "Save choice",
+    "privacy": "Privacy policy"
+  },
+  "account": {
+    "eyebrow": "Your account",
+    "title": "Data and privacy",
+    "body": "Download a copy or close the account. Closing asks for the password again.",
+    "export": "Download my data",
+    "exportHelp": "JSON with profile, subscriptions, purchases, consents, and message metadata. Up to 3 downloads per hour.",
+    "exportDone": "File generated in this browser",
+    "exportLimited": "Download limit for this hour",
+    "delete": "Delete my account",
+    "deleteHelp": "Ends active subscriptions, anonymizes personal data, and hides a public profile. Financial records stay without the name.",
+    "password": "Password",
+    "confirm": "Type EXCLUIR",
+    "confirmButton": "Confirm deletion",
+    "wrongPassword": "Wrong password.",
+    "confirmHint": "Type EXCLUIR to confirm."
   }
 }

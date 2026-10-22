@@ -175,6 +175,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Bell className="size-[18px]" />
             <i className="absolute right-2.5 top-2.5 size-2 rounded-full border-2 border-background bg-primary" />
           </Button>
+          <Link href="/conta" data-testid="account-settings" className="px-2 text-[11px] font-bold text-muted hover:text-foreground">
+            {t("account")}
+          </Link>
           <Link href={areaHref}>
             <Button variant="ghost" size="icon" aria-label={t("profile")}>
               <UserRound className="size-[18px]" />

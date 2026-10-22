@@ -15,7 +15,7 @@ test("a fan can subscribe in demo mode and cancel at period end", async ({ page 
   await expect(page).toHaveURL(/\/topcreators/);
 
   await page.goto("/creator/lunaferraz");
-  const cookie = page.getByRole("button", { name: "Entendi" });
+  const cookie = page.getByRole("button", { name: "Só necessários" });
   if (await cookie.isVisible()) await cookie.click();
   await page.getByTestId("subscribe-card").click();
   await expect(page).toHaveURL(/\/assinaturas/);

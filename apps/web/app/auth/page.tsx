@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, Suspense, useState, useSyncExternalStore } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import {
   Apple,
   Eye,
@@ -80,7 +80,6 @@ function AuthContent() {
   const [loading, setLoading] = useState(false);
   const [social, setSocial] = useState("");
   const [error, setError] = useState("");
-  const cookie = useSyncExternalStore(subscribeDemo, cookieOpen, () => true);
   const featuredCreator = creators[0]!;
   const featuredPost = posts[0]!;
 
@@ -383,20 +382,6 @@ function AuthContent() {
       </div>
       {!signUp && <MonetizeSection />}
 
-      {cookie && (
-        <div className="fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-2xl flex-col gap-3 rounded-3xl border border-white/10 bg-ink p-4 text-white shadow-2xl sm:flex-row sm:items-center sm:px-5">
-          <p className="flex-1 text-[11px] leading-5 text-white/70">
-            Usamos cookies essenciais para manter sua experiência segura. No demo, preferências ficam somente neste navegador.
-          </p>
-          <Button
-            size="sm"
-            onClick={() => writeDemo({ cookieAccepted: true })}
-          >
-            Entendi
-          </Button>
-        </div>
-      )}
-
       {social && (
         <div className="fixed inset-0 z-[60] grid place-items-center bg-background/90 backdrop-blur-md">
           <div className="text-center">
@@ -410,15 +395,6 @@ function AuthContent() {
       )}
     </main>
   );
-}
-
-function subscribeDemo(callback: () => void) {
-  window.addEventListener("mimelux:state", callback);
-  return () => window.removeEventListener("mimelux:state", callback);
-}
-
-function cookieOpen() {
-  return !readDemo().cookieAccepted;
 }
 
 function RoleSwitch({

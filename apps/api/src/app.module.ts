@@ -6,6 +6,7 @@ import { ContentModule } from "./modules/content/content.module";
 import { CreatorsModule } from "./modules/creators/creators.module";
 import { MediaModule } from "./modules/media/media.module";
 import { PaymentsModule } from "./modules/payments/payments.module";
+import { PrivacyModule } from "./modules/privacy/privacy.module";
 import { SubscriptionsModule } from "./modules/subscriptions/subscriptions.module";
 import { HealthController } from "./health.controller";
 
@@ -18,6 +19,7 @@ import { HealthController } from "./health.controller";
     MediaModule,
     SubscriptionsModule,
     PaymentsModule,
+    PrivacyModule,
     ChatModule,
   ],
   controllers: [HealthController],

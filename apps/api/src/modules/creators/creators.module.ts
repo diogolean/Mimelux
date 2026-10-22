@@ -32,25 +32,24 @@ class CreatorsController {
         ...(this.includeDemo ? {} : { isDemo: false }),
         status: "ACTIVE",
         ...(parsed.category ? { category: { equals: parsed.category, mode: "insensitive" } } : {}),
-        ...(parsed.search
+        user: parsed.search
           ? {
-              user: {
-                profile: {
-                  is: {
-                    OR: [
-                      { name: { contains: parsed.search, mode: "insensitive" } },
-                      { username: { contains: parsed.search, mode: "insensitive" } },
-                    ],
-                  },
+              deletedAt: null,
+              profile: {
+                is: {
+                  OR: [
+                    { name: { contains: parsed.search, mode: "insensitive" } },
+                    { username: { contains: parsed.search, mode: "insensitive" } },
+                  ],
                 },
               },
             }
-          : {}),
+          : { deletedAt: null },
       },
       include: {
         user: { include: { profile: true } },
         plans: { where: { active: true } },
-        posts: { select: { likeCount: true } },
+        posts: { where: { deletedAt: null }, select: { likeCount: true } },
       },
       take: 50,
       orderBy: { createdAt: "desc" },
@@ -122,14 +121,15 @@ class CreatorsController {
     const creator = await database.creator.findFirst({
       where: {
         ...(this.includeDemo ? {} : { isDemo: false }),
-        user: { profile: { is: { username } } },
+        status: "ACTIVE",
+        user: { deletedAt: null, profile: { is: { username } } },
       },
       include: {
         user: { include: { profile: true } },
         plans: { where: { active: true } },
         promotions: { where: { active: true } },
         contentPacks: { where: { active: true } },
-        posts: { select: { likeCount: true } },
+        posts: { where: { deletedAt: null }, select: { likeCount: true } },
       },
     });
     return creator ? this.present(creator) : null;

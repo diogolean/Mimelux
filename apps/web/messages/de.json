@@ -11,6 +11,7 @@
     "notifications": "Mitteilungen",
     "profile": "Profil",
     "logout": "Abmelden",
+    "account": "Konto",
     "billing": "Abos",
     "create": "Erstelle in deinem Tempo",
     "createBody": "Veröffentliche Erlebnisse und baue deine Community auf.",
@@ -164,6 +165,7 @@
     "guidelines": "Richtlinien",
     "refunds": "Erstattung",
     "cookies": "Cookies",
+    "cookiePreferences": "Cookie-Einstellungen",
     "complaints": "Beschwerden",
     "program": "Partnerprogramm",
     "note": "Fiktiver Prototyp. Diese Links sind keine endgültigen Rechtsdokumente."
@@ -258,5 +260,35 @@
   },
   "legal": {
     "demo": "Vorläufiger Demonstrationstext von Patrocino. Dies ist kein Rechtsdokument."
+  },
+  "cookies": {
+    "title": "Cookies",
+    "body": "Bis du wählst, bleiben nur unbedingt erforderliche Cookies aktiv. Analytik und Marketing bleiben aus.",
+    "acceptAll": "Alle akzeptieren",
+    "necessaryOnly": "Nur notwendige",
+    "customize": "Anpassen",
+    "analytics": "Analytik",
+    "analyticsHint": "Misst die Reichweite der Website",
+    "marketing": "Marketing",
+    "marketingHint": "Misst Kampagnen und Anzeigen",
+    "necessaryLock": "Notwendig (immer aktiv)",
+    "save": "Auswahl speichern",
+    "privacy": "Datenschutzerklärung"
+  },
+  "account": {
+    "eyebrow": "Dein Konto",
+    "title": "Daten und Datenschutz",
+    "body": "Lade eine Kopie herunter oder schließe das Konto. Das Schließen fragt das Passwort erneut ab.",
+    "export": "Meine Daten herunterladen",
+    "exportHelp": "JSON mit Profil, Abos, Käufen, Einwilligungen und Nachrichten-Metadaten. Drei Downloads pro Stunde.",
+    "exportDone": "Datei in diesem Browser erzeugt",
+    "exportLimited": "Download-Limit dieser Stunde",
+    "delete": "Mein Konto löschen",
+    "deleteHelp": "Aktive Abos enden, persönliche Daten werden anonymisiert und ein öffentliches Profil wird ausgeblendet. Finanzunterlagen bleiben ohne den Namen.",
+    "password": "Passwort",
+    "confirm": "EXCLUIR eingeben",
+    "confirmButton": "Löschung bestätigen",
+    "wrongPassword": "Falsches Passwort.",
+    "confirmHint": "Gib EXCLUIR ein, um zu bestätigen."
   }
 }

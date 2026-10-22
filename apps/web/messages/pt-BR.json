@@ -11,6 +11,7 @@
     "notifications": "Notificações",
     "profile": "Perfil",
     "logout": "Sair",
+    "account": "Conta",
     "billing": "Assinaturas",
     "create": "Crie no seu ritmo",
     "createBody": "Publique experiências e construa sua comunidade.",
@@ -164,6 +165,7 @@
     "guidelines": "Diretrizes",
     "refunds": "Reembolso",
     "cookies": "Cookies",
+    "cookiePreferences": "Preferências de cookies",
     "complaints": "Reclamações",
     "program": "Programa de afiliados",
     "note": "Protótipo fictício. Estes links não são documentos jurídicos finais."
@@ -258,5 +260,35 @@
   },
   "legal": {
     "demo": "Texto provisório de demonstração do Patrocino. Não é um documento jurídico."
+  },
+  "cookies": {
+    "title": "Cookies",
+    "body": "Até você escolher, só os cookies estritamente necessários ficam ativos. Analíticos e de marketing permanecem desligados.",
+    "acceptAll": "Aceitar todos",
+    "necessaryOnly": "Só necessários",
+    "customize": "Personalizar",
+    "analytics": "Analíticos",
+    "analyticsHint": "Medem audiência do site",
+    "marketing": "Marketing",
+    "marketingHint": "Medem campanhas e anúncios",
+    "necessaryLock": "Necessários (sempre ativos)",
+    "save": "Salvar escolha",
+    "privacy": "Política de Privacidade"
+  },
+  "account": {
+    "eyebrow": "Sua conta",
+    "title": "Dados e privacidade",
+    "body": "Baixe uma cópia ou encerre a conta. O encerramento pede a senha de novo.",
+    "export": "Baixar meus dados",
+    "exportHelp": "JSON com perfil, assinaturas, compras, consentimentos e metadados de mensagens. Até 3 downloads por hora.",
+    "exportDone": "Arquivo gerado neste navegador",
+    "exportLimited": "Limite de downloads desta hora",
+    "delete": "Excluir minha conta",
+    "deleteHelp": "Cancela assinaturas ativas, anonimiza dados pessoais e oculta o perfil público de quem publica. Registros financeiros permanecem sem o nome.",
+    "password": "Senha",
+    "confirm": "Digite EXCLUIR",
+    "confirmButton": "Confirmar exclusão",
+    "wrongPassword": "Senha incorreta.",
+    "confirmHint": "Digite EXCLUIR para confirmar."
   }
 }

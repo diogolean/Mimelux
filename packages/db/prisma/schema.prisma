@@ -134,6 +134,8 @@ model User {
   affiliate        Affiliate?
   attributions     Attribution[]    @relation("AttributedFans")
   specialRequests  SpecialRequest[] @relation("FanSpecialRequests")
+  consents         ConsentRecord[]
+  privacyRequests  PrivacyRequest[]
 
   @@map("users")
 }
@@ -427,6 +429,31 @@ model Report {
 
   @@index([status, createdAt])
   @@map("reports")
+}
+
+model ConsentRecord {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  version    String
+  necessary  Boolean  @default(true)
+  analytics  Boolean  @default(false)
+  marketing  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("consent_records")
+}
+
+model PrivacyRequest {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  kind      String
+  createdAt DateTime @default(now())
+
+  @@index([userId, kind, createdAt])
+  @@map("privacy_requests")
 }
 
 model AuditLog {

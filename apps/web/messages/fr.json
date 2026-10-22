@@ -11,6 +11,7 @@
     "notifications": "Notifications",
     "profile": "Profil",
     "logout": "Sortir",
+    "account": "Compte",
     "billing": "Abonnements",
     "create": "Créez à votre rythme",
     "createBody": "Publiez des expériences et construisez votre communauté.",
@@ -164,6 +165,7 @@
     "guidelines": "Règles",
     "refunds": "Remboursement",
     "cookies": "Cookies",
+    "cookiePreferences": "Préférences de cookies",
     "complaints": "Réclamations",
     "program": "Programme d'affiliation",
     "note": "Prototype fictif. Ces liens ne sont pas des documents juridiques définitifs."
@@ -258,5 +260,35 @@
   },
   "legal": {
     "demo": "Texte provisoire de démonstration de Patrocino. Ce n'est pas un document juridique."
+  },
+  "cookies": {
+    "title": "Cookies",
+    "body": "Jusqu'à votre choix, seuls les cookies strictement nécessaires restent actifs. L'analytique et le marketing restent désactivés.",
+    "acceptAll": "Tout accepter",
+    "necessaryOnly": "Nécessaires seulement",
+    "customize": "Personnaliser",
+    "analytics": "Analytique",
+    "analyticsHint": "Mesure l'audience du site",
+    "marketing": "Marketing",
+    "marketingHint": "Mesure les campagnes et les annonces",
+    "necessaryLock": "Nécessaires (toujours actifs)",
+    "save": "Enregistrer le choix",
+    "privacy": "Politique de confidentialité"
+  },
+  "account": {
+    "eyebrow": "Votre compte",
+    "title": "Données et confidentialité",
+    "body": "Téléchargez une copie ou fermez le compte. La fermeture demande à nouveau le mot de passe.",
+    "export": "Télécharger mes données",
+    "exportHelp": "JSON avec profil, abonnements, achats, consentements et métadonnées des messages. Trois téléchargements par heure.",
+    "exportDone": "Fichier généré dans ce navigateur",
+    "exportLimited": "Limite de téléchargements de cette heure",
+    "delete": "Supprimer mon compte",
+    "deleteHelp": "Les abonnements actifs prennent fin, les données personnelles sont anonymisées et un profil public est masqué. Les écritures financières restent sans le nom.",
+    "password": "Mot de passe",
+    "confirm": "Saisissez EXCLUIR",
+    "confirmButton": "Confirmer la suppression",
+    "wrongPassword": "Mot de passe incorrect.",
+    "confirmHint": "Saisissez EXCLUIR pour confirmer."
   }
 }
