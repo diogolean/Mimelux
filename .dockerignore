@@ -1,14 +1,6 @@
+.env
+.git
 node_modules
 **/node_modules
 **/.next
 **/dist
-.git
-.turbo
-test-results
-playwright-report
-coverage
-*.pem
-.env
-.env.*
-!.env.example
-media

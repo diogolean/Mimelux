@@ -1,18 +1,30 @@
-patrocino.com, www.patrocino.com {
-	encode gzip zstd
-
+{
+	email diogolean@gmail.com
+}
+(app) {
+	encode zstd gzip
+	handle /v1* {
+		reverse_proxy api:3334
+	}
 	@private path /media/uploads/*/private /media/uploads/*/private/* /media/uploads/*/tmp /media/uploads/*/tmp/*
 	handle @private {
 		respond 404
 	}
-
 	handle_path /media/* {
 		root * /srv/media
 		header Cache-Control "public, max-age=31536000, immutable"
 		file_server
 	}
-
 	handle {
-		reverse_proxy {$WEB_UPSTREAM:web:3333}
+		reverse_proxy web:3333
 	}
+}
+patrocino.com, www.patrocino.com {
+	import app
+}
+api.patrocino.com {
+	reverse_proxy api:3334
+}
+http://2.25.182.133, http://localhost {
+	import app
 }

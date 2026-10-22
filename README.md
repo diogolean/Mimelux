@@ -87,19 +87,9 @@ uploads/<creatorId>/posters/<mediaId>.jpg     video or photo poster
 uploads/<creatorId>/previews/<mediaId>.jpg    blurred preview
 ```
 
-Caddy serves `/media/*` from that disk, except `uploads/*/private` and `uploads/*/tmp`, which return 404. Locked bytes are only returned by `GET /v1/media/:id/file` after the API checks the owner, an admin, an active subscription, or a paid pay-per-view purchase. Posters and blurred previews stay public. The API image installs ffmpeg for those derivatives.
+Caddy's `(app)` snippet serves `/media/*` from `/srv/media` before the web catch-all, except `uploads/*/private` and `uploads/*/tmp`, which return 404. Locked bytes are only returned by `GET /v1/media/:id/file` after the API checks the owner, an admin, an active subscription, or a paid pay-per-view purchase. Posters and blurred previews stay public. `Dockerfile.prod` installs ffmpeg for those derivatives.
 
-Deploy on the VPS:
-
-```bash
-mkdir -p /opt/patrocino/media
-pnpm --filter @mimelux/db exec prisma migrate deploy
-docker compose -f docker-compose.prod.yml build api
-docker compose -f docker-compose.prod.yml up -d api
-# reload Caddy so the private-path 404 matcher is active
-```
-
-The API container mounts `/opt/patrocino/media` read-write. Caddy mounts the same path read-only. Swap the storage class later (Bunny Storage or Stream) without changing the upload routes.
+Production is `docker compose -f docker-compose.prod.yml up -d --build`. The `migrate` service runs `prisma migrate deploy` and `prisma/seed.ts`. API and web mount `/opt/patrocino/media` read-write (`MEDIA_ROOT`). Caddy mounts it read-only at `/srv/media`. `DATABASE_URL` stays in `.env`. `POSTGRES_PASSWORD` in `.env` must be the password already used by the Postgres volume. `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` is a build arg from `.env`, empty in git. Swap the storage class later (Bunny Storage or Stream) without changing the upload routes.
 
 ## Commands
 
